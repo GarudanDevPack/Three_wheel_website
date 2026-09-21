@@ -1,154 +1,108 @@
-'use client';
+import Link from 'next/link'
+import type { Metadata } from 'next'
+import Preloader from '@/components/animations/LazyPreloader'
+import Header from '@/components/vehicle/Header'
+import Footer from '@/components/vehicle/Footer'
+import { getPageMetadata } from '@/lib/pageSeo'
 
-import React, { Fragment } from 'react';
-import Link from 'next/link';
-import Header from '../../../components/header/Header';
-import Scrollbar from '../../../components/scrollbar/scrollbar';
-import Footer from '../../../components/footer/Footer';
-import CtaSection from '../../../components/CtaSection/CtaSection';
-import icon from '@/public/images/icon/magic.svg';
-import gImg1 from '@/public/images/gallery/cp-img01.jpg';
-import gImg2 from '@/public/images/gallery/cp-img02.jpg';
-import gImg3 from '@/public/images/gallery/cp-img03.jpg';
-import gImg4 from '@/public/images/gallery/cp-img04.jpg';
-import gImg5 from '@/public/images/gallery/cp-img05.jpg';
-import gImg6 from '@/public/images/gallery/cp-img06.jpg';
-import Image from 'next/image';
+export const revalidate = 300
 
-interface Section {
-  title: string;
-  content: string[];
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('terms-conditions', {
+    title: 'Terms & Conditions | Neptune',
+    description: 'The terms and conditions governing use of the Neptune website.',
+  })
 }
 
-const sections: Section[] = [
+const sections = [
   {
     title: 'Copyright and intellectual property usage',
     content: [
-      `All content on this website, including text, graphics, logos, and trademarks, is the intellectual property of Innomax...`,
-      `Images on this website may include licensed stock photos...`,
+      'All content on this website, including text, graphics, logos, and trademarks, is the intellectual property of Neptune unless otherwise noted.',
+      'Images on this website may include licensed stock photos and may not be reproduced without permission.',
     ],
   },
   {
     title: 'Website usage terms',
     content: [
-      `By accessing this website, you agree to comply with the following terms...`,
-      `Additionally, users must not submit or transmit any unlawful, abusive, defamatory...`,
-      `This website may contain links to external sites...`,
+      'By accessing this website, you agree to comply with these terms and use the site only for lawful purposes.',
+      'Users must not submit or transmit any unlawful, abusive, defamatory, or otherwise objectionable content through this site.',
+      'This website may contain links to external sites that Neptune does not control and is not responsible for.',
     ],
   },
   {
     title: 'Software and services',
     content: [
-      `Our services, provided on an "as-is" and "as-available" basis...`,
+      'Our services are provided on an "as-is" and "as-available" basis, without warranties of any kind, express or implied.',
     ],
   },
   {
     title: 'Personal information policy',
     content: [
-      `Innomax adheres to ethical business practices and safeguards your personal information...`,
+      'Neptune adheres to ethical business practices and safeguards your personal information as described in our Privacy Policy.',
     ],
   },
   {
     title: 'Disclaimer',
     content: [
-      `Information on this website is provided in good faith and sourced from reliable providers...`,
-      `Innomax disclaims all warranties, including those related to fitness for a particular purpose...`,
+      'Information on this website is provided in good faith and sourced from reliable providers, but Neptune makes no guarantee of completeness or accuracy.',
+      'Neptune disclaims all warranties, including those related to fitness for a particular purpose, to the fullest extent permitted by law.',
     ],
   },
   {
     title: 'Limitation of liability',
     content: [
-      `Innomax disclaims liability for any damages, including lost data or profits...`,
+      'Neptune disclaims liability for any damages, including lost data or profits, arising from the use of this website.',
     ],
   },
-];
+]
 
-const TermsPage: React.FC = () => {
-  return (
-    <Fragment>
-      <div className="body_wrap sco_agency">
-        <Header />
+const TermsPage = () => (
+  <>
+    <Preloader />
+    <Header />
+    <main>
+      <section className="tw:bg-brand-ink tw:py-20 tw:text-white">
+        <div className="tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center">
+          <p className="tw:text-sm tw:font-semibold tw:uppercase tw:tracking-widest tw:text-brand-blue-light">
+            Terms &amp; Conditions
+          </p>
+          <h1 className="tw:mt-4 tw:text-4xl tw:font-bold">Your access and usage rights</h1>
+          <p className="tw:mt-4 tw:text-sm tw:text-white/50">Updated December 10th, 2024</p>
+        </div>
+      </section>
 
-        <section
-          className="page-title cp-page-title pt-200 pos-rel bg_img"
-          style={{ backgroundImage: `url('/images/bg/page_bg01.jpg')` }}
-        >
-          <div className="container">
-            <div className="page-title-wrap">
-              <div className="row mt-none-30 align-items-center">
-                <div className="col-lg-8 mt-30">
-                  <div className="page-title-box">
-                    <span className="sub-title">
-                      <Image src={icon} alt="Terms icon" /> Terms & Conditions
-                    </span>
-                    <h2 className="title">
-                      Innomax website terms & <br />
-                      conditions your access and <br />
-                      usage rights
-                    </h2>
-                    <span className="page-update_time">Updated on: December 10th, 2024</span>
-                  </div>
-                </div>
-                <div className="col-lg-4 mt-30">
-                  <div className="cp-img-slide">
-                    <div className="cp-img-inner ul_li">
-                      <div className="cp-item marquee-first">
-                        {[gImg1, gImg2, gImg3, gImg1, gImg2, gImg3].map((img, i) => (
-                          <div className="xb-img" key={`img1-${i}`}>
-                            <Image src={img} alt={`Terms visual ${i + 1}`} />
-                          </div>
-                        ))}
-                      </div>
-                      <div className="cp-item marquee-2">
-                        {[gImg4, gImg5, gImg6, gImg4, gImg5, gImg6].map((img, i) => (
-                          <div className="xb-img" key={`img2-${i}`}>
-                            <Image src={img} alt={`Terms visual ${i + 7}`} />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <section className="tw:bg-brand-ink tw:pb-20">
+        <div className="tw:mx-auto tw:max-w-3xl tw:px-6 tw:text-white/80">
+          {sections.map((section) => (
+            <div key={section.title} className="tw:mb-10">
+              <h2 className="tw:text-xl tw:font-bold tw:text-white">{section.title}</h2>
+              {section.content.map((text) => (
+                <p key={text} className="tw:mt-3 tw:leading-relaxed">
+                  {text}
+                </p>
+              ))}
             </div>
+          ))}
+
+          <div>
+            <h2 className="tw:text-xl tw:font-bold tw:text-white">Contact</h2>
+            <p className="tw:mt-3 tw:leading-relaxed">
+              <Link href="/contact" className="tw:text-brand-blue-light tw:underline">
+                Click here
+              </Link>{' '}
+              to contact us regarding these Terms &amp; Conditions, or email{' '}
+              <a href="mailto:contact@neptune.com" className="tw:text-brand-blue-light tw:underline">
+                contact@neptune.com
+              </a>
+              .
+            </p>
           </div>
-        </section>
+        </div>
+      </section>
+    </main>
+    <Footer />
+  </>
+)
 
-        <section className="terms-conditions-section cp-det-bg">
-          <div className="container">
-            <div className="terms-section_inner pt-120 pb-75">
-              <div className="row">
-                <div className="col-lg-11">
-                  {sections.map((section, index) => (
-                    <div className="item-details-widget" key={index}>
-                      <h2 className="item_details_info_title">{section.title}</h2>
-                      {section.content.map((text, idx) => (
-                        <p key={idx}>{text}</p>
-                      ))}
-                    </div>
-                  ))}
-                  <div className="item-details-widget">
-                    <h2 className="item_details_info_title">Contact</h2>
-                    <p>
-                      <Link href="/contact" className="details-link">
-                        Click here
-                      </Link>{' '}
-                      to contact us regarding this Terms & Conditions or other related issues. You can also send us an e-mail on:{' '}
-                      <a href="mailto:contact@innomax.com">contact@innomax.com</a>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <CtaSection cClass="bg" />
-      </div>
-      <Footer />
-      <Scrollbar />
-    </Fragment>
-  );
-};
-
-export default TermsPage;
+export default TermsPage

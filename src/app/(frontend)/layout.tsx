@@ -1,13 +1,4 @@
 import type { Metadata } from "next";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "../../styles/fontawesome.css";
-import "../../styles/themify-icons.css";
-import "../../styles/animate.css";
-import "../../styles/cursor.css";
-import "../../styles/custom-font.css";
-import "../../styles/main.css";
 import "../../styles/tailwind.css";
 
 export const metadata: Metadata = {

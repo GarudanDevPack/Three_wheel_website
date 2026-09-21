@@ -18,7 +18,7 @@ const Dealers = async () => {
   try {
     const payload = await getPayloadClient()
     const { docs } = await payload.find({ collection: 'dealers', limit: 3 })
-    if (docs.length) dealers = docs as Dealer[]
+    if (docs.length) dealers = docs as unknown as Dealer[]
   } catch {
     // Payload/database not configured yet — fall back to placeholder dealer.
   }
