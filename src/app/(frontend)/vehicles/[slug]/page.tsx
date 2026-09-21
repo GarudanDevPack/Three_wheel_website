@@ -189,14 +189,14 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
 
         {colors.length > 0 && (
           <ScrollReveal>
-            <section id="colors" className="tw:bg-gray-50 tw:py-20">
+            <section id="colors" className="tw:bg-surface-raised tw:py-20">
               <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
-                <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Colors</h2>
+                <h2 className="tw:text-3xl tw:font-bold tw:text-white">Colors</h2>
                 <div className="tw:mt-10 tw:grid tw:gap-10 tw:sm:grid-cols-2">
                   {colors.map((color) => (
                     <div key={color.colorName}>
                       <ColorSpin360 images={color.angleImages || []} label={color.colorName} />
-                      <p className="tw:mt-3 tw:text-center tw:font-semibold tw:text-brand-ink">
+                      <p className="tw:mt-3 tw:text-center tw:font-semibold tw:text-white">
                         {color.colorName}
                       </p>
                     </div>
@@ -211,9 +211,9 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
           <BuildSequence frames={buildFrames} />
 
           {parts.length > 0 && vehicle.heroImage?.url && (
-            <section className="tw:bg-white tw:py-20">
+            <section className="tw:bg-surface tw:py-20">
               <div className="tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center">
-                <h2 className="tw:mb-10 tw:text-3xl tw:font-bold tw:text-brand-ink">
+                <h2 className="tw:mb-10 tw:text-3xl tw:font-bold tw:text-white">
                   Explore the build
                 </h2>
                 <PartHotspots
@@ -230,9 +230,9 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
 
         {variants.length > 0 && (
           <ScrollReveal>
-            <section id="specifications" className="tw:bg-gray-50 tw:py-20">
+            <section id="specifications" className="tw:bg-surface-raised tw:py-20">
               <div className="tw:mx-auto tw:max-w-4xl tw:px-6">
-                <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">
+                <h2 className="tw:text-3xl tw:font-bold tw:text-white">
                   Variants &amp; Specifications
                 </h2>
                 <div className="tw:mt-8">
@@ -251,9 +251,9 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
 
         {gallery.length > 0 && (
           <ScrollReveal>
-            <section className="tw:bg-white tw:py-20">
+            <section className="tw:bg-surface tw:py-20">
               <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
-                <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Gallery</h2>
+                <h2 className="tw:text-3xl tw:font-bold tw:text-white">Gallery</h2>
                 <div className="tw:mt-10 tw:columns-1 tw:gap-4 tw:sm:columns-2 tw:lg:columns-3">
                   {gallery.map(
                     (item, index) =>
@@ -280,9 +280,9 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
 
         {faqs.length > 0 && (
           <ScrollReveal>
-            <section className="tw:bg-gray-50 tw:py-20">
+            <section className="tw:bg-surface-raised tw:py-20">
               <div className="tw:mx-auto tw:max-w-3xl tw:px-6">
-                <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">
+                <h2 className="tw:text-3xl tw:font-bold tw:text-white">
                   Frequently asked questions
                 </h2>
                 <div className="tw:mt-8">
@@ -294,12 +294,12 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
         )}
 
         <ScrollReveal>
-          <section id="dealers" className="tw:bg-white tw:py-20">
+          <section id="dealers" className="tw:bg-surface tw:py-20">
             <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
-              <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Find a dealer</h2>
+              <h2 className="tw:text-3xl tw:font-bold tw:text-white">Find a dealer</h2>
               <div className="tw:mt-10">
                 {dealers.length === 0 ? (
-                  <p className="tw:text-gray-500">
+                  <p className="tw:text-white/50">
                     Add dealers in /admin to populate this section.
                   </p>
                 ) : (
@@ -312,7 +312,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
 
         {documents.length > 0 && (
           <ScrollReveal>
-            <section className="tw:bg-gray-50 tw:py-16">
+            <section className="tw:bg-surface-raised tw:py-16">
               <div className="tw:mx-auto tw:flex tw:max-w-4xl tw:flex-wrap tw:justify-center tw:gap-4 tw:px-6">
                 {documents.map(({ doc, label }) => (
                   <a
@@ -320,7 +320,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
                     href={doc!.url!}
                     target="_blank"
                     rel="noreferrer"
-                    className="tw:rounded-full tw:border tw:border-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-blue"
+                    className="tw:rounded-full tw:border tw:border-brand-blue-light tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-blue-light"
                   >
                     {label}
                   </a>

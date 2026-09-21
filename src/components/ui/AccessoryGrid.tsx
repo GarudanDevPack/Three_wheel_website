@@ -11,12 +11,12 @@ const AccessoryGrid = ({ accessories }: { accessories: Accessory[] }) => {
   if (!accessories.length) return null
 
   return (
-    <section className="tw:bg-gray-50 tw:py-20">
+    <section className="tw:bg-surface-raised tw:py-20">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
-        <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Accessories</h2>
+        <h2 className="tw:text-3xl tw:font-bold tw:text-white">Accessories</h2>
         <div className="tw:mt-10 tw:grid tw:gap-6 tw:sm:grid-cols-2 tw:lg:grid-cols-3">
           {accessories.map((accessory) => (
-            <div key={accessory.id} className="tw:overflow-hidden tw:rounded-2xl tw:bg-white tw:shadow-sm">
+            <div key={accessory.id} className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-white/10">
               {accessory.image?.url && (
                 <div className="tw:relative tw:aspect-square">
                   <Image
@@ -28,10 +28,10 @@ const AccessoryGrid = ({ accessories }: { accessories: Accessory[] }) => {
                   />
                 </div>
               )}
-              <div className="tw:border-t tw:border-black/5 tw:p-5">
-                <p className="tw:text-lg tw:font-semibold tw:text-brand-ink">{accessory.name}</p>
+              <div className="tw:border-t tw:border-white/10 tw:p-5">
+                <p className="tw:text-lg tw:font-semibold tw:text-white">{accessory.name}</p>
                 {accessory.description && (
-                  <p className="tw:mt-1 tw:text-sm tw:text-gray-600">{accessory.description}</p>
+                  <p className="tw:mt-1 tw:text-sm tw:text-white/60">{accessory.description}</p>
                 )}
               </div>
             </div>

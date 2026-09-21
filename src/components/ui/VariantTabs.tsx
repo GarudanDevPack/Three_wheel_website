@@ -29,7 +29,7 @@ const VariantTabs = ({ variants }: { variants: Variant[] }) => {
             className={`tw:rounded-full tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
               index === activeIndex
                 ? 'tw:bg-brand-blue-light tw:text-white'
-                : 'tw:bg-gray-100 tw:text-brand-ink tw:hover:bg-gray-200'
+                : 'tw:bg-surface tw:text-white/70 tw:hover:bg-surface-raised'
             }`}
           >
             {variant.variantName}
@@ -38,7 +38,7 @@ const VariantTabs = ({ variants }: { variants: Variant[] }) => {
       </div>
       <div className="tw:mt-6">
         {active.fuelType && (
-          <p className="tw:mb-3 tw:text-sm tw:font-semibold tw:uppercase tw:tracking-wide tw:text-brand-blue">
+          <p className="tw:mb-3 tw:text-sm tw:font-semibold tw:uppercase tw:tracking-wide tw:text-brand-blue-light">
             {active.fuelType}
           </p>
         )}

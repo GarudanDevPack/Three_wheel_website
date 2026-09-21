@@ -14,7 +14,7 @@ export type VehicleCardData = {
 const VehicleCard = ({ vehicle }: { vehicle: VehicleCardData }) => (
   <Link
     href={`/vehicles/${vehicle.slug}`}
-    className="tw:overflow-hidden tw:rounded-2xl tw:bg-gray-50 tw:shadow-sm tw:transition tw:hover:shadow-md"
+    className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface-raised tw:border tw:border-white/10 tw:transition tw:hover:border-white/20"
   >
     {vehicle.heroImage?.url && (
       <div className="tw:relative tw:aspect-square">
@@ -27,10 +27,10 @@ const VehicleCard = ({ vehicle }: { vehicle: VehicleCardData }) => (
         />
       </div>
     )}
-    <div className="tw:border-t tw:border-black/5 tw:p-5">
+    <div className="tw:border-t tw:border-white/10 tw:p-5">
       <div className="tw:flex tw:flex-wrap tw:gap-2">
         {vehicle.category && (
-          <span className="tw:rounded-full tw:bg-brand-blue/10 tw:px-3 tw:py-1 tw:text-xs tw:font-semibold tw:text-brand-blue">
+          <span className="tw:rounded-full tw:bg-brand-blue/10 tw:px-3 tw:py-1 tw:text-xs tw:font-semibold tw:text-brand-blue-light">
             {vehicle.category}
           </span>
         )}
@@ -43,9 +43,9 @@ const VehicleCard = ({ vehicle }: { vehicle: VehicleCardData }) => (
           </span>
         ))}
       </div>
-      <p className="tw:mt-3 tw:text-lg tw:font-semibold tw:text-brand-ink">{vehicle.name}</p>
+      <p className="tw:mt-3 tw:text-lg tw:font-semibold tw:text-white">{vehicle.name}</p>
       {vehicle.shortDescription && (
-        <p className="tw:mt-1 tw:text-sm tw:text-gray-600">{vehicle.shortDescription}</p>
+        <p className="tw:mt-1 tw:text-sm tw:text-white/60">{vehicle.shortDescription}</p>
       )}
     </div>
   </Link>

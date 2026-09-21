@@ -19,10 +19,10 @@ const ContactPage = () => (
     <Preloader />
     <Header />
     <main>
-      <section className="tw:bg-white tw:py-20">
+      <section className="tw:bg-surface tw:py-20">
         <div className="tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center">
-          <h1 className="tw:text-4xl tw:font-bold tw:text-brand-ink">Get in touch</h1>
-          <p className="tw:mt-4 tw:text-gray-600">
+          <h1 className="tw:text-4xl tw:font-bold tw:text-white">Get in touch</h1>
+          <p className="tw:mt-4 tw:text-white/60">
             Questions about a vehicle, fleet orders, or becoming a dealer or sales partner —
             reach out and our team will get back to you.
           </p>

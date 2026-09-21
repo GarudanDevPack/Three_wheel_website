@@ -97,7 +97,7 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
           value={pincodeQuery}
           onChange={(e) => setPincodeQuery(e.target.value)}
           placeholder="Search by pincode"
-          className="tw:rounded-full tw:border tw:border-black/10 tw:px-4 tw:py-2 tw:text-sm"
+          className="tw:rounded-full tw:border tw:border-white/20 tw:bg-surface-raised tw:px-4 tw:py-2 tw:text-sm tw:text-white tw:placeholder-white/40"
         />
         <button
           type="button"
@@ -112,15 +112,17 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
       <div className="tw:grid tw:gap-8 tw:lg:grid-cols-2">
         <div className="tw:grid tw:gap-4 tw:sm:grid-cols-2">
           {visibleDealers.length === 0 ? (
-            <p className="tw:text-sm tw:text-gray-500">No dealers match that pincode.</p>
+            <p className="tw:text-sm tw:text-white/50">No dealers match that pincode.</p>
           ) : (
             visibleDealers.map((dealer) => (
               <button
                 key={dealer.id}
                 type="button"
                 onClick={() => setSelectedId(dealer.id)}
-                className={`tw:rounded-2xl tw:p-6 tw:text-left tw:shadow-sm tw:transition ${
-                  dealer.id === selected?.id ? 'tw:bg-brand-blue-light tw:text-white' : 'tw:bg-white'
+                className={`tw:rounded-2xl tw:border tw:border-white/10 tw:p-6 tw:text-left tw:transition ${
+                  dealer.id === selected?.id
+                    ? 'tw:bg-brand-blue-light tw:text-white'
+                    : 'tw:bg-surface-raised tw:text-white'
                 }`}
               >
                 <p className="tw:text-lg tw:font-semibold">{dealer.name}</p>
@@ -149,7 +151,7 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
             ))
           )}
         </div>
-        <div className="tw:overflow-hidden tw:rounded-2xl tw:bg-gray-100">
+        <div className="tw:overflow-hidden tw:rounded-2xl tw:border tw:border-white/10 tw:bg-surface-raised">
           {selected?.latitude != null && selected?.longitude != null ? (
             <iframe
               key={selected.id}
@@ -158,7 +160,7 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
               className="tw:h-full tw:min-h-[320px] tw:w-full tw:border-0"
             />
           ) : (
-            <div className="tw:flex tw:h-full tw:min-h-[320px] tw:items-center tw:justify-center tw:p-6 tw:text-center tw:text-sm tw:text-gray-500">
+            <div className="tw:flex tw:h-full tw:min-h-[320px] tw:items-center tw:justify-center tw:p-6 tw:text-center tw:text-sm tw:text-white/50">
               Add latitude/longitude to a dealer in /admin to show a map here.
             </div>
           )}

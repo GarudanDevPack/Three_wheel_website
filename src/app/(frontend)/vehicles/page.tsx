@@ -31,15 +31,15 @@ const VehiclesPage = async () => {
     <>
       <Preloader />
       <Header />
-      <main className="tw:bg-white tw:py-20">
+      <main className="tw:bg-surface tw:py-20">
         <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
-          <h1 className="tw:text-4xl tw:font-bold tw:text-brand-ink">Our Vehicles</h1>
-          <p className="tw:mt-2 tw:text-gray-600">
+          <h1 className="tw:text-4xl tw:font-bold tw:text-white">Our Vehicles</h1>
+          <p className="tw:mt-2 tw:text-white/60">
             Passenger and cargo three-wheelers built for the road ahead.
           </p>
           <div className="tw:mt-10">
             {vehicles.length === 0 ? (
-              <p className="tw:text-gray-500">Add vehicles in /admin to populate this catalog.</p>
+              <p className="tw:text-white/50">Add vehicles in /admin to populate this catalog.</p>
             ) : (
               <VehicleCatalogGrid vehicles={vehicles} />
             )}

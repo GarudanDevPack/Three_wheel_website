@@ -35,7 +35,7 @@ const VehicleCatalogGrid = ({ vehicles }: { vehicles: VehicleCardData[] }) => {
               className={`tw:rounded-full tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
                 category === value
                   ? 'tw:bg-brand-blue-light tw:text-white'
-                  : 'tw:bg-gray-100 tw:text-brand-ink tw:hover:bg-gray-200'
+                  : 'tw:bg-surface-raised tw:text-white/70 tw:hover:bg-surface'
               }`}
             >
               {value}
@@ -51,7 +51,7 @@ const VehicleCatalogGrid = ({ vehicles }: { vehicles: VehicleCardData[] }) => {
               className={`tw:rounded-full tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
                 fuel === value
                   ? 'tw:bg-brand-green tw:text-white'
-                  : 'tw:bg-gray-100 tw:text-brand-ink tw:hover:bg-gray-200'
+                  : 'tw:bg-surface-raised tw:text-white/70 tw:hover:bg-surface'
               }`}
             >
               {value}
@@ -61,7 +61,7 @@ const VehicleCatalogGrid = ({ vehicles }: { vehicles: VehicleCardData[] }) => {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="tw:mt-10 tw:text-gray-500">No vehicles match those filters.</p>
+        <p className="tw:mt-10 tw:text-white/50">No vehicles match those filters.</p>
       ) : (
         <div className="tw:mt-10 tw:grid tw:gap-8 tw:sm:grid-cols-2 tw:lg:grid-cols-3">
           {filtered.map((vehicle) => (

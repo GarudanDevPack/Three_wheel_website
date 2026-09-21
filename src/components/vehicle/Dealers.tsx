@@ -24,21 +24,21 @@ const Dealers = async () => {
   }
 
   return (
-    <section id="dealers" className="tw:bg-gray-50 tw:py-20">
+    <section id="dealers" className="tw:bg-surface-raised tw:py-20">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
         <div className="tw:flex tw:items-end tw:justify-between">
-          <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Find a dealer</h2>
+          <h2 className="tw:text-3xl tw:font-bold tw:text-white">Find a dealer</h2>
           <Link href="/dealers" className="tw:text-sm tw:font-semibold tw:text-brand-blue-light">
             See all dealers →
           </Link>
         </div>
         <div className="tw:mt-10 tw:grid tw:gap-6 tw:sm:grid-cols-2 tw:lg:grid-cols-3">
           {dealers.map((dealer) => (
-            <div key={dealer.name} className="tw:rounded-2xl tw:bg-white tw:p-6 tw:shadow-sm">
-              <p className="tw:text-lg tw:font-semibold tw:text-brand-ink">{dealer.name}</p>
-              {dealer.city && <p className="tw:mt-1 tw:text-sm tw:text-brand-blue">{dealer.city}</p>}
+            <div key={dealer.name} className="tw:rounded-2xl tw:bg-surface tw:border tw:border-white/10 tw:p-6">
+              <p className="tw:text-lg tw:font-semibold tw:text-white">{dealer.name}</p>
+              {dealer.city && <p className="tw:mt-1 tw:text-sm tw:text-brand-blue-light">{dealer.city}</p>}
               {dealer.address && (
-                <p className="tw:mt-3 tw:text-sm tw:text-gray-600">{dealer.address}</p>
+                <p className="tw:mt-3 tw:text-sm tw:text-white/60">{dealer.address}</p>
               )}
               {dealer.phone && (
                 <a

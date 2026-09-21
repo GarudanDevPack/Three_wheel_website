@@ -37,9 +37,9 @@ const HighlightsReveal = ({ specs }: { specs: Spec[] }) => {
   }, [])
 
   return (
-    <section id="highlights" className="tw:bg-white tw:py-20">
+    <section id="highlights" className="tw:bg-surface tw:py-20">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
-        <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">
+        <h2 className="tw:text-3xl tw:font-bold tw:text-white">
           Why fleet owners pick Neptune
         </h2>
         <div
@@ -50,12 +50,12 @@ const HighlightsReveal = ({ specs }: { specs: Spec[] }) => {
             <div
               key={spec.label}
               data-spec-card
-              className="tw:rounded-2xl tw:border tw:border-black/5 tw:bg-gray-50 tw:p-6 tw:opacity-0"
+              className="tw:rounded-2xl tw:border tw:border-white/10 tw:bg-surface-raised tw:p-6 tw:opacity-0"
             >
-              <p className="tw:text-sm tw:font-semibold tw:uppercase tw:tracking-wide tw:text-brand-blue">
+              <p className="tw:text-sm tw:font-semibold tw:uppercase tw:tracking-wide tw:text-brand-blue-light">
                 {spec.label}
               </p>
-              <p className="tw:mt-2 tw:text-2xl tw:font-bold tw:text-brand-ink">{spec.value}</p>
+              <p className="tw:mt-2 tw:text-2xl tw:font-bold tw:text-white">{spec.value}</p>
             </div>
           ))}
         </div>

@@ -65,18 +65,18 @@ const ColorSpin360 = ({ images, label }: { images: AngleImage[]; label: string }
           type="button"
           onClick={() => step(-1)}
           aria-label="Previous angle"
-          className="tw:rounded-full tw:border tw:border-black/10 tw:px-3 tw:py-1 tw:text-sm"
+          className="tw:rounded-full tw:border tw:border-white/20 tw:px-3 tw:py-1 tw:text-sm tw:text-white"
         >
           ‹
         </button>
-        <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wide tw:text-gray-500">
+        <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wide tw:text-white/50">
           Drag to rotate — {current?.angleLabel || `${index + 1}/${frames.length}`}
         </p>
         <button
           type="button"
           onClick={() => step(1)}
           aria-label="Next angle"
-          className="tw:rounded-full tw:border tw:border-black/10 tw:px-3 tw:py-1 tw:text-sm"
+          className="tw:rounded-full tw:border tw:border-white/20 tw:px-3 tw:py-1 tw:text-sm tw:text-white"
         >
           ›
         </button>

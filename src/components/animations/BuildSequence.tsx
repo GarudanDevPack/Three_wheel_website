@@ -78,7 +78,7 @@ const BuildSequence = ({ frames }: { frames: BuildFrame[] }) => {
   return (
     <div
       ref={sectionRef}
-      className="tw:relative tw:flex tw:h-screen tw:items-center tw:justify-center tw:bg-white"
+      className="tw:relative tw:flex tw:h-screen tw:items-center tw:justify-center tw:bg-surface"
     >
       <canvas ref={canvasRef} className="tw:max-h-full tw:max-w-full" />
     </div>

@@ -1,16 +1,23 @@
 /*
-  Tailwind is scoped with the `tw:` variant prefix and preflight is skipped
-  (no `tailwindcss/preflight.css` import below) so it can coexist with the
-  Bootstrap/SASS styling the rest of this template still uses. Only the new
-  home page (app/page.tsx) should use `tw:` classes.
+  Tailwind is scoped with the `tw:` variant prefix. Preflight is skipped
+  (no `tailwindcss/preflight.css` import below) - this was originally so it
+  could coexist with template Bootstrap/SASS styling, which Phase 1 of the
+  spec-compliance work removed. All routes in src/app/(frontend) now use
+  `tw:` classes exclusively.
 */
 @layer theme, base, components, utilities;
 @import "tailwindcss/theme.css" layer(theme) prefix(tw);
 @import "tailwindcss/utilities.css" layer(utilities) prefix(tw);
 
 @theme {
-  --color-brand-blue: #123a63;
-  --color-brand-blue-light: #1d5aa0;
+  /* Primary brand accent - confident blue, per the locked design system. */
+  --color-brand-blue: #2f6feb;
+  --color-brand-blue-light: #3b82f6;
+  /* Secondary accent used only for fuel-type badges (e.g. CNG/Electric pills). */
   --color-brand-green: #1f7a3d;
-  --color-brand-ink: #10151c;
+  /* Base dark near-black/navy background, used site-wide (not just Hero). */
+  --color-brand-ink: #0b0e14;
+  /* Semantic surface tokens for the dark theme. */
+  --color-surface: #0b0e14;
+  --color-surface-raised: #171b24;
 }

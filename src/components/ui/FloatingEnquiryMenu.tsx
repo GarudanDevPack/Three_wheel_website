@@ -38,7 +38,7 @@ const FloatingEnquiryMenu = ({
                   setActiveType(option.type)
                   setOpen(false)
                 }}
-                className="tw:rounded-full tw:bg-white tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-brand-ink tw:shadow-lg tw:transition tw:hover:bg-gray-50"
+                className="tw:rounded-full tw:border tw:border-white/10 tw:bg-surface-raised tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:shadow-lg tw:transition tw:hover:bg-surface"
               >
                 {option.label}
               </button>

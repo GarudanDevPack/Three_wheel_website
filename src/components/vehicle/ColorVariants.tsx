@@ -26,16 +26,16 @@ const ColorVariants = async () => {
     const vehicleColors = docs[0]?.colors as
       | Array<{
           colorName: string
-          angleImages?: { front?: { url?: string; alt?: string } | null } | null
+          angleImages?: Array<{ angleLabel?: string; image?: { url?: string; alt?: string } | null }> | null
         }>
       | undefined
 
     const withImages = vehicleColors
-      ?.filter((color) => color.angleImages?.front?.url)
+      ?.filter((color) => color.angleImages?.[0]?.image?.url)
       .map((color) => ({
         name: color.colorName,
-        image: color.angleImages!.front!.url as string,
-        alt: color.angleImages!.front!.alt || `Neptune three-wheeler in ${color.colorName}`,
+        image: color.angleImages![0].image!.url as string,
+        alt: color.angleImages![0].image!.alt || `Neptune three-wheeler in ${color.colorName}`,
       }))
 
     if (withImages?.length) colors = withImages
@@ -44,10 +44,10 @@ const ColorVariants = async () => {
   }
 
   return (
-    <section id="colors" className="tw:bg-gray-50 tw:py-20">
+    <section id="colors" className="tw:bg-surface-raised tw:py-20">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
         <div className="tw:flex tw:items-end tw:justify-between">
-          <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Choose your color</h2>
+          <h2 className="tw:text-3xl tw:font-bold tw:text-white">Choose your color</h2>
           <Link href="/vehicles" className="tw:text-sm tw:font-semibold tw:text-brand-blue-light">
             See all vehicles →
           </Link>
@@ -56,7 +56,7 @@ const ColorVariants = async () => {
           {colors.map((color) => (
             <div
               key={color.name}
-              className="tw:overflow-hidden tw:rounded-2xl tw:bg-white tw:shadow-sm"
+              className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-white/10"
             >
               <div className="tw:relative tw:aspect-square">
                 <Image
@@ -67,7 +67,7 @@ const ColorVariants = async () => {
                   className="tw:object-contain tw:p-6"
                 />
               </div>
-              <p className="tw:border-t tw:border-black/5 tw:px-6 tw:py-4 tw:text-center tw:text-lg tw:font-semibold tw:text-brand-ink">
+              <p className="tw:border-t tw:border-white/10 tw:px-6 tw:py-4 tw:text-center tw:text-lg tw:font-semibold tw:text-white">
                 {color.name}
               </p>
             </div>

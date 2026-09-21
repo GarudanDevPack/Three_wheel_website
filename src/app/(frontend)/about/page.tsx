@@ -62,31 +62,31 @@ const AboutPage = () => (
         </div>
       </section>
 
-      <section className="tw:bg-white tw:py-20">
+      <section className="tw:bg-surface tw:py-20">
         <div className="tw:mx-auto tw:grid tw:max-w-5xl tw:gap-8 tw:px-6 tw:sm:grid-cols-3">
           {[
             { label: 'Passenger & Cargo Models', value: 'Built for every route' },
             { label: 'Fuel Options', value: 'Petrol · CNG · LPG · Electric' },
             { label: 'Dealer Network', value: 'Growing across every state' },
           ].map((item) => (
-            <div key={item.label} className="tw:rounded-2xl tw:bg-gray-50 tw:p-6 tw:text-center">
-              <p className="tw:text-lg tw:font-bold tw:text-brand-ink">{item.value}</p>
-              <p className="tw:mt-1 tw:text-sm tw:text-gray-500">{item.label}</p>
+            <div key={item.label} className="tw:rounded-2xl tw:bg-surface-raised tw:p-6 tw:text-center">
+              <p className="tw:text-lg tw:font-bold tw:text-white">{item.value}</p>
+              <p className="tw:mt-1 tw:text-sm tw:text-white/60">{item.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="tw:bg-gray-50 tw:py-20">
+      <section className="tw:bg-surface-raised tw:py-20">
         <div className="tw:mx-auto tw:max-w-3xl tw:px-6">
-          <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Frequently asked questions</h2>
+          <h2 className="tw:text-3xl tw:font-bold tw:text-white">Frequently asked questions</h2>
           <div className="tw:mt-8">
             <FaqAccordion items={faqs} />
           </div>
         </div>
       </section>
 
-      <section className="tw:bg-white tw:py-16 tw:text-center">
+      <section className="tw:bg-surface tw:py-16 tw:text-center">
         <Link
           href="/vehicles"
           className="tw:inline-block tw:rounded-full tw:bg-brand-blue-light tw:px-8 tw:py-3 tw:text-sm tw:font-semibold tw:text-white"
