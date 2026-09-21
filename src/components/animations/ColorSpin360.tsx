@@ -3,27 +3,24 @@
 import { useRef, useState, type PointerEvent } from 'react'
 import Image from 'next/image'
 
-export type AngleImages = {
-  front?: { url?: string | null; alt?: string | null } | null
-  right?: { url?: string | null; alt?: string | null } | null
-  back?: { url?: string | null; alt?: string | null } | null
-  left?: { url?: string | null; alt?: string | null } | null
+export type AngleImage = {
+  angleLabel?: string | null
+  image?: { url?: string | null; alt?: string | null } | null
 }
 
-const order: Array<keyof AngleImages> = ['front', 'right', 'back', 'left']
 const dragThreshold = 60
 
-const ColorSpin360 = ({ images, label }: { images: AngleImages; label: string }) => {
+const ColorSpin360 = ({ images, label }: { images: AngleImage[]; label: string }) => {
   const [index, setIndex] = useState(0)
   const dragStartX = useRef<number | null>(null)
 
-  const hasAnyFrame = order.some((key) => images[key]?.url)
-  if (!hasAnyFrame) return null
+  const frames = images.filter((frame) => frame?.image?.url)
+  if (!frames.length) return null
 
-  const current = images[order[index]]
+  const current = frames[index % frames.length]
 
   const step = (direction: 1 | -1) => {
-    setIndex((prev) => (prev + direction + order.length) % order.length)
+    setIndex((prev) => (prev + direction + frames.length) % frames.length)
   }
 
   const handlePointerDown = (e: PointerEvent<HTMLDivElement>) => {
@@ -53,10 +50,10 @@ const ColorSpin360 = ({ images, label }: { images: AngleImages; label: string })
         onPointerLeave={handlePointerUp}
         className="tw:relative tw:aspect-square tw:w-full tw:cursor-grab tw:touch-pan-y tw:active:cursor-grabbing"
       >
-        {current?.url && (
+        {current?.image?.url && (
           <Image
-            src={current.url}
-            alt={current.alt || `${label} — ${order[index]} view`}
+            src={current.image.url}
+            alt={current.image.alt || `${label} — ${current.angleLabel || 'view'}`}
             fill
             draggable={false}
             className="tw:object-contain tw:p-6"
@@ -73,7 +70,7 @@ const ColorSpin360 = ({ images, label }: { images: AngleImages; label: string })
           ‹
         </button>
         <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wide tw:text-gray-500">
-          Drag to rotate — {order[index]}
+          Drag to rotate — {current?.angleLabel || `${index + 1}/${frames.length}`}
         </p>
         <button
           type="button"

@@ -72,6 +72,31 @@ const specFields: CollectionConfig['fields'] = [
   { name: 'gradeability', type: 'text' },
 ]
 
+const chargingFields: CollectionConfig['fields'] = [
+  {
+    name: 'charging',
+    type: 'group',
+    admin: {
+      condition: (_, siblingData) => siblingData?.fuelType === 'Electric',
+    },
+    fields: [
+      { name: 'homeChargerTime', type: 'text' },
+      { name: 'acCommercialChargerTime', type: 'text' },
+      { name: 'fastChargerTime', type: 'text' },
+      { name: 'rangePerCharge', type: 'text' },
+    ],
+  },
+]
+
+const statField = (name: string): CollectionConfig['fields'][number] => ({
+  name,
+  type: 'group',
+  fields: [
+    { name: 'value', type: 'number' },
+    { name: 'unit', type: 'text' },
+  ],
+})
+
 export const Vehicles: CollectionConfig = {
   slug: 'vehicles',
   access: {
@@ -100,6 +125,16 @@ export const Vehicles: CollectionConfig = {
     { name: 'heroImage', type: 'upload', relationTo: 'media' },
     { name: 'shortDescription', type: 'textarea' },
     {
+      name: 'heroStats',
+      type: 'group',
+      fields: [
+        statField('range'),
+        statField('topSpeed'),
+        statField('peakPower'),
+        statField('gradeability'),
+      ],
+    },
+    {
       name: 'variants',
       type: 'array',
       fields: [
@@ -109,7 +144,9 @@ export const Vehicles: CollectionConfig = {
           type: 'select',
           options: ['Petrol', 'CNG', 'LPG', 'Electric'],
         },
+        { name: 'taglineForReveal', type: 'text' },
         { name: 'specs', type: 'group', fields: specFields },
+        ...chargingFields,
       ],
     },
     {
@@ -120,14 +157,22 @@ export const Vehicles: CollectionConfig = {
         { name: 'swatchHex', type: 'text' },
         {
           name: 'angleImages',
-          type: 'group',
+          type: 'array',
           fields: [
-            { name: 'front', type: 'upload', relationTo: 'media' },
-            { name: 'right', type: 'upload', relationTo: 'media' },
-            { name: 'back', type: 'upload', relationTo: 'media' },
-            { name: 'left', type: 'upload', relationTo: 'media' },
+            { name: 'angleLabel', type: 'text', required: true },
+            { name: 'image', type: 'upload', relationTo: 'media', required: true },
           ],
         },
+      ],
+    },
+    { name: 'mechanismDemo', type: 'upload', relationTo: 'media' },
+    {
+      name: 'awards',
+      type: 'array',
+      fields: [
+        { name: 'awardName', type: 'text', required: true },
+        { name: 'awardImage', type: 'upload', relationTo: 'media' },
+        { name: 'year', type: 'number' },
       ],
     },
     {

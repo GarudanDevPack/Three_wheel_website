@@ -38,9 +38,16 @@ export type Specs = {
   gradeability?: string | null
 }
 
+export type Charging = {
+  homeChargerTime?: string | null
+  acCommercialChargerTime?: string | null
+  fastChargerTime?: string | null
+  rangePerCharge?: string | null
+} | null
+
 type Category = { key: string; label: string; rows: SpecRow[] }
 
-const buildCategories = (specs?: Specs | null): Category[] => {
+const buildCategories = (specs?: Specs | null, charging?: Charging): Category[] => {
   if (!specs) return []
 
   const categories: Category[] = [
@@ -111,6 +118,16 @@ const buildCategories = (specs?: Specs | null): Category[] => {
       label: 'Gradeability',
       rows: [{ label: 'Gradeability', value: specs.gradeability }],
     },
+    {
+      key: 'charging',
+      label: 'Charging',
+      rows: [
+        { label: 'Home Charger', value: charging?.homeChargerTime },
+        { label: 'AC Commercial Charger', value: charging?.acCommercialChargerTime },
+        { label: 'Fast Charger', value: charging?.fastChargerTime },
+        { label: 'Range per Charge', value: charging?.rangePerCharge },
+      ],
+    },
   ]
 
   return categories
@@ -123,8 +140,14 @@ const buildCategories = (specs?: Specs | null): Category[] => {
     .filter((category) => category.rows.length > 0)
 }
 
-const SpecCategoryTabs = ({ specs }: { specs?: Specs | null }) => {
-  const categories = buildCategories(specs)
+const SpecCategoryTabs = ({
+  specs,
+  charging,
+}: {
+  specs?: Specs | null
+  charging?: Charging
+}) => {
+  const categories = buildCategories(specs, charging)
   const [activeKey, setActiveKey] = useState(categories[0]?.key)
 
   if (!categories.length) return null

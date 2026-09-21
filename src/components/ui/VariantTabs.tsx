@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import SpecCategoryTabs, { type Specs } from './SpecCategoryTabs'
+import SpecCategoryTabs, { type Specs, type Charging } from './SpecCategoryTabs'
 
 export type Variant = {
   variantName: string
   fuelType?: string | null
+  taglineForReveal?: string | null
   specs?: Specs | null
+  charging?: Charging | null
 }
 
 const VariantTabs = ({ variants }: { variants: Variant[] }) => {
@@ -40,7 +42,7 @@ const VariantTabs = ({ variants }: { variants: Variant[] }) => {
             {active.fuelType}
           </p>
         )}
-        <SpecCategoryTabs key={active.variantName} specs={active.specs} />
+        <SpecCategoryTabs key={active.variantName} specs={active.specs} charging={active.charging} />
       </div>
     </div>
   )

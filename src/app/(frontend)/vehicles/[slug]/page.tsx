@@ -9,7 +9,7 @@ import FeatureThemes from '@/components/vehicle/FeatureThemes'
 import RelatedVehicles from '@/components/vehicle/RelatedVehicles'
 import DetailAnchorNav from '@/components/ui/DetailAnchorNav'
 import VariantTabs, { type Variant } from '@/components/ui/VariantTabs'
-import { type AngleImages } from '@/components/animations/ColorSpin360'
+import { type AngleImage } from '@/components/animations/ColorSpin360'
 import ColorSpin360 from '@/components/animations/LazyColorSpin360'
 import { type BuildFrame } from '@/components/animations/BuildSequence'
 import BuildSequence from '@/components/animations/LazyBuildSequence'
@@ -33,7 +33,7 @@ type VehicleDoc = {
   shortDescription?: string | null
   heroImage?: MediaRef
   variants?: Variant[]
-  colors?: Array<{ colorName: string; angleImages?: AngleImages }>
+  colors?: Array<{ colorName: string; angleImages?: AngleImage[] }>
   buildSequenceFrames?: Array<{ frame?: MediaRef }>
   parts?: VehiclePart[]
   accessories?: Accessory[]
@@ -195,7 +195,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
                 <div className="tw:mt-10 tw:grid tw:gap-10 tw:sm:grid-cols-2">
                   {colors.map((color) => (
                     <div key={color.colorName}>
-                      <ColorSpin360 images={color.angleImages || {}} label={color.colorName} />
+                      <ColorSpin360 images={color.angleImages || []} label={color.colorName} />
                       <p className="tw:mt-3 tw:text-center tw:font-semibold tw:text-brand-ink">
                         {color.colorName}
                       </p>
