@@ -1,0 +1,16 @@
+/*
+  Tailwind is scoped with the `tw:` variant prefix and preflight is skipped
+  (no `tailwindcss/preflight.css` import below) so it can coexist with the
+  Bootstrap/SASS styling the rest of this template still uses. Only the new
+  home page (app/page.tsx) should use `tw:` classes.
+*/
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme) prefix(tw);
+@import "tailwindcss/utilities.css" layer(utilities) prefix(tw);
+
+@theme {
+  --color-brand-blue: #123a63;
+  --color-brand-blue-light: #1d5aa0;
+  --color-brand-green: #1f7a3d;
+  --color-brand-ink: #10151c;
+}
