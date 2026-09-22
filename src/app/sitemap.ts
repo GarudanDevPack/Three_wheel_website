@@ -5,7 +5,15 @@ export const revalidate = 300
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
-const staticRoutes = ['', '/vehicles', '/about', '/contact', '/dealers']
+const staticRoutes = [
+  '',
+  '/vehicles',
+  '/about',
+  '/contact',
+  '/dealers',
+  '/privacy-policy',
+  '/terms-conditions',
+]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = staticRoutes.map((route) => ({
