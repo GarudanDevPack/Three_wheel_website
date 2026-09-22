@@ -32,7 +32,7 @@ const Header = () => {
         </nav>
         <a
           href="/contact#enquire"
-          className="tw:hidden tw:rounded-full tw:bg-brand-blue-light tw:px-5 tw:py-2 tw:text-sm tw:font-semibold tw:md:inline-block"
+          className="tw:hidden tw:rounded-full tw:bg-brand-blue tw:px-5 tw:py-2 tw:text-sm tw:font-semibold tw:md:inline-block"
         >
           Enquire Now
         </a>

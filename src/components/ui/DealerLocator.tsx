@@ -103,7 +103,7 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
           type="button"
           onClick={useMyLocation}
           disabled={locating}
-          className="tw:rounded-full tw:bg-brand-blue-light tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:disabled:opacity-60"
+          className="tw:rounded-full tw:bg-brand-blue tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:disabled:opacity-60"
         >
           {locating ? 'Locating…' : 'Use my location'}
         </button>
@@ -121,7 +121,7 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
                 onClick={() => setSelectedId(dealer.id)}
                 className={`tw:rounded-2xl tw:border tw:border-white/10 tw:p-6 tw:text-left tw:transition ${
                   dealer.id === selected?.id
-                    ? 'tw:bg-brand-blue-light tw:text-white'
+                    ? 'tw:bg-brand-blue tw:text-white'
                     : 'tw:bg-surface-raised tw:text-white'
                 }`}
               >

@@ -9,6 +9,31 @@
 @import "tailwindcss/theme.css" layer(theme) prefix(tw);
 @import "tailwindcss/utilities.css" layer(utilities) prefix(tw);
 
+/*
+  Preflight is skipped (see note above), but browsers' UA stylesheets give
+  links and form controls their own default text color (link-blue, black)
+  instead of inheriting from their parent - which silently produces
+  invisible or wrong-colored text on this site's dark backgrounds whenever
+  a component doesn't set an explicit text color. This mirrors the small
+  slice of Tailwind's preflight that resets exactly that, without pulling
+  in preflight's broader box-sizing/margin resets.
+*/
+@layer base {
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+  button,
+  input,
+  optgroup,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+}
+
 @theme {
   /* Primary brand accent - confident blue, per the locked design system. */
   --color-brand-blue: #2f6feb;

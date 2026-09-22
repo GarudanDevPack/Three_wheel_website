@@ -55,6 +55,7 @@ const InquiryForm = ({
         ) : (
           <select
             name="type"
+            aria-label="Enquiry type"
             defaultValue={defaultType}
             className={`${fieldClasses} tw:sm:col-span-2`}
           >
@@ -82,7 +83,7 @@ const InquiryForm = ({
         <button
           type="submit"
           disabled={pending}
-          className="tw:rounded-full tw:bg-brand-blue-light tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:disabled:opacity-60 tw:sm:col-span-2"
+          className="tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:disabled:opacity-60 tw:sm:col-span-2"
         >
           {pending ? 'Submitting…' : 'Submit Enquiry'}
         </button>

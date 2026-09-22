@@ -164,7 +164,7 @@ const SpecCategoryTabs = ({
             onClick={() => setActiveKey(category.key)}
             className={`tw:rounded-full tw:px-3 tw:py-1.5 tw:text-xs tw:font-semibold tw:transition ${
               category.key === active.key
-                ? 'tw:bg-brand-blue-light tw:text-white'
+                ? 'tw:bg-brand-blue tw:text-white'
                 : 'tw:bg-surface tw:text-white/70 tw:hover:bg-surface-raised'
             }`}
           >

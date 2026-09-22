@@ -28,7 +28,7 @@ const VariantTabs = ({ variants }: { variants: Variant[] }) => {
             onClick={() => setActiveIndex(index)}
             className={`tw:rounded-full tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
               index === activeIndex
-                ? 'tw:bg-brand-blue-light tw:text-white'
+                ? 'tw:bg-brand-blue tw:text-white'
                 : 'tw:bg-surface tw:text-white/70 tw:hover:bg-surface-raised'
             }`}
           >

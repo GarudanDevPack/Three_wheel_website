@@ -36,7 +36,7 @@ const PartHotspots = ({ baseImage, parts }: PartHotspotsProps) => {
               type="button"
               onClick={() => setOpenId(isOpen ? null : part.id)}
               aria-label={part.partName}
-              className="tw:flex tw:h-8 tw:w-8 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue-light tw:text-white tw:shadow-lg tw:ring-4 tw:ring-white/60"
+              className="tw:flex tw:h-8 tw:w-8 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue tw:text-white tw:shadow-lg tw:ring-4 tw:ring-white/60"
             >
               +
             </button>

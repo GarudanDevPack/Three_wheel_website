@@ -34,7 +34,7 @@ const VehicleCatalogGrid = ({ vehicles }: { vehicles: VehicleCardData[] }) => {
               onClick={() => toggle(value, category, setCategory)}
               className={`tw:rounded-full tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
                 category === value
-                  ? 'tw:bg-brand-blue-light tw:text-white'
+                  ? 'tw:bg-brand-blue tw:text-white'
                   : 'tw:bg-surface-raised tw:text-white/70 tw:hover:bg-surface'
               }`}
             >

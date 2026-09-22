@@ -67,7 +67,7 @@ const Hero = async () => {
           <div className="tw:mt-8 tw:flex tw:flex-wrap tw:gap-4">
             <a
               href="#enquire"
-              className="tw:rounded-full tw:bg-brand-blue-light tw:px-6 tw:py-3 tw:text-sm tw:font-semibold"
+              className="tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold"
             >
               Book a Test Drive
             </a>

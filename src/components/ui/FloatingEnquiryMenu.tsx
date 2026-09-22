@@ -49,7 +49,7 @@ const FloatingEnquiryMenu = ({
           type="button"
           onClick={() => setOpen((prev) => !prev)}
           aria-label="Enquire about this vehicle"
-          className="tw:flex tw:h-14 tw:w-14 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue-light tw:text-xl tw:text-white tw:shadow-xl"
+          className="tw:flex tw:h-14 tw:w-14 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue tw:text-xl tw:text-white tw:shadow-xl"
         >
           {open ? '×' : '✉'}
         </button>

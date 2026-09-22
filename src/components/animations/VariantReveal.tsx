@@ -53,7 +53,7 @@ const VariantReveal = ({ variants }: { variants: RevealVariant[] }) => {
           <button
             type="button"
             onClick={() => goTo(nextIndex)}
-            className="tw:rounded-full tw:bg-brand-blue-light tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white"
+            className="tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white"
           >
             Reveal the {next.variantName} Version
           </button>
