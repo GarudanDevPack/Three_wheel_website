@@ -9,6 +9,7 @@ import Highlights from '@/components/vehicle/Highlights'
 import ColorVariants from '@/components/vehicle/ColorVariants'
 import Gallery from '@/components/vehicle/Gallery'
 import Dealers from '@/components/vehicle/Dealers'
+import AwardStrip from '@/components/vehicle/AwardStrip'
 import CtaBanner from '@/components/vehicle/CtaBanner'
 import InquiryForm from '@/components/ui/InquiryForm'
 import Footer from '@/components/vehicle/Footer'
@@ -46,6 +47,7 @@ const HomePage = () => (
       <ScrollReveal>
         <Dealers />
       </ScrollReveal>
+      <AwardStrip />
       <ScrollReveal>
         <CtaBanner />
       </ScrollReveal>

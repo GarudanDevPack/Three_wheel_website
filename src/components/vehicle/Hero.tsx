@@ -1,7 +1,55 @@
 import Image from 'next/image'
 import HeroEntrance from '@/components/animations/LazyHeroEntrance'
+import { type Stat } from '@/components/animations/StatCounters'
+import StatCounters from '@/components/animations/LazyStatCounters'
+import { getPayloadClient } from '@/lib/payload'
 
-const Hero = () => {
+const defaultStats: Stat[] = [
+  { label: 'Range', value: 180, unit: 'km' },
+  { label: 'Top Speed', value: 65, unit: 'km/h' },
+  { label: 'Peak Power', value: 12, unit: 'kW' },
+  { label: 'Gradeability', value: 25, unit: '%' },
+]
+
+type HeroStatField = { value?: number | null; unit?: string | null } | null | undefined
+
+type HeroStatsDoc = {
+  range?: HeroStatField
+  topSpeed?: HeroStatField
+  peakPower?: HeroStatField
+  gradeability?: HeroStatField
+}
+
+const buildStats = (heroStats?: HeroStatsDoc | null): Stat[] => {
+  if (!heroStats) return defaultStats
+
+  const entries: Array<[string, HeroStatField]> = [
+    ['Range', heroStats.range],
+    ['Top Speed', heroStats.topSpeed],
+    ['Peak Power', heroStats.peakPower],
+    ['Gradeability', heroStats.gradeability],
+  ]
+
+  const stats = entries
+    .filter((entry): entry is [string, { value: number; unit?: string | null }] =>
+      typeof entry[1]?.value === 'number',
+    )
+    .map(([label, stat]) => ({ label, value: stat.value, unit: stat.unit || undefined }))
+
+  return stats.length ? stats : defaultStats
+}
+
+const Hero = async () => {
+  let stats = defaultStats
+
+  try {
+    const payload = await getPayloadClient()
+    const { docs } = await payload.find({ collection: 'vehicles', limit: 1 })
+    stats = buildStats(docs[0]?.heroStats as HeroStatsDoc | undefined)
+  } catch {
+    // Payload/database not configured yet — fall back to placeholder stats.
+  }
+
   return (
     <section className="tw:relative tw:overflow-hidden tw:bg-brand-ink tw:pt-8 tw:text-white">
       <div className="tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:py-16 tw:md:grid-cols-2 tw:md:py-24">
@@ -30,6 +78,7 @@ const Hero = () => {
               See Specifications
             </a>
           </div>
+          <StatCounters stats={stats} />
         </HeroEntrance>
         <HeroEntrance
           variant="drive-in"

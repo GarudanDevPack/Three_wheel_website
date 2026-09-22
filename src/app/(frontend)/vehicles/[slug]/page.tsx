@@ -13,6 +13,8 @@ import { type AngleImage } from '@/components/animations/ColorSpin360'
 import ColorSpin360 from '@/components/animations/LazyColorSpin360'
 import { type ExplodedPart } from '@/components/animations/BuildSequence'
 import BuildSequence from '@/components/animations/LazyBuildSequence'
+import VariantReveal from '@/components/animations/LazyVariantReveal'
+import MechanismDemo from '@/components/animations/LazyMechanismDemo'
 import PartHotspots, { type VehiclePart } from '@/components/ui/PartHotspots'
 import AccessoryGrid, { type Accessory } from '@/components/ui/AccessoryGrid'
 import FaqAccordion, { type FaqItem } from '@/components/ui/FaqAccordion'
@@ -35,6 +37,7 @@ type VehicleDoc = {
   variants?: Variant[]
   colors?: Array<{ colorName: string; angleImages?: AngleImage[] }>
   explodedPartsIllustration?: ExplodedPart[]
+  mechanismDemo?: MediaRef
   parts?: VehiclePart[]
   accessories?: Accessory[]
   gallery?: Array<{ image?: MediaRef }>
@@ -113,6 +116,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
   if (!vehicle) notFound()
 
   const variants = vehicle.variants || []
+  const revealableVariants = variants.filter((v) => v.taglineForReveal)
   const colors = vehicle.colors || []
   const explodedParts = vehicle.explodedPartsIllustration || []
   const parts = vehicle.parts || []
@@ -225,6 +229,17 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
           )}
         </div>
 
+        {vehicle.mechanismDemo?.url && (
+          <ScrollReveal>
+            <section className="tw:bg-surface tw:py-20">
+              <div className="tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center">
+                <h2 className="tw:mb-10 tw:text-3xl tw:font-bold tw:text-white">See it in action</h2>
+                <MechanismDemo src={vehicle.mechanismDemo.url} />
+              </div>
+            </section>
+          </ScrollReveal>
+        )}
+
         {variants.length > 0 && (
           <ScrollReveal>
             <section id="specifications" className="tw:bg-surface-raised tw:py-20">
@@ -235,6 +250,19 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
                 <div className="tw:mt-8">
                   <VariantTabs variants={variants} />
                 </div>
+              </div>
+            </section>
+          </ScrollReveal>
+        )}
+
+        {revealableVariants.length >= 2 && (
+          <ScrollReveal>
+            <section className="tw:bg-surface tw:py-20">
+              <div className="tw:mx-auto tw:max-w-4xl tw:px-6">
+                <h2 className="tw:mb-8 tw:text-center tw:text-3xl tw:font-bold tw:text-white">
+                  Reveal the version built for you
+                </h2>
+                <VariantReveal variants={variants} />
               </div>
             </section>
           </ScrollReveal>
