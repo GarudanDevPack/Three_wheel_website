@@ -1,21 +1,27 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { animate, onScroll } from 'animejs'
 
-gsap.registerPlugin(ScrollTrigger)
+export type ExplodedPart = {
+  partName: string
+  svg?: { url?: string | null; alt?: string | null } | null
+  exploded?: { x?: number | null; y?: number | null; rotate?: number | null } | null
+  assembled?: { x?: number | null; y?: number | null; rotate?: number | null } | null
+}
 
-export type BuildFrame = { url: string }
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 
-const BuildSequence = ({ frames }: { frames: BuildFrame[] }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+const BuildSequence = ({ parts }: { parts: ExplodedPart[] }) => {
   const sectionRef = useRef<HTMLDivElement>(null)
+  const partRefs = useRef<Array<HTMLDivElement | null>>([])
   const [isNearViewport, setIsNearViewport] = useState(false)
+
+  const renderableParts = parts.filter((part) => part.svg?.url)
 
   useEffect(() => {
     const section = sectionRef.current
-    if (!section || frames.length === 0) return
+    if (!section || renderableParts.length === 0) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -29,58 +35,73 @@ const BuildSequence = ({ frames }: { frames: BuildFrame[] }) => {
 
     observer.observe(section)
     return () => observer.disconnect()
-  }, [frames.length])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [renderableParts.length])
 
   useEffect(() => {
-    const canvas = canvasRef.current
     const section = sectionRef.current
-    if (!isNearViewport || !canvas || !section || frames.length === 0) return
+    if (!isNearViewport || !section || renderableParts.length === 0) return
 
-    const context = canvas.getContext('2d')
-    if (!context) return
+    const state = { progress: 0 }
 
-    const images: HTMLImageElement[] = frames.map((frame) => {
-      const img = new window.Image()
-      img.src = frame.url
-      return img
-    })
-
-    const state = { frame: 0 }
-
-    const draw = () => {
-      const img = images[Math.round(state.frame)]
-      if (!img || !img.complete) return
-      canvas.width = img.naturalWidth
-      canvas.height = img.naturalHeight
-      context.clearRect(0, 0, canvas.width, canvas.height)
-      context.drawImage(img, 0, 0)
+    const applyProgress = () => {
+      partRefs.current.forEach((el, index) => {
+        if (!el) return
+        const part = renderableParts[index]
+        const exploded = part.exploded || {}
+        const assembled = part.assembled || {}
+        const x = lerp(exploded.x ?? 0, assembled.x ?? 0, state.progress)
+        const y = lerp(exploded.y ?? 0, assembled.y ?? 0, state.progress)
+        const rotate = lerp(exploded.rotate ?? 0, assembled.rotate ?? 0, state.progress)
+        el.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`
+      })
     }
 
-    images[0].onload = draw
+    applyProgress()
 
-    const trigger = ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: `+=${frames.length * 40}`,
-      pin: true,
-      scrub: true,
-      onUpdate: (self) => {
-        state.frame = Math.min(frames.length - 1, Math.floor(self.progress * frames.length))
-        draw()
-      },
+    const animation = animate(state, {
+      progress: 1,
+      ease: 'linear',
+      autoplay: onScroll({ target: section, sync: true }),
+      onUpdate: applyProgress,
     })
 
-    return () => trigger.kill()
-  }, [frames, isNearViewport])
+    return () => {
+      animation.revert()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNearViewport, renderableParts])
 
-  if (!frames.length) return null
+  if (!renderableParts.length) return null
 
   return (
     <div
       ref={sectionRef}
-      className="tw:relative tw:flex tw:h-screen tw:items-center tw:justify-center tw:bg-surface"
+      className="tw:relative"
+      style={{ height: `${Math.max(renderableParts.length, 3) * 60}vh` }}
     >
-      <canvas ref={canvasRef} className="tw:max-h-full tw:max-w-full" />
+      <div className="tw:sticky tw:top-0 tw:flex tw:h-screen tw:items-center tw:justify-center tw:overflow-hidden tw:bg-surface">
+        <div className="tw:relative tw:h-[70vmin] tw:w-[70vmin]">
+          {renderableParts.map((part, index) => (
+            <div
+              key={`${part.partName}-${index}`}
+              ref={(el) => {
+                partRefs.current[index] = el
+              }}
+              className="tw:absolute tw:inset-0 tw:flex tw:items-center tw:justify-center tw:will-change-transform"
+            >
+              {/* SVG part illustrations are user-uploaded and variable in count/size, so a plain img keeps this simple - next/image's fixed-dimension requirement doesn't fit an unknown-count exploded diagram. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={part.svg!.url!}
+                alt={part.svg?.alt || part.partName}
+                className="tw:max-h-full tw:max-w-full"
+                draggable={false}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }

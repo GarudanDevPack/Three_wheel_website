@@ -176,9 +176,31 @@ export const Vehicles: CollectionConfig = {
       ],
     },
     {
-      name: 'buildSequenceFrames',
+      name: 'explodedPartsIllustration',
       type: 'array',
-      fields: [{ name: 'frame', type: 'upload', relationTo: 'media', required: true }],
+      labels: { singular: 'Part illustration', plural: 'Part illustrations' },
+      fields: [
+        { name: 'partName', type: 'text', required: true },
+        { name: 'svg', type: 'upload', relationTo: 'media', required: true },
+        {
+          name: 'exploded',
+          type: 'group',
+          fields: [
+            { name: 'x', type: 'number', defaultValue: 0 },
+            { name: 'y', type: 'number', defaultValue: 0 },
+            { name: 'rotate', type: 'number', defaultValue: 0 },
+          ],
+        },
+        {
+          name: 'assembled',
+          type: 'group',
+          fields: [
+            { name: 'x', type: 'number', defaultValue: 0 },
+            { name: 'y', type: 'number', defaultValue: 0 },
+            { name: 'rotate', type: 'number', defaultValue: 0 },
+          ],
+        },
+      ],
     },
     { name: 'parts', type: 'relationship', relationTo: 'vehicle-parts', hasMany: true },
     { name: 'accessories', type: 'relationship', relationTo: 'accessories', hasMany: true },

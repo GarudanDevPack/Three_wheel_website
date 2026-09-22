@@ -1,10 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(ScrollTrigger)
+import { animate, stagger, onScroll } from 'animejs'
 
 export type Spec = { label: string; value: string }
 
@@ -12,28 +9,22 @@ const HighlightsReveal = ({ specs }: { specs: Spec[] }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const cards = containerRef.current?.querySelectorAll('[data-spec-card]')
-    if (!cards?.length) return
+    const container = containerRef.current
+    const cards = container?.querySelectorAll('[data-spec-card]')
+    if (!container || !cards?.length) return
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        cards,
-        { opacity: 0, y: 40 },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.12,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 80%',
-          },
-        },
-      )
-    }, containerRef)
+    const animation = animate(cards, {
+      opacity: [0, 1],
+      translateY: [40, 0],
+      delay: stagger(120),
+      duration: 600,
+      ease: 'outQuad',
+      autoplay: onScroll({ target: container }),
+    })
 
-    return () => ctx.revert()
+    return () => {
+      animation.revert()
+    }
   }, [])
 
   return (

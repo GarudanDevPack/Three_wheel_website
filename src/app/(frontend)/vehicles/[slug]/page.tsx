@@ -11,7 +11,7 @@ import DetailAnchorNav from '@/components/ui/DetailAnchorNav'
 import VariantTabs, { type Variant } from '@/components/ui/VariantTabs'
 import { type AngleImage } from '@/components/animations/ColorSpin360'
 import ColorSpin360 from '@/components/animations/LazyColorSpin360'
-import { type BuildFrame } from '@/components/animations/BuildSequence'
+import { type ExplodedPart } from '@/components/animations/BuildSequence'
 import BuildSequence from '@/components/animations/LazyBuildSequence'
 import PartHotspots, { type VehiclePart } from '@/components/ui/PartHotspots'
 import AccessoryGrid, { type Accessory } from '@/components/ui/AccessoryGrid'
@@ -34,7 +34,7 @@ type VehicleDoc = {
   heroImage?: MediaRef
   variants?: Variant[]
   colors?: Array<{ colorName: string; angleImages?: AngleImage[] }>
-  buildSequenceFrames?: Array<{ frame?: MediaRef }>
+  explodedPartsIllustration?: ExplodedPart[]
   parts?: VehiclePart[]
   accessories?: Accessory[]
   gallery?: Array<{ image?: MediaRef }>
@@ -114,10 +114,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
 
   const variants = vehicle.variants || []
   const colors = vehicle.colors || []
-  const buildFrames: BuildFrame[] = (vehicle.buildSequenceFrames || [])
-    .map((f) => f.frame?.url)
-    .filter((url): url is string => Boolean(url))
-    .map((url) => ({ url }))
+  const explodedParts = vehicle.explodedPartsIllustration || []
   const parts = vehicle.parts || []
   const accessories = vehicle.accessories || []
   const gallery = vehicle.gallery || []
@@ -208,7 +205,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
         )}
 
         <div id="build">
-          <BuildSequence frames={buildFrames} />
+          <BuildSequence parts={explodedParts} />
 
           {parts.length > 0 && vehicle.heroImage?.url && (
             <section className="tw:bg-surface tw:py-20">
