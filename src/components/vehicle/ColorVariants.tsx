@@ -1,19 +1,28 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { getPayloadClient } from '@/lib/payload'
+import { type AngleImage } from '@/components/animations/ColorSpin360'
+import ColorSpin360 from '@/components/animations/LazyColorSpin360'
 
-type ColorPreview = { name: string; image: string; alt: string }
+type ColorPreview = { name: string; angleImages: AngleImage[] }
 
 const defaultColors: ColorPreview[] = [
   {
     name: 'Neptune Blue',
-    image: '/images/auto/neptune-blue-2.png',
-    alt: 'Neptune three-wheeler in Neptune Blue',
+    angleImages: [
+      {
+        angleLabel: 'Front',
+        image: { url: '/images/auto/neptune-blue-2.png', alt: 'Neptune three-wheeler in Neptune Blue' },
+      },
+    ],
   },
   {
     name: 'Forest Green',
-    image: '/images/auto/green-1.png',
-    alt: 'Neptune three-wheeler in Forest Green',
+    angleImages: [
+      {
+        angleLabel: 'Front',
+        image: { url: '/images/auto/green-1.png', alt: 'Neptune three-wheeler in Forest Green' },
+      },
+    ],
   },
 ]
 
@@ -24,18 +33,14 @@ const ColorVariants = async () => {
     const payload = await getPayloadClient()
     const { docs } = await payload.find({ collection: 'vehicles', limit: 1 })
     const vehicleColors = docs[0]?.colors as
-      | Array<{
-          colorName: string
-          angleImages?: Array<{ angleLabel?: string; image?: { url?: string; alt?: string } | null }> | null
-        }>
+      | Array<{ colorName: string; angleImages?: AngleImage[] | null }>
       | undefined
 
     const withImages = vehicleColors
-      ?.filter((color) => color.angleImages?.[0]?.image?.url)
+      ?.filter((color) => color.angleImages?.some((frame) => frame?.image?.url))
       .map((color) => ({
         name: color.colorName,
-        image: color.angleImages![0].image!.url as string,
-        alt: color.angleImages![0].image!.alt || `Neptune three-wheeler in ${color.colorName}`,
+        angleImages: color.angleImages || [],
       }))
 
     if (withImages?.length) colors = withImages
@@ -56,18 +61,10 @@ const ColorVariants = async () => {
           {colors.map((color) => (
             <div
               key={color.name}
-              className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-white/10"
+              className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-white/10 tw:p-6"
             >
-              <div className="tw:relative tw:aspect-square">
-                <Image
-                  src={color.image}
-                  alt={color.alt}
-                  fill
-                  sizes="(min-width: 640px) 50vw, 100vw"
-                  className="tw:object-contain tw:p-6"
-                />
-              </div>
-              <p className="tw:border-t tw:border-white/10 tw:px-6 tw:py-4 tw:text-center tw:text-lg tw:font-semibold tw:text-white">
+              <ColorSpin360 images={color.angleImages} label={color.name} />
+              <p className="tw:mt-4 tw:border-t tw:border-white/10 tw:pt-4 tw:text-center tw:text-lg tw:font-semibold tw:text-white">
                 {color.name}
               </p>
             </div>

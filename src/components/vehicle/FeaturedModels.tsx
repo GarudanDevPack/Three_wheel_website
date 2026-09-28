@@ -16,7 +16,7 @@ const FeaturedModels = async () => {
   if (!vehicles.length) return null
 
   return (
-    <section className="tw:bg-surface tw:py-20">
+    <section id="featured-models" className="tw:bg-surface tw:py-20">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
         <div className="tw:flex tw:items-end tw:justify-between">
           <h2 className="tw:text-3xl tw:font-bold tw:text-white">Featured models</h2>
