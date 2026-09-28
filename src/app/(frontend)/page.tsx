@@ -1,16 +1,15 @@
 import type { Metadata } from 'next'
 import Preloader from '@/components/animations/LazyPreloader'
-import ScrollReveal from '@/components/animations/LazyScrollReveal'
+import FloatingVehicleWidget from '@/components/animations/LazyFloatingVehicleWidget'
+import CtaBanner from '@/components/animations/LazyCtaBanner'
+import DesignShowcase from '@/components/vehicle/LazyDesignShowcase'
 import Header from '@/components/vehicle/Header'
 import Hero from '@/components/vehicle/Hero'
-import FeaturedModels from '@/components/vehicle/FeaturedModels'
 import WhyChooseUs from '@/components/vehicle/WhyChooseUs'
 import Highlights from '@/components/vehicle/Highlights'
-import ColorVariants from '@/components/vehicle/ColorVariants'
+import ChargingSection from '@/components/vehicle/ChargingSection'
 import Gallery from '@/components/vehicle/Gallery'
-import Dealers from '@/components/vehicle/Dealers'
 import AwardStrip from '@/components/vehicle/AwardStrip'
-import CtaBanner from '@/components/vehicle/CtaBanner'
 import InquiryForm from '@/components/ui/InquiryForm'
 import Footer from '@/components/vehicle/Footer'
 import { getPageMetadata } from '@/lib/pageSeo'
@@ -31,29 +30,17 @@ const HomePage = () => (
     <Header />
     <main>
       <Hero />
-      <ScrollReveal>
-        <FeaturedModels />
-      </ScrollReveal>
-      <ScrollReveal>
-        <WhyChooseUs />
-      </ScrollReveal>
+      <WhyChooseUs />
+      <DesignShowcase />
       <Highlights />
-      <ScrollReveal>
-        <ColorVariants />
-      </ScrollReveal>
-      <ScrollReveal>
-        <Gallery />
-      </ScrollReveal>
-      <ScrollReveal>
-        <Dealers />
-      </ScrollReveal>
+      <ChargingSection />
+      <Gallery />
       <AwardStrip />
-      <ScrollReveal>
-        <CtaBanner />
-      </ScrollReveal>
+      <CtaBanner />
       <InquiryForm />
     </main>
     <Footer />
+    <FloatingVehicleWidget />
   </>
 )
 

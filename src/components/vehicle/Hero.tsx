@@ -51,9 +51,32 @@ const Hero = async () => {
   }
 
   return (
-    <section className="tw:relative tw:overflow-hidden tw:bg-brand-ink tw:pt-8 tw:text-white">
-      <div className="tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:py-16 tw:md:grid-cols-2 tw:md:py-24">
-        <HeroEntrance variant="up">
+    <section
+      id="hero"
+      className="tw:relative tw:isolate tw:flex tw:min-h-[70vh] tw:items-center tw:overflow-hidden tw:bg-brand-ink tw:text-white tw:md:min-h-[85vh]"
+    >
+      <HeroEntrance variant="drive-in" delay={0.1} duration={0.8} className="tw:absolute tw:inset-0">
+        <Image
+          src="/images/auto/neptune-blue-1.png"
+          alt="Neptune three-wheeler, blue variant"
+          fill
+          priority
+          sizes="100vw"
+          className="tw:object-cover tw:object-center"
+        />
+      </HeroEntrance>
+
+      {/* Light-sweep: simulates a moving light reflection across the photo, no video asset needed. */}
+      <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:overflow-hidden">
+        <div className="hero-sweep tw:absolute tw:inset-y-0 tw:left-0 tw:w-1/4 tw:bg-gradient-to-r tw:from-transparent tw:via-white/15 tw:to-transparent" />
+      </div>
+
+      {/* Legibility scrims */}
+      <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-gradient-to-r tw:from-brand-ink tw:via-brand-ink/60 tw:to-transparent tw:md:via-brand-ink/40" />
+      <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-gradient-to-t tw:from-brand-ink tw:via-transparent tw:to-transparent" />
+
+      <div className="tw:relative tw:z-10 tw:mx-auto tw:w-full tw:max-w-6xl tw:px-6 tw:pb-28 tw:pt-16">
+        <HeroEntrance variant="up" className="tw:max-w-xl">
           <p className="tw:mb-4 tw:text-sm tw:font-semibold tw:uppercase tw:tracking-widest tw:text-brand-blue-light">
             Neptune Three-Wheeler
           </p>
@@ -78,23 +101,13 @@ const Hero = async () => {
               See Specifications
             </a>
           </div>
+        </HeroEntrance>
+      </div>
+
+      <div className="tw:absolute tw:inset-x-0 tw:bottom-0 tw:z-10 tw:bg-gradient-to-t tw:from-brand-ink tw:to-transparent tw:pb-8 tw:pt-16">
+        <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
           <StatCounters stats={stats} />
-        </HeroEntrance>
-        <HeroEntrance
-          variant="drive-in"
-          delay={0.15}
-          duration={0.8}
-          className="tw:relative tw:aspect-square tw:w-full"
-        >
-          <Image
-            src="/images/auto/neptune-blue-1.png"
-            alt="Neptune three-wheeler, blue variant"
-            fill
-            priority
-            sizes="(min-width: 768px) 480px, 100vw"
-            className="tw:object-contain tw:drop-shadow-2xl"
-          />
-        </HeroEntrance>
+        </div>
       </div>
     </section>
   )

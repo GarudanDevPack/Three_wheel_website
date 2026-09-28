@@ -1,31 +1,44 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const navLinks = [
-  { href: '/vehicles', label: 'Vehicles' },
-  { href: '/dealers', label: 'Dealers' },
+  { href: '/360-view', label: '360° View' },
+  { href: '/#gallery', label: 'Gallery' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ]
 
+const navLinkClasses =
+  'tw:relative tw:pb-1 tw:transition tw:hover:text-brand-blue-light tw:after:absolute tw:after:bottom-0 tw:after:left-0 tw:after:h-[1.5px] tw:after:w-full tw:after:origin-left tw:after:scale-x-0 tw:after:bg-brand-blue-light tw:after:transition-transform tw:after:duration-300 tw:hover:after:scale-x-100'
+
 const Header = () => {
   const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <header className="tw:sticky tw:top-0 tw:z-50 tw:bg-brand-ink/95 tw:text-white tw:backdrop-blur">
+    <header
+      className={`tw:sticky tw:top-0 tw:z-50 tw:text-white tw:transition-colors tw:duration-300 ${
+        scrolled
+          ? 'tw:bg-brand-ink/95 tw:shadow-lg tw:backdrop-blur'
+          : 'tw:bg-gradient-to-b tw:from-black/70 tw:via-black/30 tw:to-transparent'
+      }`}
+    >
       <div className="tw:mx-auto tw:flex tw:max-w-6xl tw:items-center tw:justify-between tw:px-6 tw:py-4">
         <Link href="/" className="tw:text-xl tw:font-bold tw:tracking-wide">
           Neptune
         </Link>
         <nav className="tw:hidden tw:gap-8 tw:text-sm tw:font-medium tw:md:flex">
           {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="tw:transition tw:hover:text-brand-blue-light"
-            >
+            <Link key={link.href} href={link.href} className={navLinkClasses}>
               {link.label}
             </Link>
           ))}
@@ -46,7 +59,7 @@ const Header = () => {
         </button>
       </div>
       {open && (
-        <nav className="tw:flex tw:flex-col tw:gap-1 tw:border-t tw:border-white/10 tw:px-6 tw:pb-4 tw:md:hidden">
+        <nav className="tw:flex tw:flex-col tw:gap-1 tw:border-t tw:border-white/10 tw:bg-brand-ink tw:px-6 tw:pb-4 tw:md:hidden">
           {navLinks.map((link) => (
             <Link
               key={link.href}

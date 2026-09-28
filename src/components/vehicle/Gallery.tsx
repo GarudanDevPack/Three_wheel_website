@@ -1,4 +1,5 @@
-import Image from 'next/image'
+import GalleryReveal from '@/components/animations/LazyGalleryReveal'
+import SectionBackdrop from '@/components/ui/SectionBackdrop'
 
 const photos = [
   '/images/auto/gallery-1.png',
@@ -9,25 +10,11 @@ const photos = [
 ]
 
 const Gallery = () => (
-  <section id="gallery" className="tw:bg-surface tw:py-20">
+  <section id="gallery" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
+    <SectionBackdrop src="/images/auto/night-ride.jpg" variant="strong" base="surface" />
     <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
       <h2 className="tw:text-3xl tw:font-bold tw:text-white">Gallery</h2>
-      <div className="tw:mt-10 tw:columns-1 tw:gap-4 tw:sm:columns-2 tw:lg:columns-3">
-        {photos.map((src) => (
-          <div
-            key={src}
-            className="tw:relative tw:mb-4 tw:break-inside-avoid tw:overflow-hidden tw:rounded-xl"
-          >
-            <Image
-              src={src}
-              alt="Neptune three-wheeler"
-              width={600}
-              height={800}
-              className="tw:h-auto tw:w-full tw:object-cover"
-            />
-          </div>
-        ))}
-      </div>
+      <GalleryReveal photos={photos} />
     </div>
   </section>
 )

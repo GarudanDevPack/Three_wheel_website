@@ -34,6 +34,44 @@
   }
 }
 
+/*
+  Hero background light-sweep: a soft diagonal band that continuously
+  crosses the hero photo, simulating the moving light-reflection quality
+  of a product render/video without needing an actual video asset.
+*/
+@layer utilities {
+  @keyframes hero-sweep {
+    0% {
+      transform: translateX(-60%) skewX(-12deg);
+    }
+    50%,
+    100% {
+      transform: translateX(160%) skewX(-12deg);
+    }
+  }
+  .hero-sweep {
+    animation: hero-sweep 6s ease-in-out infinite;
+  }
+
+  /* Charging section: a continuous pulse on the charger icon to read as "actively charging". */
+  @keyframes charger-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.12);
+      opacity: 0.75;
+    }
+  }
+  .charger-pulse {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: charger-pulse 1.8s ease-in-out infinite;
+  }
+}
+
 @theme {
   /* Primary brand accent - confident blue, per the locked design system. */
   --color-brand-blue: #2f6feb;

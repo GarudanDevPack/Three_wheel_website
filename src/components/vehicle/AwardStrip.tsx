@@ -16,7 +16,7 @@ const AwardStrip = async () => {
   if (!awards.length) return null
 
   return (
-    <section className="tw:bg-surface-raised tw:py-16">
+    <section id="award-strip" className="tw:bg-surface-raised tw:py-16">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
         <h2 className="tw:text-center tw:text-sm tw:font-semibold tw:uppercase tw:tracking-widest tw:text-white/50">
           Recognized for engineering that works as hard as you do

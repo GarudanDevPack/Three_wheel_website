@@ -88,10 +88,10 @@ const AboutPage = () => (
 
       <section className="tw:bg-surface tw:py-16 tw:text-center">
         <Link
-          href="/vehicles"
+          href="/360-view"
           className="tw:inline-block tw:rounded-full tw:bg-brand-blue tw:px-8 tw:py-3 tw:text-sm tw:font-semibold tw:text-white"
         >
-          Explore the lineup
+          See it in 360°
         </Link>
       </section>
     </main>

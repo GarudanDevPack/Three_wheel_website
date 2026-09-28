@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 const variantsMap: Record<'up' | 'scale' | 'drive-in', Variants> = {
   up: { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } },
   scale: { hidden: { opacity: 0, scale: 0.92 }, visible: { opacity: 1, scale: 1 } },
-  'drive-in': { hidden: { opacity: 0, x: -120 }, visible: { opacity: 1, x: 0 } },
+  'drive-in': { hidden: { opacity: 0, x: 160 }, visible: { opacity: 1, x: 0 } },
 }
 
 type HeroEntranceProps = {
