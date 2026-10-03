@@ -8,11 +8,11 @@ const SpecsTable = ({ rows }: { rows: SpecRow[] }) => {
     <table className="tw:w-full tw:border-collapse tw:overflow-hidden tw:rounded-xl tw:bg-surface-raised tw:text-sm">
       <tbody>
         {populated.map((row) => (
-          <tr key={row.label} className="tw:border-b tw:border-white/10 tw:last:border-0">
-            <th className="tw:w-1/2 tw:px-4 tw:py-3 tw:text-left tw:font-medium tw:text-white/60">
+          <tr key={row.label} className="tw:border-b tw:border-brand-ink/10 tw:last:border-0">
+            <th className="tw:w-1/2 tw:px-4 tw:py-3 tw:text-left tw:font-medium tw:text-brand-ink/60">
               {row.label}
             </th>
-            <td className="tw:px-4 tw:py-3 tw:font-semibold tw:text-white">{row.value}</td>
+            <td className="tw:px-4 tw:py-3 tw:font-semibold tw:text-brand-ink">{row.value}</td>
           </tr>
         ))}
       </tbody>

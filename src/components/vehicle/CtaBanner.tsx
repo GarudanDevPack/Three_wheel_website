@@ -1,10 +1,13 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import Link from 'next/link'
+import Image from 'next/image'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { animate, stagger, onScroll } from 'animejs'
 
 const CtaBanner = () => {
+  const t = useTranslations('Cta')
   const sectionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -29,8 +32,13 @@ const CtaBanner = () => {
   return (
     <section
       id="cta"
-      className="tw:relative tw:overflow-hidden tw:bg-gradient-to-br tw:from-brand-blue tw:to-brand-ink tw:py-20 tw:text-center tw:text-white"
+      className="tw:relative tw:isolate tw:overflow-hidden tw:bg-brand-ink tw:py-20 tw:text-center tw:text-white"
     >
+      <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:overflow-hidden">
+        <Image src="/images/auto/neptune-blue-1.png" alt="" fill sizes="100vw" className="tw:object-cover tw:opacity-50" />
+      </div>
+      <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-brand-ink/50" />
+
       <div className="tw:pointer-events-none tw:absolute tw:-left-24 tw:-top-24 tw:h-72 tw:w-72 tw:rounded-full tw:bg-white/15 tw:blur-3xl" />
       <div className="tw:pointer-events-none tw:absolute tw:-bottom-24 tw:-right-16 tw:h-80 tw:w-80 tw:rounded-full tw:bg-white/10 tw:blur-3xl" />
 
@@ -52,25 +60,17 @@ const CtaBanner = () => {
       </svg>
 
       <div ref={sectionRef} className="tw:relative tw:mx-auto tw:max-w-3xl tw:px-6">
-        <h2 data-cta-item className="tw:text-3xl tw:font-bold tw:opacity-0">
-          Ready to find your Neptune?
-        </h2>
-        <p data-cta-item className="tw:mt-3 tw:text-white/80 tw:opacity-0">
-          Compare passenger and cargo models, specs, and colors across the full lineup.
-        </p>
+        <h2 data-cta-item className="tw:text-3xl tw:font-bold tw:opacity-0">{t('title')}</h2>
+        <p data-cta-item className="tw:mt-3 tw:text-white/80 tw:opacity-0">{t('intro')}</p>
         <div data-cta-item className="tw:mt-8 tw:flex tw:flex-wrap tw:justify-center tw:gap-4 tw:opacity-0">
           <Link
             href="/vehicles"
             className="tw:rounded-full tw:bg-white tw:px-8 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-blue tw:transition tw:hover:bg-white/90"
-          >
-            Browse the catalog
-          </Link>
+          >{t('catalog')}</Link>
           <a
             href="#enquire"
             className="tw:rounded-full tw:border tw:border-white/30 tw:px-8 tw:py-3 tw:text-sm tw:font-semibold tw:transition tw:hover:border-white/60"
-          >
-            Book a Test Drive
-          </a>
+          >{t('testDrive')}</a>
         </div>
       </div>
     </section>

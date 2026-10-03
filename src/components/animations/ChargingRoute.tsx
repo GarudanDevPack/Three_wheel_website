@@ -71,15 +71,22 @@ const ChargingRoute = ({ rangeLabel }: { rangeLabel: string }) => {
         />
         <circle ref={dot1Ref} r="3.5" fill="#8fb8ff" />
         <circle ref={dot2Ref} r="3.5" fill="#8fb8ff" />
-        <circle cx="40" cy="200" r="6" fill="#3b82f6" />
-        <g className="charger-pulse">
-          <rect x="24" y="184" width="32" height="20" rx="4" stroke="#3b82f6" strokeWidth="2" />
-          <path d="M32 184 L32 176 M48 184 L48 176" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="40" cy="200" r="6" fill="#3b82f6" className="charger-pulse" />
+        <g transform="translate(226, 4) scale(0.6)" opacity="0.7">
+          <path
+            d="M4 24 L4 16 Q4 12 8 12 L14 12 L19 6 L34 6 Q38 6 39 10 L41 16 L44 16 Q46 16 46 18 L46 24"
+            stroke="#2563eb"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <circle cx="13" cy="24" r="4.5" stroke="#2563eb" strokeWidth="2.4" />
+          <circle cx="37" cy="24" r="4.5" stroke="#2563eb" strokeWidth="2.4" />
         </g>
-        <circle cx="280" cy="30" r="5" fill="white" />
-        <circle cx="280" cy="30" r="9" stroke="white" strokeWidth="1.5" opacity="0.5" />
+        <circle cx="280" cy="30" r="5" fill="#2563eb" />
+        <circle cx="280" cy="30" r="9" stroke="#2563eb" strokeWidth="1.5" opacity="0.5" />
       </svg>
-      <span className="tw:absolute tw:right-2 tw:top-8 tw:text-sm tw:font-semibold tw:text-white">
+      <span className="tw:absolute tw:right-0 tw:top-16 tw:text-sm tw:font-semibold tw:text-brand-ink">
         {rangeLabel}
       </span>
     </div>

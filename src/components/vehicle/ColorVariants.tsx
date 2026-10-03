@@ -52,7 +52,7 @@ const ColorVariants = async () => {
     <section id="colors" className="tw:bg-surface-raised tw:py-20">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
         <div className="tw:flex tw:items-end tw:justify-between">
-          <h2 className="tw:text-3xl tw:font-bold tw:text-white">Choose your color</h2>
+          <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Choose your color</h2>
           <Link href="/vehicles" className="tw:text-sm tw:font-semibold tw:text-brand-blue-light">
             See all vehicles →
           </Link>
@@ -61,10 +61,10 @@ const ColorVariants = async () => {
           {colors.map((color) => (
             <div
               key={color.name}
-              className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-white/10 tw:p-6"
+              className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-brand-ink/10 tw:p-6"
             >
               <ColorSpin360 images={color.angleImages} label={color.name} />
-              <p className="tw:mt-4 tw:border-t tw:border-white/10 tw:pt-4 tw:text-center tw:text-lg tw:font-semibold tw:text-white">
+              <p className="tw:mt-4 tw:border-t tw:border-brand-ink/10 tw:pt-4 tw:text-center tw:text-lg tw:font-semibold tw:text-brand-ink">
                 {color.name}
               </p>
             </div>

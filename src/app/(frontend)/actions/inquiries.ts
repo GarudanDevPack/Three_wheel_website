@@ -2,9 +2,19 @@
 
 import { getPayloadClient } from '@/lib/payload'
 
-export type InquiryType = 'Test Ride' | 'Single Vehicle' | 'Fleet' | 'Dealership' | 'Sales Partner'
+// Keep in sync with the `type` options in src/collections/Inquiries.ts
+export type InquiryType =
+  | 'Test Ride'
+  | 'Single Vehicle'
+  | 'Fleet'
+  | 'Finance'
+  | 'Dealership'
+  | 'Sales Partner'
 
-export type InquiryFormState = { status: 'idle' | 'success' | 'error'; message?: string }
+export type InquiryFormState = {
+  status: 'idle' | 'success' | 'error'
+  messageKey?: 'success' | 'missingFields' | 'failed'
+}
 
 export async function submitInquiry(
   _prevState: InquiryFormState,
@@ -18,7 +28,7 @@ export async function submitInquiry(
   const relatedVehicle = String(formData.get('relatedVehicle') || '').trim()
 
   if (!name || !phone) {
-    return { status: 'error', message: 'Name and phone number are required.' }
+    return { status: 'error', messageKey: 'missingFields' }
   }
 
   try {
@@ -34,11 +44,8 @@ export async function submitInquiry(
         relatedVehicle: relatedVehicle || undefined,
       },
     })
-    return { status: 'success', message: 'Thanks! Our team will reach out shortly.' }
+    return { status: 'success', messageKey: 'success' }
   } catch {
-    return {
-      status: 'error',
-      message: 'We could not submit your enquiry right now. Please try again later.',
-    }
+    return { status: 'error', messageKey: 'failed' }
   }
 }

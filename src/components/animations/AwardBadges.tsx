@@ -49,6 +49,7 @@ const AwardBadges = ({ awards }: { awards: Award[] }) => {
                 src={award.awardImage.url}
                 alt={award.awardImage.alt || award.awardName}
                 fill
+                sizes="64px"
                 className="tw:object-contain"
               />
             </div>
@@ -57,10 +58,10 @@ const AwardBadges = ({ awards }: { awards: Award[] }) => {
               🏆
             </div>
           )}
-          <p className="tw:max-w-[8rem] tw:text-center tw:text-xs tw:font-semibold tw:text-white">
+          <p className="tw:max-w-[8rem] tw:text-center tw:text-xs tw:font-semibold tw:text-brand-ink">
             {award.awardName}
           </p>
-          {award.year && <p className="tw:text-xs tw:text-white/50">{award.year}</p>}
+          {award.year && <p className="tw:text-xs tw:text-brand-ink/50">{award.year}</p>}
         </div>
       ))}
     </div>

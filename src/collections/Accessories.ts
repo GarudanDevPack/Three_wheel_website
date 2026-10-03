@@ -14,8 +14,8 @@ export const Accessories: CollectionConfig = {
     useAsTitle: 'name',
   },
   fields: [
-    { name: 'name', type: 'text', required: true },
-    { name: 'description', type: 'textarea' },
+    { name: 'name', type: 'text', required: true, localized: true },
+    { name: 'description', type: 'textarea', localized: true },
     { name: 'image', type: 'upload', relationTo: 'media' },
     { name: 'compatibleVehicles', type: 'relationship', relationTo: 'vehicles', hasMany: true },
   ],

@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 export type Dealer = {
   id: string
@@ -36,6 +37,7 @@ const haversineKm = (lat1: number, lon1: number, lat2: number, lon2: number) => 
 }
 
 const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
+  const t = useTranslations('DealerLocator')
   const [pincodeQuery, setPincodeQuery] = useState('')
   const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null)
   const [locating, setLocating] = useState(false)
@@ -73,7 +75,7 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
 
   const useMyLocation = () => {
     if (!navigator.geolocation) {
-      setLocationError('Geolocation is not supported by your browser.')
+      setLocationError(t('unsupported'))
       return
     }
     setLocating(true)
@@ -84,7 +86,7 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
         setLocating(false)
       },
       () => {
-        setLocationError('Could not get your location. Please allow location access and try again.')
+        setLocationError(t('denied'))
         setLocating(false)
       },
     )
@@ -96,33 +98,33 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
         <input
           value={pincodeQuery}
           onChange={(e) => setPincodeQuery(e.target.value)}
-          placeholder="Search by pincode"
-          className="tw:rounded-full tw:border tw:border-white/20 tw:bg-surface-raised tw:px-4 tw:py-2 tw:text-sm tw:text-white tw:placeholder-white/40"
+          placeholder={t('search')}
+          className="tw:rounded-full tw:border tw:border-brand-ink/20 tw:bg-surface-raised tw:px-4 tw:py-2 tw:text-sm tw:text-brand-ink tw:placeholder-brand-ink/40"
         />
         <button
           type="button"
           onClick={useMyLocation}
           disabled={locating}
-          className="tw:rounded-full tw:bg-brand-blue tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:disabled:opacity-60"
+          className="tw:cursor-pointer tw:rounded-full tw:border-0 tw:bg-brand-blue tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:disabled:opacity-60"
         >
-          {locating ? 'Locating…' : 'Use my location'}
+          {locating ? t('locating') : t('useLocation')}
         </button>
         {locationError && <p className="tw:text-sm tw:text-red-500">{locationError}</p>}
       </div>
       <div className="tw:grid tw:gap-8 tw:lg:grid-cols-2">
         <div className="tw:grid tw:gap-4 tw:sm:grid-cols-2">
           {visibleDealers.length === 0 ? (
-            <p className="tw:text-sm tw:text-white/50">No dealers match that pincode.</p>
+            <p className="tw:text-sm tw:text-brand-ink/50">{t('noMatch')}</p>
           ) : (
             visibleDealers.map((dealer) => (
               <button
                 key={dealer.id}
                 type="button"
                 onClick={() => setSelectedId(dealer.id)}
-                className={`tw:rounded-2xl tw:border tw:border-white/10 tw:p-6 tw:text-left tw:transition ${
+                className={`tw:cursor-pointer tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:p-6 tw:text-left tw:transition ${
                   dealer.id === selected?.id
                     ? 'tw:bg-brand-blue tw:text-white'
-                    : 'tw:bg-surface-raised tw:text-white'
+                    : 'tw:bg-surface-raised tw:text-brand-ink'
                 }`}
               >
                 <p className="tw:text-lg tw:font-semibold">{dealer.name}</p>
@@ -132,8 +134,8 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
                 )}
                 {dealer.phone && <p className="tw:mt-3 tw:text-sm tw:font-semibold">{dealer.phone}</p>}
                 {distances?.has(dealer.id) && (
-                  <p className="tw:mt-2 tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wide tw:opacity-70">
-                    {distances.get(dealer.id)!.toFixed(1)} km away
+                  <p className="tw:mt-2 tw:text-xs tw:font-semibold tw:opacity-70">
+                    {t('away', { km: distances.get(dealer.id)!.toFixed(1) })}
                   </p>
                 )}
                 {dealer.latitude != null && dealer.longitude != null && (
@@ -144,25 +146,23 @@ const DealerLocator = ({ dealers }: { dealers: Dealer[] }) => {
                     rel="noreferrer"
                     className="tw:mt-4 tw:inline-block tw:text-sm tw:font-semibold tw:underline"
                   >
-                    Get directions
+                    {t('directions')}
                   </a>
                 )}
               </button>
             ))
           )}
         </div>
-        <div className="tw:overflow-hidden tw:rounded-2xl tw:border tw:border-white/10 tw:bg-surface-raised">
+        <div className="tw:overflow-hidden tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised">
           {selected?.latitude != null && selected?.longitude != null ? (
             <iframe
               key={selected.id}
-              title={`Map to ${selected.name}`}
+              title={t('mapTitle', { name: selected.name })}
               src={mapEmbedUrl(selected.latitude, selected.longitude)}
               className="tw:h-full tw:min-h-[320px] tw:w-full tw:border-0"
             />
           ) : (
-            <div className="tw:flex tw:h-full tw:min-h-[320px] tw:items-center tw:justify-center tw:p-6 tw:text-center tw:text-sm tw:text-white/50">
-              Add latitude/longitude to a dealer in /admin to show a map here.
-            </div>
+            <div className="tw:flex tw:h-full tw:min-h-[320px] tw:items-center tw:justify-center tw:p-6 tw:text-center tw:text-sm tw:text-brand-ink/50">{t('noMap')}</div>
           )}
         </div>
       </div>

@@ -23,7 +23,13 @@ const PartHotspots = ({ baseImage, parts }: PartHotspotsProps) => {
 
   return (
     <div className="tw:relative tw:mx-auto tw:aspect-square tw:w-full tw:max-w-2xl">
-      <Image src={baseImage.url} alt={baseImage.alt} fill className="tw:object-contain" />
+      <Image
+        src={baseImage.url}
+        alt={baseImage.alt}
+        fill
+        sizes="(min-width: 768px) 672px, 100vw"
+        className="tw:object-contain"
+      />
       {placed.map((part) => {
         const isOpen = openId === part.id
         return (
@@ -41,20 +47,21 @@ const PartHotspots = ({ baseImage, parts }: PartHotspotsProps) => {
               +
             </button>
             {isOpen && (
-              <div className="tw:absolute tw:top-10 tw:left-1/2 tw:z-10 tw:w-56 tw:-translate-x-1/2 tw:rounded-xl tw:border tw:border-white/10 tw:bg-surface-raised tw:p-4 tw:text-left tw:shadow-xl">
+              <div className="tw:absolute tw:top-10 tw:left-1/2 tw:z-10 tw:w-56 tw:-translate-x-1/2 tw:rounded-xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:p-4 tw:text-left tw:shadow-xl">
                 {part.image?.url && (
                   <div className="tw:relative tw:mb-2 tw:aspect-video tw:overflow-hidden tw:rounded-lg">
                     <Image
                       src={part.image.url}
                       alt={part.image.alt || part.partName}
                       fill
+                      sizes="224px"
                       className="tw:object-cover"
                     />
                   </div>
                 )}
-                <p className="tw:text-sm tw:font-semibold tw:text-white">{part.partName}</p>
+                <p className="tw:text-sm tw:font-semibold tw:text-brand-ink">{part.partName}</p>
                 {part.description && (
-                  <p className="tw:mt-1 tw:text-xs tw:text-white/60">{part.description}</p>
+                  <p className="tw:mt-1 tw:text-xs tw:text-brand-ink/60">{part.description}</p>
                 )}
               </div>
             )}

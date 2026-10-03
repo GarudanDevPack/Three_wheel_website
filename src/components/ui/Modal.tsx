@@ -34,7 +34,7 @@ const Modal = ({ open, onClose, children }: ModalProps) => {
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="tw:absolute tw:right-4 tw:top-4 tw:z-10 tw:flex tw:h-8 tw:w-8 tw:items-center tw:justify-center tw:rounded-full tw:bg-white/10 tw:text-white"
+          className="tw:absolute tw:right-4 tw:top-4 tw:z-10 tw:flex tw:h-8 tw:w-8 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-ink/10 tw:text-brand-ink"
         >
           ×
         </button>

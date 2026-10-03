@@ -19,7 +19,8 @@ export const Inquiries: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'Single Vehicle',
-      options: ['Test Ride', 'Single Vehicle', 'Fleet', 'Dealership', 'Sales Partner'],
+      // Keep in sync with InquiryType in src/app/(frontend)/actions/inquiries.ts
+      options: ['Test Ride', 'Single Vehicle', 'Fleet', 'Finance', 'Dealership', 'Sales Partner'],
     },
     { name: 'name', type: 'text', required: true },
     { name: 'phone', type: 'text', required: true },

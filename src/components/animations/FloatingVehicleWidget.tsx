@@ -1,26 +1,29 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { AnimatePresence, motion } from 'framer-motion'
 
+// Section id → message key under `FloatingWidget`.
 const sectionMessages: Record<string, string> = {
-  hero: 'Meet the Neptune.',
-  'featured-models': 'Built for every route.',
-  'why-choose-us': 'Lower running costs, every day.',
-  'mechanism-sketch': 'One vehicle, many jobs.',
-  highlights: 'Check the numbers.',
-  colors: 'Pick your color.',
-  charging: 'Charged up and ready.',
-  gallery: 'See it from every angle.',
-  dealers: 'Find a dealer near you.',
-  'award-strip': 'Award-winning design.',
-  cta: 'Ready to book a test drive?',
-  enquire: "Let's talk.",
+  hero: 'hero',
+  'model-selector': 'modelSelector',
+  design: 'design',
+  pricing: 'pricing',
+  testimonials: 'testimonials',
+  compare: 'compare',
+  charging: 'charging',
+  gallery: 'gallery',
+  dealers: 'dealers',
+  'award-strip': 'awardStrip',
+  cta: 'cta',
+  enquire: 'enquire',
 }
 
 const sectionIds = Object.keys(sectionMessages)
 
 const FloatingVehicleWidget = () => {
+  const t = useTranslations('FloatingWidget')
   const [activeSection, setActiveSection] = useState<string | null>(null)
 
   useEffect(() => {
@@ -54,7 +57,7 @@ const FloatingVehicleWidget = () => {
     return () => observer.disconnect()
   }, [])
 
-  const message = activeSection ? sectionMessages[activeSection] : null
+  const message = activeSection ? t(sectionMessages[activeSection]) : null
 
   return (
     <div className="tw:pointer-events-none tw:fixed tw:bottom-6 tw:right-6 tw:z-[70] tw:flex tw:items-end tw:gap-3">
@@ -66,14 +69,14 @@ const FloatingVehicleWidget = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.25 }}
-            className="tw:mb-1 tw:max-w-[12rem] tw:rounded-2xl tw:rounded-br-sm tw:border tw:border-white/10 tw:bg-surface-raised tw:px-4 tw:py-3 tw:text-sm tw:font-medium tw:text-white tw:shadow-xl"
+            className="tw:mb-1 tw:max-w-[12rem] tw:rounded-2xl tw:rounded-br-sm tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:px-4 tw:py-3 tw:text-sm tw:font-medium tw:text-brand-ink tw:shadow-xl"
           >
             {message}
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="tw:flex tw:h-14 tw:w-14 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:border tw:border-white/10 tw:bg-surface tw:shadow-xl">
+      <div className="tw:flex tw:h-14 tw:w-14 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:border tw:border-brand-ink/10 tw:bg-surface tw:shadow-xl">
         <svg viewBox="0 0 48 32" className="tw:h-8 tw:w-8" fill="none" aria-hidden="true">
           <path
             d="M4 24 L4 16 Q4 12 8 12 L14 12 L19 6 L34 6 Q38 6 39 10 L41 16 L44 16 Q46 16 46 18 L46 24"

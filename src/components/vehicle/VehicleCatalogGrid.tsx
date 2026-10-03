@@ -1,12 +1,14 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { useTranslations } from 'next-intl'
 import VehicleCard, { type VehicleCardData } from './VehicleCard'
 
 const categories = ['Passenger', 'Cargo'] as const
 const fuelTypes = ['Petrol', 'CNG', 'LPG', 'Electric'] as const
 
 const VehicleCatalogGrid = ({ vehicles }: { vehicles: VehicleCardData[] }) => {
+  const t = useTranslations('Catalog')
   const [category, setCategory] = useState<string | null>(null)
   const [fuel, setFuel] = useState<string | null>(null)
 
@@ -32,13 +34,13 @@ const VehicleCatalogGrid = ({ vehicles }: { vehicles: VehicleCardData[] }) => {
               key={value}
               type="button"
               onClick={() => toggle(value, category, setCategory)}
-              className={`tw:rounded-full tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
+              className={`tw:cursor-pointer tw:rounded-full tw:border-0 tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
                 category === value
                   ? 'tw:bg-brand-blue tw:text-white'
-                  : 'tw:bg-surface-raised tw:text-white/70 tw:hover:bg-surface'
+                  : 'tw:bg-surface-raised tw:text-brand-ink/70 tw:hover:bg-surface'
               }`}
             >
-              {value}
+              {t(`categories.${value}`)}
             </button>
           ))}
         </div>
@@ -48,20 +50,20 @@ const VehicleCatalogGrid = ({ vehicles }: { vehicles: VehicleCardData[] }) => {
               key={value}
               type="button"
               onClick={() => toggle(value, fuel, setFuel)}
-              className={`tw:rounded-full tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
+              className={`tw:cursor-pointer tw:rounded-full tw:border-0 tw:px-4 tw:py-2 tw:text-sm tw:font-semibold tw:transition ${
                 fuel === value
                   ? 'tw:bg-brand-green tw:text-white'
-                  : 'tw:bg-surface-raised tw:text-white/70 tw:hover:bg-surface'
+                  : 'tw:bg-surface-raised tw:text-brand-ink/70 tw:hover:bg-surface'
               }`}
             >
-              {value}
+              {t(`fuel.${value}`)}
             </button>
           ))}
         </div>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="tw:mt-10 tw:text-white/50">No vehicles match those filters.</p>
+        <p className="tw:mt-10 tw:text-brand-ink/50">{t('noMatch')}</p>
       ) : (
         <div className="tw:mt-10 tw:grid tw:gap-8 tw:sm:grid-cols-2 tw:lg:grid-cols-3">
           {filtered.map((vehicle) => (

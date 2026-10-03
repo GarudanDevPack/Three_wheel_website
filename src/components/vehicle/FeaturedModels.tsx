@@ -19,7 +19,7 @@ const FeaturedModels = async () => {
     <section id="featured-models" className="tw:bg-surface tw:py-20">
       <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
         <div className="tw:flex tw:items-end tw:justify-between">
-          <h2 className="tw:text-3xl tw:font-bold tw:text-white">Featured models</h2>
+          <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">Featured models</h2>
           <Link href="/vehicles" className="tw:text-sm tw:font-semibold tw:text-brand-blue-light">
             View all →
           </Link>

@@ -19,8 +19,8 @@ export const Pages: CollectionConfig = {
       name: 'seo',
       type: 'group',
       fields: [
-        { name: 'metaTitle', type: 'text' },
-        { name: 'metaDescription', type: 'textarea' },
+        { name: 'metaTitle', type: 'text', localized: true },
+        { name: 'metaDescription', type: 'textarea', localized: true },
         { name: 'ogImage', type: 'upload', relationTo: 'media' },
       ],
     },

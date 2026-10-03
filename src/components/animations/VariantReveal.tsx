@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 import { createTimeline } from 'animejs'
 
@@ -10,6 +11,8 @@ export type RevealVariant = {
 }
 
 const VariantReveal = ({ variants }: { variants: RevealVariant[] }) => {
+  const t = useTranslations('VariantReveal')
+  const tc = useTranslations('Catalog')
   const [activeIndex, setActiveIndex] = useState(0)
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -41,29 +44,29 @@ const VariantReveal = ({ variants }: { variants: RevealVariant[] }) => {
   return (
     <div
       ref={contentRef}
-      className="tw:rounded-2xl tw:border tw:border-white/10 tw:bg-surface-raised tw:p-8 tw:text-center"
+      className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:p-8 tw:text-center"
     >
-      <p className="tw:text-sm tw:font-semibold tw:uppercase tw:tracking-wide tw:text-brand-blue-light">
-        {active.fuelType || 'Variant'}
+      <p className="tw:text-sm tw:font-semibold tw:text-brand-blue">
+        {active.fuelType ? tc(`fuel.${active.fuelType}`) : t('variant')}
       </p>
-      <h3 className="tw:mt-2 tw:text-2xl tw:font-bold tw:text-white">{active.variantName}</h3>
-      <p className="tw:mx-auto tw:mt-3 tw:max-w-xl tw:text-white/70">{active.taglineForReveal}</p>
+      <h3 className="tw:mt-2 tw:text-2xl tw:font-bold tw:text-brand-ink">{active.variantName}</h3>
+      <p className="tw:mx-auto tw:mt-3 tw:max-w-xl tw:text-brand-ink/70">{active.taglineForReveal}</p>
       <div className="tw:mt-6">
         {activeIndex === 0 ? (
           <button
             type="button"
             onClick={() => goTo(nextIndex)}
-            className="tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white"
+            className="tw:cursor-pointer tw:rounded-full tw:border-0 tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white"
           >
-            Reveal the {next.variantName} Version
+            {t('reveal', { name: next.variantName })}
           </button>
         ) : (
           <button
             type="button"
             onClick={() => goTo(0)}
-            className="tw:rounded-full tw:border tw:border-white/30 tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white"
+            className="tw:cursor-pointer tw:rounded-full tw:border tw:border-brand-ink/30 tw:bg-transparent tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-ink"
           >
-            Back to {revealable[0].variantName}
+            {t('back', { name: revealable[0].variantName })}
           </button>
         )}
       </div>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { createAnimatable, type AnimatableObject } from 'animejs'
 
 export type AngleImage = {
@@ -14,7 +15,16 @@ const maxTilt = 22
 const idleSwingAngle = 7
 const idleSwingIntervalMs = 1400
 
-const ColorSpin360 = ({ images, label }: { images: AngleImage[]; label: string }) => {
+const ColorSpin360 = ({
+  images,
+  label,
+  dark = false,
+}: {
+  images: AngleImage[]
+  label: string
+  dark?: boolean
+}) => {
+  const t = useTranslations('Viewer')
   const [index, setIndex] = useState(0)
   const dragStartX = useRef<number | null>(null)
   const isDraggingRef = useRef(false)
@@ -108,6 +118,7 @@ const ColorSpin360 = ({ images, label }: { images: AngleImage[]; label: string }
                 alt={current.image.alt || `${label} — ${current.angleLabel || 'view'}`}
                 fill
                 draggable={false}
+                sizes="(min-width: 768px) 50vw, 100vw"
                 className="tw:object-contain tw:p-6"
               />
             </div>
@@ -117,6 +128,7 @@ const ColorSpin360 = ({ images, label }: { images: AngleImage[]; label: string }
               alt={current.image.alt || `${label} — ${current.angleLabel || 'view'}`}
               fill
               draggable={false}
+              sizes="(min-width: 768px) 50vw, 100vw"
               className="tw:object-contain tw:p-6"
             />
           ))}
@@ -126,23 +138,23 @@ const ColorSpin360 = ({ images, label }: { images: AngleImage[]; label: string }
           <button
             type="button"
             onClick={() => step(-1)}
-            aria-label="Previous angle"
-            className="tw:rounded-full tw:border tw:border-white/20 tw:px-3 tw:py-1 tw:text-sm tw:text-white"
+            aria-label={t('previousAngle')}
+            className={`tw:rounded-full tw:border tw:px-3 tw:py-1 tw:text-sm ${dark ? 'tw:border-white/20 tw:text-white' : 'tw:border-brand-ink/20 tw:text-brand-ink'}`}
           >
             ‹
           </button>
         )}
-        <p className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wide tw:text-white/50">
+        <p className={`tw:m-0 tw:text-xs tw:font-semibold ${dark ? 'tw:text-white/50' : 'tw:text-brand-ink/50'}`}>
           {isTiltMode
-            ? 'Drag to tilt'
-            : `Drag to rotate — ${current?.angleLabel || `${index + 1}/${frames.length}`}`}
+            ? t('dragTilt')
+            : t('dragRotate', { angle: current?.angleLabel || `${index + 1}/${frames.length}` })}
         </p>
         {!isTiltMode && (
           <button
             type="button"
             onClick={() => step(1)}
-            aria-label="Next angle"
-            className="tw:rounded-full tw:border tw:border-white/20 tw:px-3 tw:py-1 tw:text-sm tw:text-white"
+            aria-label={t('nextAngle')}
+            className={`tw:rounded-full tw:border tw:px-3 tw:py-1 tw:text-sm ${dark ? 'tw:border-white/20 tw:text-white' : 'tw:border-brand-ink/20 tw:text-brand-ink'}`}
           >
             ›
           </button>

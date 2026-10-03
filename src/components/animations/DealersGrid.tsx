@@ -2,11 +2,13 @@
 
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { animate, stagger, onScroll } from 'animejs'
 
 type Dealer = { name: string; city?: string; address?: string; phone?: string }
 
 const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
+  const t = useTranslations('Dealers')
   const sectionRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const photoRef = useRef<HTMLDivElement>(null)
@@ -52,7 +54,7 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
           <div
             key={dealer.name}
             data-dealer-card
-            className="tw:rounded-2xl tw:border tw:border-white/10 tw:bg-surface tw:p-6 tw:opacity-0 tw:transition tw:hover:border-white/20"
+            className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface tw:p-6 tw:opacity-0 tw:transition tw:hover:border-brand-ink/20"
           >
             <div className="tw:flex tw:items-center tw:gap-3">
               <span className="tw:flex tw:h-10 tw:w-10 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue/15">
@@ -66,14 +68,14 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
                   <circle cx="12" cy="9.5" r="2.5" stroke="#3b82f6" strokeWidth="1.8" />
                 </svg>
               </span>
-              <p className="tw:text-lg tw:font-semibold tw:text-white">{dealer.name}</p>
+              <p className="tw:text-lg tw:font-semibold tw:text-brand-ink">{dealer.name}</p>
             </div>
             {dealer.city && (
-              <p className="tw:mt-3 tw:inline-block tw:rounded-full tw:bg-brand-blue-light/10 tw:px-3 tw:py-1 tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wide tw:text-brand-blue-light">
+              <p className="tw:mt-3 tw:inline-block tw:rounded-full tw:bg-brand-blue-light/10 tw:px-3 tw:py-1 tw:text-xs tw:font-semibold tw:text-brand-blue-light">
                 {dealer.city}
               </p>
             )}
-            {dealer.address && <p className="tw:mt-3 tw:text-sm tw:text-white/60">{dealer.address}</p>}
+            {dealer.address && <p className="tw:mt-3 tw:text-sm tw:text-brand-ink/60">{dealer.address}</p>}
             {dealer.phone && (
               <a
                 href={`tel:${dealer.phone}`}
@@ -97,8 +99,9 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
       <div ref={photoRef} className="tw:relative tw:aspect-square tw:w-full tw:opacity-0">
         <Image
           src="/images/auto/gallery-2.png"
-          alt="Neptune three-wheeler"
+          alt={t('photoAlt')}
           fill
+          sizes="(min-width: 768px) 50vw, 100vw"
           className="tw:rounded-2xl tw:object-cover"
         />
       </div>

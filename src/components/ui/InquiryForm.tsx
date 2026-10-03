@@ -2,34 +2,35 @@
 
 import { useEffect, useRef } from 'react'
 import { useActionState } from 'react'
+import { useTranslations } from 'next-intl'
 import { animate, stagger, onScroll } from 'animejs'
 import { submitInquiry, type InquiryFormState, type InquiryType } from '@/app/(frontend)/actions/inquiries'
+import { trackEvent } from '@/lib/analytics'
+import SectionBackdrop from './SectionBackdrop'
 
 const initialState: InquiryFormState = { status: 'idle' }
 
 const fieldRowClasses =
-  'tw:flex tw:items-center tw:gap-2 tw:rounded-lg tw:bg-white/10 tw:px-3 tw:focus-within:ring-2 tw:focus-within:ring-brand-blue-light'
+  'tw:flex tw:items-center tw:gap-2 tw:rounded-lg tw:bg-brand-ink/5 tw:px-3 tw:focus-within:ring-2 tw:focus-within:ring-brand-blue-light'
 
 const fieldClasses =
-  'tw:w-full tw:flex-1 tw:border-0 tw:bg-transparent tw:py-3 tw:text-sm tw:placeholder-white/50 tw:outline-none'
+  'tw:w-full tw:flex-1 tw:border-0 tw:bg-transparent tw:py-3 tw:text-sm tw:text-brand-ink tw:placeholder-brand-ink/50 tw:outline-none'
 
-const labelClasses = 'tw:mb-1.5 tw:block tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wide tw:text-white/50'
+const labelClasses = 'tw:mb-1.5 tw:block tw:text-xs tw:font-semibold tw:text-brand-ink/50'
 
 const iconClasses = 'tw:h-4 tw:w-4 tw:shrink-0 tw:text-brand-blue-light'
 
-const inquiryTypes: InquiryType[] = [
-  'Single Vehicle',
-  'Test Ride',
-  'Fleet',
-  'Dealership',
-  'Sales Partner',
+// Stored values stay English (admin + reporting); labels are translated.
+const inquiryTypes: Array<{ value: InquiryType; key: string }> = [
+  { value: 'Single Vehicle', key: 'singleVehicle' },
+  { value: 'Test Ride', key: 'testRide' },
+  { value: 'Fleet', key: 'fleet' },
+  { value: 'Finance', key: 'finance' },
+  { value: 'Dealership', key: 'dealership' },
+  { value: 'Sales Partner', key: 'salesPartner' },
 ]
 
-const steps = [
-  'Share your details',
-  'A dealer reaches out',
-  'Book your test drive',
-]
+const steps = ['step1', 'step2', 'step3'] as const
 
 const TagIcon = () => (
   <svg viewBox="0 0 24 24" className={iconClasses} fill="none" aria-hidden="true">
@@ -77,6 +78,7 @@ type InquiryFormProps = {
   compact?: boolean
   title?: string
   description?: string
+  defaultMessage?: string
 }
 
 const InquiryForm = ({
@@ -85,12 +87,20 @@ const InquiryForm = ({
   defaultType = 'Single Vehicle',
   lockType = false,
   compact = false,
-  title = 'Book a test drive',
-  description = 'Leave your details and a dealer will contact you.',
+  title,
+  description,
+  defaultMessage,
 }: InquiryFormProps) => {
+  const t = useTranslations('Inquiry')
   const [state, formAction, pending] = useActionState(submitInquiry, initialState)
   const sectionRef = useRef<HTMLDivElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
+  const heading = title || t('title')
+  const intro = description || t('description')
+
+  useEffect(() => {
+    if (state.status === 'success') trackEvent('generate_lead', { inquiry_type: defaultType })
+  }, [state.status, defaultType])
 
   useEffect(() => {
     if (compact) return
@@ -135,14 +145,14 @@ const InquiryForm = ({
       ) : (
         <div className="tw:sm:col-span-2">
           <label htmlFor="inquiry-type" className={labelClasses}>
-            Enquiry type
+            {t('typeLabel')}
           </label>
           <div className={fieldRowClasses}>
             <TagIcon />
             <select id="inquiry-type" name="type" defaultValue={defaultType} className={fieldClasses}>
               {inquiryTypes.map((option) => (
-                <option key={option} value={option} className="tw:text-brand-ink">
-                  {option}
+                <option key={option.value} value={option.value} className="tw:text-brand-ink">
+                  {t(`types.${option.key}`)}
                 </option>
               ))}
             </select>
@@ -151,25 +161,25 @@ const InquiryForm = ({
       )}
       <div>
         <label htmlFor="inquiry-name" className={labelClasses}>
-          Full name
+          {t('nameLabel')}
         </label>
         <div className={fieldRowClasses}>
           <PersonIcon />
-          <input id="inquiry-name" name="name" required placeholder="Jane Doe" className={fieldClasses} />
+          <input id="inquiry-name" name="name" required placeholder={t('namePlaceholder')} className={fieldClasses} />
         </div>
       </div>
       <div>
         <label htmlFor="inquiry-phone" className={labelClasses}>
-          Phone number
+          {t('phoneLabel')}
         </label>
         <div className={fieldRowClasses}>
           <PhoneIcon />
-          <input id="inquiry-phone" name="phone" required placeholder="+91 00000 00000" className={fieldClasses} />
+          <input id="inquiry-phone" name="phone" required placeholder="077 123 4567" className={fieldClasses} />
         </div>
       </div>
       <div className="tw:sm:col-span-2">
         <label htmlFor="inquiry-email" className={labelClasses}>
-          Email (optional)
+          {t('emailLabel')}
         </label>
         <div className={fieldRowClasses}>
           <EnvelopeIcon />
@@ -178,7 +188,7 @@ const InquiryForm = ({
       </div>
       <div className="tw:sm:col-span-2">
         <label htmlFor="inquiry-message" className={labelClasses}>
-          Message (optional)
+          {t('messageLabel')}
         </label>
         <div className={`${fieldRowClasses} tw:items-start`}>
           <span className="tw:mt-3">
@@ -187,7 +197,8 @@ const InquiryForm = ({
           <textarea
             id="inquiry-message"
             name="message"
-            placeholder="Anything we should know?"
+            placeholder={t('messagePlaceholder')}
+            defaultValue={defaultMessage}
             rows={3}
             className={fieldClasses}
           />
@@ -196,9 +207,9 @@ const InquiryForm = ({
       <button
         type="submit"
         disabled={pending}
-        className="tw:inline-flex tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:transition tw:hover:bg-brand-blue-light tw:disabled:opacity-60 tw:sm:col-span-2"
+        className="tw:inline-flex tw:cursor-pointer tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:border-0 tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light tw:disabled:opacity-60 tw:sm:col-span-2"
       >
-        {pending ? 'Submitting…' : 'Submit Enquiry'}
+        {pending ? t('submitting') : t('submit')}
         <svg viewBox="0 0 24 24" className="tw:h-4 tw:w-4" fill="none" aria-hidden="true">
           <path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -208,22 +219,23 @@ const InquiryForm = ({
 
   const status = state.status !== 'idle' && (
     <p
-      className={`tw:mt-4 tw:text-sm ${
-        state.status === 'success' ? 'tw:text-green-400' : 'tw:text-red-400'
+      role="status"
+      className={`tw:mt-4 tw:text-sm tw:font-medium ${
+        state.status === 'success' ? 'tw:text-green-600' : 'tw:text-red-600'
       }`}
     >
-      {state.message}
+      {state.messageKey && t(`status.${state.messageKey}`)}
     </p>
   )
 
   if (compact) {
     return (
-      <div className="tw:bg-brand-ink tw:p-6 tw:text-white tw:sm:p-8">
-        <h2 className="tw:text-3xl tw:font-bold">{title}</h2>
-        <p className="tw:mt-2 tw:text-white/70">{description}</p>
+      <div className="tw:bg-surface tw:p-6 tw:text-brand-ink tw:sm:p-8">
+        <h2 className="tw:text-3xl tw:font-bold">{heading}</h2>
+        <p className="tw:mt-2 tw:text-brand-ink/70">{intro}</p>
         {relatedVehicleName && (
           <p className="tw:mt-2 tw:text-sm tw:font-semibold tw:text-brand-blue-light">
-            Regarding: {relatedVehicleName}
+            {t('regarding', { name: relatedVehicleName })}
           </p>
         )}
         <div className="tw:mt-8">{form}</div>
@@ -233,27 +245,28 @@ const InquiryForm = ({
   }
 
   return (
-    <section id="enquire" className="tw:bg-brand-ink tw:py-20 tw:text-white">
-      <div ref={sectionRef} className="tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
+    <section id="enquire" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20 tw:text-brand-ink">
+      <SectionBackdrop src="/images/auto/neptune-blue-2.png" variant="soft" base="surface" />
+      <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
         <div>
           <h2 data-intro-item className="tw:text-3xl tw:font-bold tw:opacity-0">
-            {title}
+            {heading}
           </h2>
-          <p data-intro-item className="tw:mt-2 tw:max-w-md tw:text-white/70 tw:opacity-0">
-            {description}
+          <p data-intro-item className="tw:mt-2 tw:max-w-md tw:text-brand-ink/70 tw:opacity-0">
+            {intro}
           </p>
           {relatedVehicleName && (
             <p data-intro-item className="tw:mt-2 tw:text-sm tw:font-semibold tw:text-brand-blue-light tw:opacity-0">
-              Regarding: {relatedVehicleName}
+              {t('regarding', { name: relatedVehicleName })}
             </p>
           )}
-          <ul className="tw:mt-8 tw:space-y-4">
+          <ul className="tw:mt-8 tw:space-y-4 tw:p-0">
             {steps.map((step, index) => (
-              <li key={step} data-intro-item className="tw:flex tw:items-center tw:gap-3 tw:opacity-0">
+              <li key={step} data-intro-item className="tw:flex tw:list-none tw:items-center tw:gap-3 tw:opacity-0">
                 <span className="tw:flex tw:h-7 tw:w-7 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue-light/15 tw:text-sm tw:font-semibold tw:text-brand-blue-light">
                   {index + 1}
                 </span>
-                <p className="tw:text-sm tw:text-white/70">{step}</p>
+                <p className="tw:m-0 tw:text-sm tw:text-brand-ink/70">{t(step)}</p>
               </li>
             ))}
           </ul>
@@ -265,7 +278,7 @@ const InquiryForm = ({
 
         <div
           ref={cardRef}
-          className="tw:rounded-2xl tw:border tw:border-white/10 tw:bg-surface-raised tw:p-8 tw:opacity-0"
+          className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:p-8 tw:opacity-0"
         >
           {form}
           {status}

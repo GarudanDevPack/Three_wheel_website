@@ -1,0 +1,439 @@
+{
+  "Meta": {
+    "siteTitle": "Neptune Three-Wheelers",
+    "siteDescription": "Neptune three-wheeler auto rickshaws — built for daily loads and longer routes."
+  },
+  "Header": {
+    "home": "Home",
+    "gallery": "Gallery",
+    "news": "News",
+    "about": "About",
+    "contact": "Contact",
+    "enquire": "Enquire Now",
+    "toggleMenu": "Toggle menu"
+  },
+  "Cookies": {
+    "title": "We value your privacy",
+    "message": "We use cookies to understand how visitors use our site so we can improve it. Analytics cookies are only set if you accept.",
+    "learnMore": "Privacy policy",
+    "accept": "Accept",
+    "decline": "Decline",
+    "settings": "Cookie settings"
+  },
+  "WhatsApp": {
+    "label": "Chat with us on WhatsApp"
+  },
+  "Inquiry": {
+    "title": "Book a test drive",
+    "description": "Leave your details and a dealer will contact you.",
+    "regarding": "Regarding: {name}",
+    "step1": "Share your details",
+    "step2": "A dealer reaches out",
+    "step3": "Book your test drive",
+    "typeLabel": "Enquiry type",
+    "types": {
+      "singleVehicle": "Single vehicle",
+      "testRide": "Test ride",
+      "fleet": "Fleet",
+      "finance": "Finance",
+      "dealership": "Dealership",
+      "salesPartner": "Sales partner"
+    },
+    "nameLabel": "Full name",
+    "namePlaceholder": "Your name",
+    "phoneLabel": "Phone number",
+    "emailLabel": "Email (optional)",
+    "messageLabel": "Message (optional)",
+    "messagePlaceholder": "Anything we should know?",
+    "submit": "Submit enquiry",
+    "submitting": "Submitting…",
+    "status": {
+      "success": "Thanks! Our team will reach out shortly.",
+      "missingFields": "Name and phone number are required.",
+      "failed": "We could not submit your enquiry right now. Please try again later."
+    }
+  },
+  "EnquiryMenu": {
+    "toggle": "Enquire about this vehicle",
+    "testRide": "Book Test Ride",
+    "single": "Single Enquiry",
+    "finance": "Finance Enquiry",
+    "fleet": "Fleet Enquiry",
+    "dealership": "Dealership",
+    "partner": "Become a Partner",
+    "modalDescription": "Share your details and we'll get back to you shortly."
+  },
+  "Hero": {
+    "eyebrow": "Neptune Three-Wheeler",
+    "title": "Built to carry your business further.",
+    "intro": "A rugged, energy-efficient electric auto rickshaw designed for daily loads, longer routes, and lower running costs.",
+    "testDrive": "Book a Test Drive",
+    "compare": "Compare Models",
+    "pricing": "See pricing"
+  },
+  "ModelSelector": {
+    "title": "Choose your model",
+    "seeAll": "See all vehicles",
+    "available": "Available",
+    "upcoming": "Upcoming",
+    "rangeModel": "{range} Range",
+    "flagshipDescription": "Our flagship long-range model, built for daily loads and longer routes.",
+    "upcomingDescription": "Specs coming soon.",
+    "viewDetails": "View full details",
+    "specsSoon": "Specs coming soon",
+    "photosSoon": "Model photos & colors coming soon"
+  },
+  "FloatingWidget": {
+    "hero": "Meet the Neptune.",
+    "modelSelector": "Pick your color.",
+    "design": "Built for every detail.",
+    "pricing": "See what it costs per month.",
+    "testimonials": "Hear it from drivers.",
+    "compare": "Check the numbers.",
+    "charging": "Charged up and ready.",
+    "gallery": "See it from every angle.",
+    "dealers": "Find a dealer near you.",
+    "awardStrip": "Award-winning design.",
+    "cta": "Ready to book a test drive?",
+    "enquire": "Let's talk."
+  },
+  "Viewer": {
+    "turntable": "{label} — 360° turntable",
+    "view360": "360° view",
+    "dragTilt": "Drag to tilt",
+    "dragRotate": "Drag to rotate — {angle}",
+    "previousAngle": "Previous angle",
+    "nextAngle": "Next angle"
+  },
+  "Design": {
+    "eyebrow": "Design",
+    "seeBuild": "See the build",
+    "powertrain": {
+      "label": "Powertrain",
+      "headline": "Chassis and battery, built to endure",
+      "copy": "A reinforced frame carries the motor, battery, and suspension as one rigid unit — engineered to endure diverse terrain and rigorously tested for daily commercial duty.",
+      "alt": "Neptune three-wheeler chassis, battery, and suspension layout"
+    },
+    "interior": {
+      "label": "Interior",
+      "headline": "A cabin built around the driver",
+      "copy": "A driver-first layout with an adjustable seat, digital instrument cluster, and USB charging — ergonomic touches that make a full shift behind the wheel comfortable, not just possible.",
+      "alt": "Neptune three-wheeler cabin and seating layout, viewed from above"
+    },
+    "exterior": {
+      "label": "Exterior",
+      "headline": "One structure, start to finish",
+      "copy": "Every panel and support is engineered as part of a single structure — confident styling built to stand out on the route and stand up to daily commercial use, mile after mile.",
+      "alt": "Neptune three-wheeler full-body structure, isometric view"
+    }
+  },
+  "Cargo": {
+    "title": "Got cargo? No problem!",
+    "intro": "Neptune switches between passenger and cargo mode in moments, so one vehicle covers both jobs. Fold the seats back for a generous, secure load area, or keep them up for a comfortable ride with plenty of legroom — either way, it's built for a full day's work.",
+    "passengerMode": "Passenger mode",
+    "cargoMode": "Cargo mode",
+    "passengerAlt": "Neptune three-wheeler, passenger mode",
+    "cargoAlt": "Neptune three-wheeler, technical animation",
+    "passengerCaption": "Passenger preview",
+    "cargoCaption": "Technical preview"
+  },
+  "Charging": {
+    "title": "Charging",
+    "intro": "Recharge with confidence. Say goodbye to range anxiety with fast, flexible charging options that fit your day.",
+    "charger": "Charger",
+    "chargingTime": "Charging time (20% → 100%)"
+  },
+  "Dealers": {
+    "title": "Find a dealer",
+    "seeAll": "See all dealers",
+    "headOffice": "Neptune Head Office",
+    "photoAlt": "Neptune three-wheeler, rear view on a coastal road"
+  },
+  "Gallery": {
+    "title": "Gallery",
+    "close": "Close",
+    "previous": "Previous photo",
+    "next": "Next photo",
+    "photos": {
+      "front": "Neptune three-wheeler, front three-quarter view parked by the water",
+      "rear": "Neptune three-wheeler, rear view on a coastal road",
+      "side": "Neptune three-wheeler, side profile studio shot",
+      "cabin": "Neptune three-wheeler cabin interior and seating",
+      "usb": "Neptune three-wheeler USB fast-charging port detail"
+    }
+  },
+  "Awards": {
+    "title": "Recognized for engineering that works as hard as you do"
+  },
+  "Cta": {
+    "title": "Ready to find your Neptune?",
+    "intro": "Compare passenger and cargo models, specs, and colors across the full lineup.",
+    "catalog": "Browse the catalog",
+    "testDrive": "Book a Test Drive"
+  },
+  "Footer": {
+    "photoAlt": "Neptune three-wheeler driving at night",
+    "tagline": "Rugged electric three-wheelers built for daily loads, longer routes, and lower running costs.",
+    "copyright": "© {year} Neptune Three-Wheelers. All rights reserved.",
+    "privacy": "Privacy policy",
+    "terms": "Terms & conditions",
+    "cookieSettings": "Cookie settings"
+  },
+  "About": {
+    "metaTitle": "About Neptune",
+    "metaDescription": "Neptune designs and builds electric passenger and cargo three-wheelers for daily loads and longer routes.",
+    "eyebrow": "About Neptune",
+    "title": "Built for the roads that carry a livelihood.",
+    "intro": "Neptune designs and builds electric passenger and cargo three-wheelers engineered for daily loads, longer routes, and lower running costs — so every trip pays for itself.",
+    "highlights": {
+      "models": { "label": "Passenger & cargo models", "value": "Built for every route" },
+      "drivetrain": { "label": "Drivetrain", "value": "100% electric" },
+      "network": { "label": "Dealer network", "value": "Growing across Sri Lanka" }
+    },
+    "faqTitle": "Frequently asked questions",
+    "faq": {
+      "electric": {
+        "q": "Is Neptune fully electric?",
+        "a": "Yes. Neptune three-wheelers run on an electric motor and battery — no fuel needed, just a regular charge."
+      },
+      "warranty": {
+        "q": "What is the warranty coverage?",
+        "a": "Every Neptune vehicle ships with a standard warranty policy — see the vehicle detail page for the full document."
+      },
+      "testDrive": {
+        "q": "Can I test drive before buying?",
+        "a": "Yes — request a test ride from any vehicle page or your nearest dealer."
+      }
+    },
+    "cta": "Explore the lineup"
+  },
+  "Contact": {
+    "metaTitle": "Contact Neptune",
+    "metaDescription": "Get in touch with Neptune for vehicle, finance, fleet, dealership, or partnership enquiries.",
+    "title": "Get in touch",
+    "intro": "Questions about a vehicle, finance, fleet orders, or becoming a dealer or sales partner — reach out and our team will get back to you.",
+    "formTitle": "Send us a message",
+    "formDescription": "Pick the enquiry type that fits best and we'll route it to the right team."
+  },
+  "DealersPage": {
+    "metaTitle": "Find a Neptune Dealer",
+    "metaDescription": "Locate your nearest Neptune dealer for a test drive or to place an order.",
+    "title": "Find a dealer",
+    "intro": "Visit your nearest Neptune dealer for a test drive or to place an order.",
+    "headOffice": "Neptune Head Office",
+    "networkSoon": "Our dealer network is expanding — contact the head office and we'll connect you with the nearest partner."
+  },
+  "DealerLocator": {
+    "search": "Search by postal code",
+    "useLocation": "Use my location",
+    "locating": "Locating…",
+    "unsupported": "Geolocation is not supported by your browser.",
+    "denied": "Could not get your location. Please allow location access and try again.",
+    "noMatch": "No dealers match that postal code.",
+    "away": "{km} km away",
+    "directions": "Get directions",
+    "mapTitle": "Map to {name}",
+    "noMap": "Select a dealer to see it on the map."
+  },
+  "Catalog": {
+    "metaTitle": "Our Vehicles",
+    "metaDescription": "Browse Neptune electric passenger and cargo three-wheelers.",
+    "title": "Our Vehicles",
+    "intro": "Passenger and cargo three-wheelers built for the road ahead.",
+    "empty": "Our full catalog is being updated. In the meantime, compare the Neptune range on the homepage.",
+    "compareModels": "Compare models",
+    "noMatch": "No vehicles match those filters.",
+    "fromPrice": "From {price}",
+    "priceOnRequest": "Price on request",
+    "categories": { "Passenger": "Passenger", "Cargo": "Cargo" },
+    "fuel": { "Petrol": "Petrol", "CNG": "CNG", "LPG": "LPG", "Electric": "Electric" }
+  },
+  "VehicleDetail": {
+    "nav": {
+      "overview": "Overview",
+      "build": "Build & Parts",
+      "specifications": "Specifications",
+      "accessories": "Accessories",
+      "dealers": "Dealers"
+    },
+    "price": "Price",
+    "priceOnRequest": "Price on request",
+    "colors": "Colors",
+    "exploreBuild": "Explore the build",
+    "inAction": "See it in action",
+    "specifications": "Variants & Specifications",
+    "reveal": "Reveal the version built for you",
+    "gallery": "Gallery",
+    "faq": "Frequently asked questions",
+    "findDealer": "Find a dealer",
+    "dealersSoon": "Our dealer network is expanding — contact us and we'll connect you with the nearest partner.",
+    "documents": {
+      "brochure": "Download Brochure",
+      "maintenance": "Maintenance Schedule",
+      "warranty": "Warranty Policy"
+    },
+    "related": "You may also like",
+    "accessories": "Accessories"
+  },
+  "Legal": {
+    "privacyTitle": "Privacy Policy",
+    "privacyHeading": "How we handle your data",
+    "termsTitle": "Terms & Conditions",
+    "termsHeading": "Your access and usage rights",
+    "englishOnly": "This policy is currently provided in English."
+  },
+  "NotFound": {
+    "title": "We can't find that page",
+    "text": "The page you're looking for doesn't exist or may have moved.",
+    "home": "Go back home"
+  },
+  "VariantReveal": {
+    "variant": "Variant",
+    "reveal": "Reveal the {name} version",
+    "back": "Back to {name}"
+  },
+  "FeatureThemes": {
+    "title": "Built around what matters",
+    "items": {
+      "economy": { "title": "Economy", "blurb": "Charging costs far less than fuel, keeping your cost per kilometre low." },
+      "durability": { "title": "Durability", "blurb": "Reinforced chassis and components built for daily commercial duty." },
+      "maintenance": { "title": "Low Maintenance", "blurb": "Fewer moving parts, simple servicing and genuine parts support." },
+      "comfort": { "title": "Comfort", "blurb": "A cabin designed for long shifts on the road." }
+    }
+  },
+  "Chassis": {
+    "heading": "Strong Chassis & Frame Design",
+    "description": "Built on a reinforced frame designed for daily commercial duty — the {name} keeps its shape under load, mile after mile.",
+    "imageAlt": "{name} chassis and frame",
+    "placeholderAlt": "Neptune chassis and frame, build angle {number}"
+  },
+  "Pricing": {
+    "eyebrow": "Pricing & finance",
+    "title": "Own a Neptune for less than you think",
+    "intro": "Clear pricing and an instant monthly estimate. Adjust the numbers to match your budget, then apply in one step.",
+    "rangeModel": "{range} Range",
+    "available": "Available",
+    "upcoming": "Upcoming",
+    "priceOnRequest": "Price on request",
+    "fromPerMonth": "From {amount}/month",
+    "monthlyLabel": "Estimated monthly payment",
+    "over": "Over {months} months at {rate}% p.a.",
+    "loanAmount": "Loan amount",
+    "totalInterest": "Total interest",
+    "totalPayable": "Total cost",
+    "vehiclePrice": "Vehicle price",
+    "pricePlaceholder": "Enter vehicle price",
+    "priceHint": "Enter the price quoted by your dealer to see your estimate.",
+    "downPayment": "Down payment",
+    "tenure": "Loan term",
+    "months": "{months} months",
+    "interestRate": "Interest rate (p.a.)",
+    "apply": "Apply for finance",
+    "applyTitle": "Apply for finance",
+    "applyDescription": "Share your details and our finance team will contact you with a tailored offer.",
+    "applyMessage": "I'm interested in financing the {model}. Price: {price}, down payment: {down}%, term: {months} months, estimated EMI: {emi}.",
+    "disclaimer": "Estimates are indicative only. Final interest rates, terms and eligibility are set by the lending partner.",
+    "partners": "Our finance partners"
+  },
+  "Testimonials": {
+    "eyebrow": "Testimonials",
+    "title": "Trusted by drivers and fleet owners",
+    "rating": "Rated {rating} out of 5",
+    "previous": "Previous testimonial",
+    "next": "Next testimonial",
+    "goTo": "Show testimonial {number}"
+  },
+  "Compare": {
+    "eyebrow": "Compare models",
+    "title": "Find the range that fits your route",
+    "intro": "Every Neptune side by side, from daily city runs to long-distance routes.",
+    "differencesOnly": "Show differences only",
+    "model": "Model",
+    "rangeModel": "{range} Range",
+    "available": "Available",
+    "upcoming": "Upcoming",
+    "priceOnRequest": "Price on request",
+    "photoSoon": "Photo coming soon",
+    "specsSoon": "Full specs coming soon",
+    "viewDetails": "View details",
+    "comingSoon": "Coming soon",
+    "noDifferences": "These models share the same specs.",
+    "noDifferencesYet": "Differences will appear once more models have full specs."
+  },
+  "News": {
+    "metaTitle": "News",
+    "metaDescription": "The latest news, launches and press coverage from Neptune Three-Wheelers.",
+    "eyebrow": "News",
+    "title": "News & updates",
+    "intro": "Launches, events and press coverage — the latest from Neptune.",
+    "readMore": "Read more",
+    "emptyTitle": "No news yet",
+    "emptyText": "We'll share launches, events and press coverage here. Check back soon.",
+    "backHome": "Back to home",
+    "back": "All news",
+    "moreNews": "More news",
+    "originallyIn": "Originally published in {source}",
+    "readOriginal": "Read the original article"
+  },
+  "Specs": {
+    "categories": {
+      "performance": "Performance",
+      "motor": "Motor / Drive Train",
+      "battery": "Battery",
+      "comfort": "Comfort",
+      "transmission": "Transmission",
+      "chassis": "Chassis",
+      "suspension": "Suspension",
+      "brakes": "Brakes",
+      "tyres": "Tyres",
+      "electricals": "Electricals",
+      "dimensions": "Dimensions",
+      "gradeability": "Gradeability",
+      "charging": "Charging"
+    },
+    "rows": {
+      "range": "Range",
+      "topSpeed": "Top speed",
+      "peakPower": "Peak power",
+      "gradeabilityStat": "Gradeability",
+      "motorType": "Motor type",
+      "ratedPower": "Rated power",
+      "maxPower": "Max power",
+      "peakTorque": "Peak torque",
+      "driveType": "Drive type",
+      "driveModes": "Drive modes",
+      "batteryCapacity": "Battery capacity",
+      "waterResistance": "Water resistance",
+      "driverSeat": "Driver seat",
+      "passengerSeat": "Passenger seat",
+      "instrumentCluster": "Instrument cluster",
+      "gloveBox": "Glove box",
+      "cabinLight": "Cabin light",
+      "mobileCharger": "Mobile charger",
+      "bottleHolder": "Bottle holder",
+      "transmissionType": "Type",
+      "chassisType": "Type",
+      "suspension": "Front / rear",
+      "brakes": "Front / rear",
+      "regenerativeBraking": "Regenerative braking",
+      "rimSize": "Rim size",
+      "tyreSize": "Tyre size",
+      "electricalBattery": "Battery",
+      "headLamp": "Head lamp",
+      "tailLamp": "Tail lamp",
+      "turnSignal": "Turn signal",
+      "warningLamps": "Warning lamps",
+      "groundClearance": "Ground clearance",
+      "kerbWeight": "Kerb weight",
+      "overallHeight": "Overall height",
+      "overallLength": "Overall length",
+      "overallWidth": "Overall width",
+      "wheelTrack": "Wheel track",
+      "wheelbase": "Wheelbase",
+      "gradeability": "Gradeability",
+      "charger": "Charger",
+      "chargingTime": "Charging time (20% → 100%)",
+      "rangePerCharge": "Range per charge"
+    }
+  }
+}
