@@ -23,6 +23,12 @@
   "WhatsApp": {
     "label": "Chat with us on WhatsApp"
   },
+  "Facebook": {
+    "label": "Visit us on Facebook"
+  },
+  "YouTube": {
+    "label": "Watch us on YouTube"
+  },
   "Inquiry": {
     "title": "Book a test drive",
     "description": "Leave your details and a dealer will contact you.",
@@ -84,18 +90,38 @@
     "photosSoon": "Model photos & colors coming soon"
   },
   "FloatingWidget": {
-    "hero": "Meet the Neptune.",
-    "modelSelector": "Pick your color.",
-    "design": "Built for every detail.",
-    "pricing": "See what it costs per month.",
-    "testimonials": "Hear it from drivers.",
-    "compare": "Check the numbers.",
-    "charging": "Charged up and ready.",
-    "gallery": "See it from every angle.",
-    "dealers": "Find a dealer near you.",
-    "awardStrip": "Award-winning design.",
-    "cta": "Ready to book a test drive?",
-    "enquire": "Let's talk."
+    "greeting": "Hey there! I'm ready to help with any questions about Neptune.",
+    "hero": "Hey there! Ask me anything about the Neptune electric three-wheeler.",
+    "modelSelector": "Which range fits your day? I can help you choose.",
+    "design": "Curious about the chassis or battery? Just ask me.",
+    "pricing": "Want help working out your monthly payment?",
+    "testimonials": "Wondering how much drivers save on fuel? Ask me.",
+    "compare": "Not sure which model suits your route? Let's compare.",
+    "charging": "How far does one charge go? I'll explain.",
+    "gallery": "Like what you see? Ask me about colours and features.",
+    "dealers": "Need the nearest dealer or a phone number? Just ask.",
+    "awardStrip": "Questions about warranty or servicing? I can help.",
+    "enquire": "Prefer to chat first? Tap me and ask away."
+  },
+  "Assistant": {
+    "open": "Chat with the Neptune assistant",
+    "title": "Neptune Assistant",
+    "online": "Online",
+    "close": "Close chat",
+    "dismiss": "Hide message",
+    "welcome": "Hi! I'm the Neptune assistant. Ask me about price, range, charging, warranty or the nearest dealer.",
+    "placeholder": "Type your question…",
+    "send": "Send",
+    "typing": "Neptune assistant is typing",
+    "offline": "Our assistant is offline right now — please chat with our team on WhatsApp or give us a call.",
+    "error": "Sorry, something went wrong. Please try again, or chat with us on WhatsApp.",
+    "busy": "You're sending messages quickly — please wait a moment and try again.",
+    "whatsapp": "WhatsApp",
+    "call": "Call",
+    "callHeadOffice": "Head office",
+    "callJaffna": "Jaffna",
+    "whatsappText": "Hi, I have a question about the Neptune electric three-wheeler.",
+    "disclaimer": "AI answers can be wrong — please confirm prices and terms with our team."
   },
   "Viewer": {
     "turntable": "{label} — 360° turntable",
@@ -147,7 +173,11 @@
     "title": "Find a dealer",
     "seeAll": "See all dealers",
     "headOffice": "Neptune Head Office",
-    "photoAlt": "Neptune three-wheeler, rear view on a coastal road"
+    "jaffnaDealer": "Neptune Jaffna Dealer",
+    "photoAlt": "Neptune electric three-wheeler in {colour}",
+    "colour": "Colour",
+    "colourBlack": "Black",
+    "colourGreen": "Green"
   },
   "Gallery": {
     "title": "Gallery",
@@ -165,19 +195,22 @@
   "Awards": {
     "title": "Recognized for engineering that works as hard as you do"
   },
-  "Cta": {
-    "title": "Ready to find your Neptune?",
-    "intro": "Compare passenger and cargo models, specs, and colors across the full lineup.",
-    "catalog": "Browse the catalog",
-    "testDrive": "Book a Test Drive"
+  "HomeNews": {
+    "eyebrow": "Latest news",
+    "title": "What's moving Sri Lanka's three-wheelers",
+    "intro": "Fuel prices, the shift to electric, and the new rules every owner should know — explained.",
+    "viewAll": "View all news",
+    "warrantyLink": "Warranty & service terms"
   },
   "Footer": {
-    "photoAlt": "Neptune three-wheeler driving at night",
     "tagline": "Rugged electric three-wheelers built for daily loads, longer routes, and lower running costs.",
     "copyright": "© {year} Neptune Three-Wheelers. All rights reserved.",
     "privacy": "Privacy policy",
     "terms": "Terms & conditions",
-    "cookieSettings": "Cookie settings"
+    "warranty": "Warranty",
+    "cookieSettings": "Cookie settings",
+    "headOfficeHeading": "Head office",
+    "branchHeading": "Jaffna dealer"
   },
   "About": {
     "metaTitle": "About Neptune",
@@ -282,6 +315,29 @@
     "termsHeading": "Your access and usage rights",
     "englishOnly": "This policy is currently provided in English."
   },
+  "Warranty": {
+    "metaTitle": "Warranty & Service Terms",
+    "metaDescription": "Neptune Electric Three Wheeler warranty: 24 months or 50,000 km on the vehicle, 5 years unlimited km on the LiFePO4 battery, plus the free service schedule.",
+    "eyebrow": "Warranty & Service Terms",
+    "heading": "Covered for the road ahead",
+    "intro": "Neptune Electric Three Wheelers are manufactured by Garudan (Pvt) Ltd. These terms are taken from the User Manual & Service Book supplied with every vehicle.",
+    "vehicleLabel": "Vehicle warranty",
+    "vehicleValue": "24 months / 50,000 km",
+    "vehicleNote": "whichever comes first",
+    "batteryLabel": "LiFePO4 battery warranty",
+    "batteryValue": "5 years",
+    "batteryNote": "unlimited kilometres",
+    "termsHeading": "Terms and conditions of warranty",
+    "scheduleHeading": "Service schedule",
+    "scheduleIntro": "Use the service coupons in your Service Book at an authorized Garudan service dealer. Missing a service can void the warranty.",
+    "serviceColumn": "Service",
+    "mileageColumn": "Mileage",
+    "careHeading": "Owner care essentials",
+    "download": "Download User Manual & Service Book",
+    "downloadNote": "PDF · 8 MB",
+    "questions": "Questions about your warranty?",
+    "contact": "Contact us"
+  },
   "NotFound": {
     "title": "We can't find that page",
     "text": "The page you're looking for doesn't exist or may have moved.",
@@ -333,7 +389,19 @@
     "applyDescription": "Share your details and our finance team will contact you with a tailored offer.",
     "applyMessage": "I'm interested in financing the {model}. Price: {price}, down payment: {down}%, term: {months} months, estimated EMI: {emi}.",
     "disclaimer": "Estimates are indicative only. Final interest rates, terms and eligibility are set by the lending partner.",
-    "partners": "Our finance partners"
+    "partners": "Our finance partners",
+    "save": "Save {amount}",
+    "wasPrice": "Was",
+    "rangePerCharge": "Range per charge",
+    "monthlySaving": "Monthly saving",
+    "warranty": "Neptune warranty",
+    "batteryWarranty": "Battery warranty",
+    "fuelSaving": "Monthly fuel saving",
+    "savingVsPayment": "Your fuel saving vs the monthly payment",
+    "coversPayment": "Your fuel saving covers the payment — with {amount} left over every month.",
+    "coversPercent": "Your fuel saving covers {percent}% of the monthly payment.",
+    "youSave": "You save {amount} with the {offer}",
+    "applySaving": "Expected monthly fuel saving: {saving}."
   },
   "Testimonials": {
     "eyebrow": "Testimonials",
@@ -373,7 +441,8 @@
     "back": "All news",
     "moreNews": "More news",
     "originallyIn": "Originally published in {source}",
-    "readOriginal": "Read the original article"
+    "readOriginal": "Read the original article",
+    "sources": "Sources"
   },
   "Specs": {
     "categories": {

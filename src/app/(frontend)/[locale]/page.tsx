@@ -2,9 +2,8 @@ import type { Metadata } from 'next'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import Preloader from '@/components/animations/LazyPreloader'
 import ScrollReveal from '@/components/animations/LazyScrollReveal'
-import FloatingVehicleWidget from '@/components/animations/LazyFloatingVehicleWidget'
 import CargoVersatility from '@/components/vehicle/CargoVersatility'
-import CtaBanner from '@/components/animations/LazyCtaBanner'
+import HomeNews from '@/components/news/HomeNews'
 import Header from '@/components/vehicle/Header'
 import Hero from '@/components/vehicle/Hero'
 import ModelSelector from '@/components/vehicle/ModelSelector'
@@ -63,11 +62,10 @@ const HomePage = async ({ params }: PageProps) => {
         <Gallery />
         <Dealers />
         <AwardStrip />
-        <CtaBanner />
+        <HomeNews />
         <InquiryForm />
       </main>
       <Footer />
-      <FloatingVehicleWidget />
     </>
   )
 }

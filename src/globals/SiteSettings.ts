@@ -17,6 +17,11 @@ export const SiteSettings: GlobalConfig = {
           fields: [
             { name: 'address', type: 'textarea', localized: true },
             { name: 'phone', type: 'text' },
+            {
+              name: 'whatsapp',
+              type: 'text',
+              admin: { description: 'Number for the floating WhatsApp button, e.g. 077 396 9427.' },
+            },
             { name: 'email', type: 'text' },
             { name: 'businessHours', type: 'text', localized: true },
             {

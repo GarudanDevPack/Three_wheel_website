@@ -6,6 +6,10 @@ import '@/styles/tailwind.css'
 import { routing } from '@/i18n/routing'
 import { getSiteSettings } from '@/lib/siteSettings'
 import WhatsAppButton from '@/components/ui/WhatsAppButton'
+import FacebookButton from '@/components/ui/FacebookButton'
+import YouTubeButton from '@/components/ui/YouTubeButton'
+import Assistant from '@/components/assistant/LazyAssistant'
+import { jaffnaDealer } from '@/lib/dealers'
 import CookieConsent from '@/components/ui/CookieConsent'
 import Analytics from '@/components/ui/Analytics'
 
@@ -52,6 +56,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   setRequestLocale(locale)
 
   const settings = await getSiteSettings(locale)
+  const facebookUrl = settings.socialLinks.find((link) => link.platform === 'Facebook')?.url
+  const youtubeUrl = settings.socialLinks.find((link) => link.platform === 'YouTube')?.url
 
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
@@ -79,7 +85,12 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <body id="scrool">
         <NextIntlClientProvider>
           {children}
-          <WhatsAppButton phone={settings.phone} />
+          {youtubeUrl && <YouTubeButton url={youtubeUrl} />}
+          {facebookUrl && <FacebookButton url={facebookUrl} />}
+          <WhatsAppButton phone={settings.whatsapp} />
+          <Assistant
+            contacts={{ whatsapp: settings.whatsapp, headOffice: settings.phone, jaffna: jaffnaDealer.phone }}
+          />
           {settings.cookieConsent.enabled && (
             <CookieConsent
               message={settings.cookieConsent.message}

@@ -7,9 +7,11 @@ type NewsCardProps = {
   dateLabel: string
   readMore: string
   featured?: boolean
+  /** Use `h3` when the cards sit under a section `h2` (e.g. on the home page). */
+  headingLevel?: 'h2' | 'h3'
 }
 
-const NewsCard = ({ item, dateLabel, readMore, featured = false }: NewsCardProps) => (
+const NewsCard = ({ item, dateLabel, readMore, featured = false, headingLevel: Heading = 'h2' }: NewsCardProps) => (
   <article
     data-news-card
     className={`tw:group tw:overflow-hidden tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:opacity-0 tw:transition tw:duration-300 tw:hover:-translate-y-1 tw:hover:shadow-[0_20px_40px_-20px_rgba(11,14,20,0.35)] ${
@@ -36,11 +38,11 @@ const NewsCard = ({ item, dateLabel, readMore, featured = false }: NewsCardProps
           <span className="tw:rounded-full tw:bg-brand-blue/10 tw:px-2.5 tw:py-0.5 tw:text-brand-blue">{item.sourceName}</span>
         )}
       </div>
-      <h2 className={`tw:mt-3 tw:font-bold tw:text-brand-ink ${featured ? 'tw:text-2xl tw:md:text-3xl' : 'tw:text-lg'}`}>
+      <Heading className={`tw:mt-3 tw:font-bold tw:text-brand-ink ${featured ? 'tw:text-2xl tw:md:text-3xl' : 'tw:text-lg'}`}>
         <Link href={`/news/${item.slug}`} className="tw:transition tw:hover:text-brand-blue">
           {item.title}
         </Link>
-      </h2>
+      </Heading>
       {item.excerpt && (
         <p className={`tw:mt-3 tw:text-brand-ink/70 ${featured ? '' : 'tw:line-clamp-3 tw:text-sm'}`}>{item.excerpt}</p>
       )}

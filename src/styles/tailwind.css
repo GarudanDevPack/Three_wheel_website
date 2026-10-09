@@ -168,7 +168,7 @@
   /* Secondary accent used only for fuel-type badges (e.g. CNG/Electric pills). */
   --color-brand-green: #22d97a;
   /* Dark near-black/navy, now scoped to a few intentional full-bleed dark
-     bands (Hero, Footer, CtaBanner, Preloader, the Gallery lightbox) rather
+     bands (Hero, Footer, Preloader, the Gallery lightbox) rather
      than the whole site; also reused as the dark TEXT color on the light
      surfaces below. */
   --color-brand-ink: #0b0e14;

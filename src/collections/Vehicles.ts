@@ -175,6 +175,26 @@ export const Vehicles: CollectionConfig = {
           localized: true,
           admin: { description: 'Optional, e.g. "Ex-showroom, Colombo".' },
         },
+        {
+          name: 'originalPrice',
+          type: 'number',
+          min: 0,
+          admin: { description: 'Optional pre-offer price (LKR). Shown struck through when higher than the price.' },
+        },
+        {
+          name: 'offerLabel',
+          type: 'text',
+          localized: true,
+          admin: { description: 'Optional offer badge, e.g. "Mega Offer".' },
+        },
+        {
+          name: 'monthlySaving',
+          type: 'number',
+          min: 0,
+          admin: {
+            description: 'Estimated monthly fuel/running-cost saving vs a petrol three-wheeler (LKR), e.g. 100000.',
+          },
+        },
       ],
     },
     {

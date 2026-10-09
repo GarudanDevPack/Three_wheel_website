@@ -20,7 +20,9 @@ const DesignShowcase = () => {
   const caps = locale === 'en' ? 'tw:uppercase tw:tracking-widest' : ''
   const [activeKey, setActiveKey] = useState<(typeof tabs)[number]['key']>(tabs[0].key)
   const sectionRef = useRef<HTMLDivElement>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+  const imageRef = useRef<HTMLDivElement>(null)
+  const mediaRef = useRef<HTMLDivElement>(null)
   const active = tabs.find((tab) => tab.key === activeKey) || tabs[0]
 
   useEffect(() => {
@@ -28,23 +30,41 @@ const DesignShowcase = () => {
     const items = section?.querySelectorAll('[data-design-intro]')
     if (!section || !items?.length) return
 
-    const animation = animate(items, {
-      opacity: [0, 1],
-      translateY: [24, 0],
-      delay: stagger(100),
-      duration: 600,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: section }),
-    })
+    const animations = [
+      animate(items, {
+        opacity: [0, 1],
+        translateY: [24, 0],
+        delay: stagger(100),
+        duration: 600,
+        ease: 'outQuad',
+        autoplay: onScroll({ target: section }),
+      }),
+    ]
+
+    // The image frame slides in from the right once, as the section scrolls into view.
+    if (mediaRef.current) {
+      animations.push(
+        animate(mediaRef.current, {
+          opacity: [0, 1],
+          translateX: ['60%', '0%'],
+          scale: [0.96, 1],
+          duration: 900,
+          ease: 'outCubic',
+          autoplay: onScroll({ target: section }),
+        }),
+      )
+    }
 
     return () => {
-      animation.revert()
+      animations.forEach((animation) => animation.revert())
     }
   }, [])
 
+  // Tab switches only cross-fade the copy and the picture inside the (already visible) frame.
   useEffect(() => {
-    if (!panelRef.current) return
-    const animation = animate(panelRef.current, {
+    const targets = [textRef.current, imageRef.current].filter((el): el is HTMLDivElement => Boolean(el))
+    if (!targets.length) return
+    const animation = animate(targets, {
       opacity: [0, 1],
       translateY: [16, 0],
       duration: 400,
@@ -68,8 +88,8 @@ const DesignShowcase = () => {
           {t('eyebrow')}
         </p>
 
-        <div ref={panelRef} key={active.key} className="tw:mt-4 tw:grid tw:items-center tw:gap-10 tw:md:grid-cols-2">
-          <div>
+        <div className="tw:mt-4 tw:grid tw:items-center tw:gap-10 tw:md:grid-cols-2">
+          <div ref={textRef} key={active.key}>
             <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">{t(`${active.key}.headline`)}</h2>
             <p className="tw:mt-3 tw:max-w-md tw:text-brand-ink/70">{t(`${active.key}.copy`)}</p>
             <Link
@@ -80,14 +100,19 @@ const DesignShowcase = () => {
             </Link>
           </div>
 
-          <div className="tw:relative tw:aspect-[4/3] tw:w-full tw:overflow-hidden tw:rounded-2xl">
-            <Image
-              src={active.image}
-              alt={t(`${active.key}.alt`)}
-              fill
-              sizes="(min-width: 768px) 50vw, 100vw"
-              className="tw:object-contain"
-            />
+          <div
+            ref={mediaRef}
+            className="tw:relative tw:aspect-[4/3] tw:w-full tw:overflow-hidden tw:rounded-2xl tw:bg-surface-raised/60 tw:opacity-0 tw:shadow-[0_30px_60px_-30px_rgba(11,14,20,0.35)]"
+          >
+            <div ref={imageRef} key={active.key} className="tw:absolute tw:inset-0">
+              <Image
+                src={active.image}
+                alt={t(`${active.key}.alt`)}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="tw:object-contain"
+              />
+            </div>
           </div>
         </div>
 

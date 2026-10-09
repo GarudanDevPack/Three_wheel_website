@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useRef, type ReactNode } from 'react'
-import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { openConsentSettings } from '@/lib/analytics'
+import { useInViewVideo } from '@/lib/useInViewVideo'
 import { animate, stagger, onScroll } from 'animejs'
 
-export type ContactRow = { type: 'address' | 'phone' | 'email'; label: string }
+export type ContactRow = { type: 'address' | 'phone' | 'email'; label: string; href?: string }
+export type ContactGroup = { heading: string; rows: ContactRow[] }
 export type SocialLink = { label: string; path: string; url?: string }
 
 const icons: Record<ContactRow['type'], { icon: ReactNode; extra?: ReactNode }> = {
@@ -44,14 +45,18 @@ const icons: Record<ContactRow['type'], { icon: ReactNode; extra?: ReactNode }> 
 
 const FooterReveal = ({
   contactRows,
+  branches = [],
   socialLinks,
 }: {
   contactRows: ContactRow[]
+  /** Extra dealer/branch contact columns shown beside the head office. */
+  branches?: ContactGroup[]
   socialLinks: SocialLink[]
 }) => {
   const t = useTranslations('Footer')
   const containerRef = useRef<HTMLDivElement>(null)
-  const photoRef = useRef<HTMLDivElement>(null)
+  const mediaRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const container = containerRef.current
@@ -69,9 +74,9 @@ const FooterReveal = ({
       }),
     ]
 
-    if (photoRef.current) {
+    if (mediaRef.current) {
       animations.push(
-        animate(photoRef.current, {
+        animate(mediaRef.current, {
           opacity: [0, 1],
           duration: 900,
           ease: 'outQuad',
@@ -85,33 +90,60 @@ const FooterReveal = ({
     }
   }, [])
 
+  // The footer is on every page, so only fetch and play the video once it is near the viewport.
+  useInViewVideo(videoRef)
+
   return (
     <footer className="tw:relative tw:overflow-hidden tw:bg-brand-ink tw:text-white">
-      <div ref={photoRef} className="tw:absolute tw:inset-0 tw:opacity-0">
-        <Image
-          src="/images/auto/night-ride.jpg"
-          alt={t('photoAlt')}
-          fill
-          className="tw:object-cover"
-        />
+      <div ref={mediaRef} className="tw:absolute tw:inset-0 tw:opacity-0">
+        <video
+          ref={videoRef}
+          muted
+          loop
+          playsInline
+          preload="none"
+          aria-hidden="true"
+          poster="/images/auto/night-ride.jpg"
+          className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:object-[65%_center]"
+        >
+          <source src="/videos/vehicles-driving.mp4" type="video/mp4" />
+        </video>
+        {/* Legibility scrims — vehicles stay on the right, text sits on the black left side */}
         <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-gradient-to-r tw:from-brand-ink tw:via-brand-ink/70 tw:to-transparent" />
         <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-gradient-to-t tw:from-brand-ink tw:via-transparent tw:to-transparent" />
+        <div className="tw:pointer-events-none tw:absolute tw:inset-x-0 tw:top-0 tw:h-24 tw:bg-gradient-to-b tw:from-brand-ink/80 tw:to-transparent" />
+        <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-brand-ink/50 tw:md:hidden" />
       </div>
 
       <div ref={containerRef} className="tw:relative tw:mx-auto tw:flex tw:min-h-[420px] tw:max-w-6xl tw:flex-col tw:justify-center tw:px-6 tw:py-20 tw:md:min-h-[520px]">
         <p className="tw:text-2xl tw:font-bold">Neptune</p>
         <p className="tw:mt-2 tw:max-w-sm tw:text-sm tw:text-white/60">{t('tagline')}</p>
-        <div className="tw:mt-8 tw:space-y-4">
-          {contactRows.map((row) => (
-            <div key={row.type} data-contact-row className="tw:flex tw:items-center tw:gap-3 tw:opacity-0">
-              <svg viewBox="0 0 24 24" className="tw:h-5 tw:w-5 tw:shrink-0" fill="none" aria-hidden="true">
-                {icons[row.type].icon}
-                {icons[row.type].extra}
-              </svg>
-              <p className="tw:text-sm tw:text-white/70">{row.label}</p>
-            </div>
-          ))}
-          <div data-contact-row className="tw:flex tw:items-center tw:gap-4 tw:pt-2 tw:opacity-0">
+        <div className="tw:mt-8 tw:space-y-6">
+          <div className="tw:grid tw:max-w-2xl tw:gap-8 tw:md:grid-cols-2">
+            {[{ heading: t('headOfficeHeading'), rows: contactRows }, ...branches].map((group) => (
+              <div key={group.heading} className="tw:space-y-4">
+                <p data-contact-row className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wider tw:text-brand-blue-light tw:opacity-0">
+                  {group.heading}
+                </p>
+                {group.rows.map((row) => (
+                  <div key={`${row.type}-${row.label}`} data-contact-row className="tw:flex tw:items-center tw:gap-3 tw:opacity-0">
+                    <svg viewBox="0 0 24 24" className="tw:h-5 tw:w-5 tw:shrink-0" fill="none" aria-hidden="true">
+                      {icons[row.type].icon}
+                      {icons[row.type].extra}
+                    </svg>
+                    {row.href ? (
+                      <a href={row.href} className="tw:text-sm tw:text-white/70 tw:transition tw:hover:text-white">
+                        {row.label}
+                      </a>
+                    ) : (
+                      <p className="tw:text-sm tw:text-white/70">{row.label}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+          <div data-contact-row className="tw:flex tw:items-center tw:gap-4 tw:opacity-0">
             {socialLinks.map((social) =>
               social.url ? (
                 <a
@@ -151,6 +183,9 @@ const FooterReveal = ({
             </Link>
             <Link href="/terms-conditions" className="tw:transition tw:hover:text-white">
               {t('terms')}
+            </Link>
+            <Link href="/warranty" className="tw:transition tw:hover:text-white">
+              {t('warranty')}
             </Link>
             <button
               type="button"
