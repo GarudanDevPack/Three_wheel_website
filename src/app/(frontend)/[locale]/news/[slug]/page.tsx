@@ -94,9 +94,47 @@ const NewsArticlePage = async ({ params }: PageProps) => {
             </div>
           )}
 
-          {item.body && (
+          {item.body ? (
             <div className="news-body tw:mt-10">
               <RichText data={item.body} />
+            </div>
+          ) : (
+            item.paragraphs && (
+              <div className="news-body tw:mt-10">
+                {item.paragraphs.map((text) => (
+                  <p key={text}>{text}</p>
+                ))}
+              </div>
+            )
+          )}
+
+          {item.related && (
+            <Link
+              href={item.related.href}
+              className="tw:mt-10 tw:inline-flex tw:items-center tw:gap-2 tw:rounded-full tw:bg-brand-blue tw:px-5 tw:py-2.5 tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light"
+            >
+              {item.related.label}
+              <span aria-hidden="true">→</span>
+            </Link>
+          )}
+
+          {item.sources && item.sources.length > 0 && (
+            <div className="tw:mt-10 tw:border-t tw:border-brand-ink/10 tw:pt-6">
+              <h2 className="tw:text-sm tw:font-semibold tw:text-brand-ink/50">{t('sources')}</h2>
+              <ul className="tw:mt-3 tw:space-y-2 tw:text-sm">
+                {item.sources.map((source) => (
+                  <li key={source.url}>
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="tw:text-brand-blue tw:underline tw:underline-offset-2"
+                    >
+                      {source.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
 

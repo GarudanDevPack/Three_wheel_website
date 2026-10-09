@@ -7,6 +7,8 @@ export type FinancePartner = { name: string; logo?: string | null }
 export type SiteSettingsData = {
   address: string
   phone: string
+  /** Number behind the floating WhatsApp button (can differ from the head-office phone). */
+  whatsapp: string
   email?: string
   businessHours: string
   socialLinks: Array<{ platform?: string | null; url?: string | null }>
@@ -29,9 +31,14 @@ export type SiteSettingsData = {
 const fallback: SiteSettingsData = {
   address: '13 Galle Rd, Dehiwala-Mount Lavinia 10370',
   phone: '077 444 5909',
+  whatsapp: '077 396 9427',
   email: undefined, // TODO: no company email supplied by client yet
   businessHours: 'Open 24 hours',
-  socialLinks: [],
+  // TODO: client to supply the Facebook page and YouTube channel URLs.
+  socialLinks: [
+    { platform: 'Facebook', url: 'https://www.facebook.com/' },
+    { platform: 'YouTube', url: 'https://www.youtube.com/' },
+  ],
   // Calculator starting points only — visitors adjust them, and the admin sets the real figures.
   financing: { interestRate: 15, downPaymentPercent: 20, maxTenureMonths: 60, partners: [] },
   gaMeasurementId: undefined,
@@ -41,6 +48,7 @@ const fallback: SiteSettingsData = {
 type SettingsDoc = {
   address?: string | null
   phone?: string | null
+  whatsapp?: string | null
   email?: string | null
   businessHours?: string | null
   socialLinks?: SiteSettingsData['socialLinks'] | null
@@ -75,9 +83,10 @@ export const getSiteSettings = cache(async (locale?: AppLocale): Promise<SiteSet
     return {
       address: settings.address || fallback.address,
       phone: settings.phone || fallback.phone,
+      whatsapp: settings.whatsapp || fallback.whatsapp,
       email: settings.email || fallback.email,
       businessHours: settings.businessHours || fallback.businessHours,
-      socialLinks: settings.socialLinks || fallback.socialLinks,
+      socialLinks: settings.socialLinks?.length ? settings.socialLinks : fallback.socialLinks,
       financing: {
         interestRate: financing?.interestRate ?? fallback.financing.interestRate,
         downPaymentPercent: financing?.downPaymentPercent ?? fallback.financing.downPaymentPercent,

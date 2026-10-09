@@ -1,7 +1,8 @@
-import { getLocale } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { getSiteSettings } from '@/lib/siteSettings'
+import { jaffnaDealer } from '@/lib/dealers'
 import type { AppLocale } from '@/i18n/routing'
-import FooterReveal, { type ContactRow, type SocialLink } from './FooterReveal'
+import FooterReveal, { type ContactGroup, type ContactRow, type SocialLink } from './FooterReveal'
 
 const socialIconPaths: Record<string, string> = {
   Facebook:
@@ -18,10 +19,24 @@ const Footer = async () => {
   const locale = (await getLocale()) as AppLocale
   const settings = await getSiteSettings(locale)
 
+  const t = await getTranslations('Footer')
+  const tel = (phone: string) => `tel:${phone.replace(/\s/g, '')}`
+
   const contactRows: ContactRow[] = [
     { type: 'address', label: settings.address },
-    { type: 'phone', label: settings.phone },
-    ...(settings.email ? [{ type: 'email' as const, label: settings.email }] : []),
+    { type: 'phone', label: settings.phone, href: tel(settings.phone) },
+    ...(settings.email ? [{ type: 'email' as const, label: settings.email, href: `mailto:${settings.email}` }] : []),
+  ]
+
+  const branches: ContactGroup[] = [
+    {
+      heading: t('branchHeading'),
+      rows: [
+        { type: 'address', label: jaffnaDealer.address },
+        { type: 'phone', label: jaffnaDealer.phone, href: tel(jaffnaDealer.phone) },
+        { type: 'phone', label: jaffnaDealer.phone2, href: tel(jaffnaDealer.phone2) },
+      ],
+    },
   ]
 
   const linkedByPlatform = new Map(
@@ -36,7 +51,7 @@ const Footer = async () => {
     url: linkedByPlatform.get(platform),
   }))
 
-  return <FooterReveal contactRows={contactRows} socialLinks={socialLinks} />
+  return <FooterReveal contactRows={contactRows} branches={branches} socialLinks={socialLinks} />
 }
 
 export default Footer

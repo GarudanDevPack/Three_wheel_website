@@ -7,7 +7,7 @@ import { animate, onScroll } from 'animejs'
 import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { formatLkr } from '@/lib/format'
-import SectionBackdrop from '@/components/ui/SectionBackdrop'
+import SectionVideoBackdrop from '@/components/ui/SectionVideoBackdrop'
 
 export type ComparisonColumn = {
   id: string
@@ -65,7 +65,13 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
 
   return (
     <section id="compare" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-      <SectionBackdrop src="/images/auto/gallery-4.png" variant="soft" base="surface" />
+      <SectionVideoBackdrop
+        src="/videos/design-backdrop.mp4"
+        poster="/images/auto/gallery-4.png"
+        variant="soft"
+        base="surface"
+        lazy
+      />
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6 tw:opacity-0">
         <div className="tw:flex tw:flex-col tw:gap-6 tw:md:flex-row tw:md:items-end tw:md:justify-between">
           <div className="tw:max-w-2xl">

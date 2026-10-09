@@ -1,14 +1,24 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { animate, stagger, onScroll } from 'animejs'
 
-type Dealer = { name: string; city?: string; address?: string; phone?: string }
+type Dealer = { name: string; city?: string; address?: string; phone?: string; phone2?: string }
+
+// Background-free renders for the Elektrateq-style colour switcher. Add a colour = add an entry.
+const colours = [
+  { key: 'black', hex: '#1c1c1e', src: '/images/auto/neptune-black-cutout.webp' },
+  { key: 'green', hex: '#1fa05a', src: '/images/auto/green-1.png' },
+] as const
+
+type ColourKey = (typeof colours)[number]['key']
+const colourLabelKey = { black: 'colourBlack', green: 'colourGreen' } as const
 
 const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
   const t = useTranslations('Dealers')
+  const [colour, setColour] = useState<ColourKey>(colours[0].key)
   const sectionRef = useRef<HTMLDivElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const photoRef = useRef<HTMLDivElement>(null)
@@ -32,11 +42,13 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
 
     if (photoRef.current) {
       animations.push(
+        // Slides in from beyond the right edge as the section scrolls into view.
         animate(photoRef.current, {
           opacity: [0, 1],
-          translateX: [140, 0],
-          duration: 700,
-          ease: 'outQuad',
+          translateX: ['60%', '0%'],
+          scale: [0.96, 1],
+          duration: 900,
+          ease: 'outCubic',
           autoplay: onScroll({ target: section }),
         }),
       )
@@ -48,7 +60,7 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
   }, [])
 
   return (
-    <div ref={sectionRef} className="tw:mt-10 tw:grid tw:items-center tw:gap-10 tw:md:grid-cols-2">
+    <div ref={sectionRef} className="tw:mt-10 tw:grid tw:items-center tw:gap-10 tw:md:grid-cols-[5fr_7fr]">
       <div ref={containerRef} className="tw:grid tw:gap-6">
         {dealers.map((dealer) => (
           <div
@@ -76,34 +88,84 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
               </p>
             )}
             {dealer.address && <p className="tw:mt-3 tw:text-sm tw:text-brand-ink/60">{dealer.address}</p>}
-            {dealer.phone && (
-              <a
-                href={`tel:${dealer.phone}`}
-                className="tw:mt-4 tw:inline-flex tw:items-center tw:gap-2 tw:text-sm tw:font-semibold tw:text-brand-blue-light"
-              >
-                <svg viewBox="0 0 24 24" className="tw:h-4 tw:w-4" fill="none" aria-hidden="true">
-                  <path
-                    d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.2c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"
-                    stroke="#3b82f6"
-                    strokeWidth="1.6"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                {dealer.phone}
-              </a>
+            {(dealer.phone || dealer.phone2) && (
+              <div className="tw:mt-4 tw:flex tw:flex-wrap tw:gap-x-6 tw:gap-y-2">
+                {[dealer.phone, dealer.phone2]
+                  .filter((phone): phone is string => Boolean(phone))
+                  .map((phone) => (
+                    <a
+                      key={phone}
+                      href={`tel:${phone.replace(/\s/g, '')}`}
+                      className="tw:inline-flex tw:items-center tw:gap-2 tw:text-sm tw:font-semibold tw:text-brand-blue-light"
+                    >
+                      <svg viewBox="0 0 24 24" className="tw:h-4 tw:w-4" fill="none" aria-hidden="true">
+                        <path
+                          d="M6.6 10.8c1.4 2.8 3.8 5.2 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.2c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"
+                          stroke="#3b82f6"
+                          strokeWidth="1.6"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      {phone}
+                    </a>
+                  ))}
+              </div>
             )}
           </div>
         ))}
       </div>
 
-      <div ref={photoRef} className="tw:relative tw:aspect-square tw:w-full tw:opacity-0">
-        <Image
-          src="/images/auto/gallery-2.png"
-          alt={t('photoAlt')}
-          fill
-          sizes="(min-width: 768px) 50vw, 100vw"
-          className="tw:rounded-2xl tw:object-cover"
-        />
+      {/* Floating studio stage: background-free vehicle, ground shadow and colour dots (Elektrateq-style). */}
+      <div ref={photoRef} className="tw:relative tw:opacity-0 tw:md:pr-16">
+        <div className="tw:relative tw:aspect-[16/12] tw:w-full tw:md:scale-110">
+          <div
+            aria-hidden="true"
+            className="tw:absolute tw:bottom-[4%] tw:left-1/2 tw:h-8 tw:w-3/4 tw:-translate-x-1/2 tw:rounded-[100%] tw:bg-brand-ink/25 tw:blur-2xl"
+          />
+          {colours.map((option) => {
+            const isActive = option.key === colour
+            return (
+              <Image
+                key={option.key}
+                src={option.src}
+                alt={isActive ? t('photoAlt', { colour: t(colourLabelKey[option.key]) }) : ''}
+                aria-hidden={!isActive}
+                fill
+                sizes="(min-width: 768px) 55vw, 100vw"
+                className={`tw:object-contain tw:transition tw:duration-500 tw:ease-out tw:motion-reduce:transition-none ${
+                  isActive ? 'tw:translate-x-0 tw:opacity-100' : 'tw:translate-x-6 tw:opacity-0'
+                }`}
+              />
+            )
+          })}
+        </div>
+
+        <div
+          role="group"
+          aria-label={t('colour')}
+          className="tw:mt-6 tw:flex tw:items-center tw:justify-center tw:gap-4 tw:md:absolute tw:md:right-0 tw:md:top-1/2 tw:md:mt-0 tw:md:-translate-y-1/2 tw:md:flex-col"
+        >
+          {colours.map((option) => {
+            const isActive = option.key === colour
+            return (
+              <button
+                key={option.key}
+                type="button"
+                onClick={() => setColour(option.key)}
+                aria-pressed={isActive}
+                aria-label={t(colourLabelKey[option.key])}
+                title={t(colourLabelKey[option.key])}
+                className={`tw:h-7 tw:w-7 tw:cursor-pointer tw:rounded-full tw:border-2 tw:border-white tw:p-0 tw:shadow-md tw:transition ${
+                  isActive ? 'tw:scale-110 tw:ring-2 tw:ring-brand-blue tw:ring-offset-2' : 'tw:hover:scale-110'
+                }`}
+                style={{ backgroundColor: option.hex }}
+              />
+            )
+          })}
+          <span className="tw:text-xs tw:font-semibold tw:text-brand-ink/60 tw:md:mt-1">
+            {t(colourLabelKey[colour])}
+          </span>
+        </div>
       </div>
     </div>
   )

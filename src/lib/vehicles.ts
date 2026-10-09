@@ -16,12 +16,17 @@ export type ModelVehicle = {
   price: number | null
   showPrice: boolean
   priceNote: string | null
+  /** Pre-offer price, shown struck through when higher than `price`. */
+  originalPrice: number | null
+  offerLabel: string | null
+  /** Estimated monthly fuel/running-cost saving vs a petrol three-wheeler (LKR). */
+  monthlySaving: number | null
   heroStats: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'gradeability', HeroStat>>
   specs: Specs | null
   charging: Charging
 }
 
-// Only figures already published on the site/spec sheet. No prices: those come from the admin.
+// Only figures already published by the client (spec sheet + Mega Offer poster); the admin overrides them.
 const fallbackModels: ModelVehicle[] = [
   {
     id: 'placeholder-300',
@@ -30,9 +35,12 @@ const fallbackModels: ModelVehicle[] = [
     modelRange: '300km',
     availability: 'Available',
     heroImage: { url: '/images/auto/neptune-blue-1.png', alt: 'Neptune three-wheeler, 300km model' },
-    price: null,
-    showPrice: false,
+    price: 2_375_000,
+    showPrice: true,
     priceNote: null,
+    originalPrice: 2_675_000,
+    offerLabel: 'Mega Offer',
+    monthlySaving: 100_000,
     heroStats: {
       range: { value: 300, unit: 'km' },
       topSpeed: { value: 60, unit: 'km/h' },
@@ -59,6 +67,9 @@ const fallbackModels: ModelVehicle[] = [
     price: null,
     showPrice: false,
     priceNote: null,
+    originalPrice: null,
+    offerLabel: null,
+    monthlySaving: null,
     heroStats: {},
     specs: null,
     charging: null,
@@ -74,7 +85,14 @@ type VehicleDoc = {
   modelRange?: string | null
   availability?: string | null
   heroImage?: { url?: string | null; alt?: string | null } | null
-  pricing?: { price?: number | null; showPrice?: boolean | null; priceNote?: string | null } | null
+  pricing?: {
+    price?: number | null
+    showPrice?: boolean | null
+    priceNote?: string | null
+    originalPrice?: number | null
+    offerLabel?: string | null
+    monthlySaving?: number | null
+  } | null
   heroStats?: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'gradeability', StatDoc>> | null
   variants?: Array<{ specs?: Specs | null; charging?: Charging }> | null
 }
@@ -107,6 +125,9 @@ export const getModelVehicles = cache(async (locale: AppLocale): Promise<ModelVe
         price: typeof doc.pricing?.price === 'number' ? doc.pricing.price : null,
         showPrice: doc.pricing?.showPrice ?? true,
         priceNote: doc.pricing?.priceNote || null,
+        originalPrice: typeof doc.pricing?.originalPrice === 'number' ? doc.pricing.originalPrice : null,
+        offerLabel: doc.pricing?.offerLabel || null,
+        monthlySaving: typeof doc.pricing?.monthlySaving === 'number' ? doc.pricing.monthlySaving : null,
         heroStats: {
           range: toStat(stats.range),
           topSpeed: toStat(stats.topSpeed),

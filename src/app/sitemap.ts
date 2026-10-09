@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { getPayloadClient } from '@/lib/payload'
 import { routing } from '@/i18n/routing'
 import { localizedPath } from '@/lib/pageSeo'
+import { fallbackNews } from '@/lib/news'
 
 export const revalidate = 300
 
@@ -16,6 +17,7 @@ const staticRoutes = [
   '/news',
   '/privacy-policy',
   '/terms-conditions',
+  '/warranty',
 ]
 
 const entriesFor = (path: string, lastModified: Date): MetadataRoute.Sitemap =>
@@ -49,7 +51,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       entries.push(...entriesFor(`/news/${doc.slug}`, doc.updatedAt ? new Date(doc.updatedAt) : new Date()))
     })
   } catch {
-    // Payload/database not configured yet — sitemap still returns the static routes.
+    // Payload/database not configured yet — list the built-in fallback articles instead.
+    fallbackNews.forEach((item) => {
+      entries.push(...entriesFor(`/news/${item.slug}`, new Date(item.publishedDate)))
+    })
   }
 
   return entries

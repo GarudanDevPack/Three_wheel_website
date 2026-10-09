@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl'
 import { animate, stagger, onScroll } from 'animejs'
 import { submitInquiry, type InquiryFormState, type InquiryType } from '@/app/(frontend)/actions/inquiries'
 import { trackEvent } from '@/lib/analytics'
-import SectionBackdrop from './SectionBackdrop'
+import SectionVideoBackdrop from './SectionVideoBackdrop'
 
 const initialState: InquiryFormState = { status: 'idle' }
 
@@ -246,7 +246,13 @@ const InquiryForm = ({
 
   return (
     <section id="enquire" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20 tw:text-brand-ink">
-      <SectionBackdrop src="/images/auto/neptune-blue-2.png" variant="soft" base="surface" />
+      <SectionVideoBackdrop
+        src="/videos/test-drive-road.mp4"
+        poster="/images/auto/neptune-blue-2.png"
+        variant="clear"
+        base="surface"
+        lazy
+      />
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
         <div>
           <h2 data-intro-item className="tw:text-3xl tw:font-bold tw:opacity-0">
