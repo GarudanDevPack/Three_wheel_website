@@ -15,6 +15,14 @@ import Analytics from '@/components/ui/Analytics'
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
+// Latin fonts everywhere; the Sinhala / Tamil script fonts only on the page language that needs them.
+const scriptFont: Record<string, string> = {
+  si: '&family=Noto+Sans+Sinhala:wght@400..700',
+  ta: '&family=Noto+Sans+Tamil:wght@400..700',
+}
+const fontStylesheet = (locale: string) =>
+  `https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Red+Hat+Display:wght@300..900${scriptFont[locale] ?? ''}&display=swap`
+
 type LayoutProps = {
   children: React.ReactNode
   params: Promise<{ locale: string }>
@@ -39,13 +47,13 @@ export async function generateMetadata({ params }: Pick<LayoutProps, 'params'>):
       description,
       siteName: 'Neptune',
       locale,
-      images: ['/images/auto/neptune-blue-1.png'],
+      images: ['/images/auto/neptune-blue-1.webp'],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: ['/images/auto/neptune-blue-1.png'],
+      images: ['/images/auto/neptune-blue-1.webp'],
     },
   }
 }
@@ -73,10 +81,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&family=Red+Hat+Display:ital,wght@0,300..900;1,300..900&family=Noto+Sans+Sinhala:wght@400..700&family=Noto+Sans+Tamil:wght@400..700&display=swap"
-          rel="stylesheet"
-        />
+        <link href={fontStylesheet(locale)} rel="stylesheet" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}

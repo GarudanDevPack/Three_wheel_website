@@ -11,7 +11,7 @@ const defaultColors: ColorPreview[] = [
     angleImages: [
       {
         angleLabel: 'Front',
-        image: { url: '/images/auto/neptune-blue-2.png', alt: 'Neptune three-wheeler in Neptune Blue' },
+        image: { url: '/images/auto/neptune-blue-2.webp', alt: 'Neptune three-wheeler in Neptune Blue' },
       },
     ],
   },
@@ -20,7 +20,7 @@ const defaultColors: ColorPreview[] = [
     angleImages: [
       {
         angleLabel: 'Front',
-        image: { url: '/images/auto/green-1.png', alt: 'Neptune three-wheeler in Forest Green' },
+        image: { url: '/images/auto/green-1.webp', alt: 'Neptune three-wheeler in Forest Green' },
       },
     ],
   },

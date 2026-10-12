@@ -9,11 +9,14 @@ type SectionVideoBackdropProps = {
   variant?: 'soft' | 'strong' | 'clear'
   base?: 'surface' | 'surface-raised'
   poster?: string
-  /** Defer download/playback until the section is near the viewport (for below-the-fold sections). */
+  /**
+   * Defer download/playback until the section is near the viewport (default). Every backdrop sits
+   * below the fold, so eager autoplay would download every clip on page load.
+   */
   lazy?: boolean
 }
 
-const SectionVideoBackdrop = ({ src, variant = 'soft', base = 'surface', poster, lazy = false }: SectionVideoBackdropProps) => {
+const SectionVideoBackdrop = ({ src, variant = 'soft', base = 'surface', poster, lazy = true }: SectionVideoBackdropProps) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   useInViewVideo(videoRef, lazy)
 

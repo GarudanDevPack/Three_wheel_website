@@ -28,7 +28,7 @@ const Dealers = async () => {
     <section id="dealers" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20">
       <SectionVideoBackdrop
         src="/videos/vehicles-driving.mp4"
-        poster="/images/auto/night-ride.jpg"
+        poster="/images/posters/night-ride.webp"
         variant="soft"
         base="surface-raised"
         lazy

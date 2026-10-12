@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { animate, onScroll } from 'animejs'
 import SectionVideoBackdrop from '@/components/ui/SectionVideoBackdrop'
+import { useInViewVideo } from '@/lib/useInViewVideo'
 
 type Mode = 'passenger' | 'cargo'
 
@@ -12,6 +13,9 @@ const CargoVersatility = () => {
   const [mode, setMode] = useState<Mode>('passenger')
   const visualRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  // Fetch/play only near the viewport; re-attach when the mode swaps the <video>.
+  useInViewVideo(videoRef, true, mode)
 
   useEffect(() => {
     if (!visualRef.current) return
@@ -80,10 +84,11 @@ const CargoVersatility = () => {
             <div className="tw:relative tw:aspect-square tw:w-full tw:overflow-hidden tw:rounded-xl">
               {mode === 'passenger' ? (
                 <video
-                  autoPlay
+                  ref={videoRef}
                   muted
                   loop
                   playsInline
+                  preload="none"
                   aria-label={t('passengerAlt')}
                   className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover"
                 >
@@ -91,10 +96,11 @@ const CargoVersatility = () => {
                 </video>
               ) : (
                 <video
-                  autoPlay
+                  ref={videoRef}
                   muted
                   loop
                   playsInline
+                  preload="none"
                   aria-label={t('cargoAlt')}
                   className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover"
                 >

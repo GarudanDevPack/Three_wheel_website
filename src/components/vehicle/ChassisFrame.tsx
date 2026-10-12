@@ -12,7 +12,7 @@ export type ChassisFeatureDoc = {
 } | null
 
 // TODO: replace with real chassis/frame photos once the client sends them.
-const placeholderImages = ['/images/auto/gallery-1.png', '/images/auto/gallery-2.png', '/images/auto/gallery-3.png']
+const placeholderImages = ['/images/auto/gallery-1.webp', '/images/auto/gallery-2.webp', '/images/auto/gallery-3.webp']
 
 const ChassisFrame = async ({
   chassisFeature,

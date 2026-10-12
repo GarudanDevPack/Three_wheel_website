@@ -34,7 +34,7 @@ const fallbackModels: ModelVehicle[] = [
     name: '',
     modelRange: '300km',
     availability: 'Available',
-    heroImage: { url: '/images/auto/neptune-blue-1.png', alt: 'Neptune three-wheeler, 300km model' },
+    heroImage: { url: '/images/auto/neptune-blue-1.webp', alt: 'Neptune three-wheeler, 300km model' },
     price: 2_375_000,
     showPrice: true,
     priceNote: null,

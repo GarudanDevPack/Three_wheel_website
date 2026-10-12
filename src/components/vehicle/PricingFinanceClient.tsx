@@ -170,7 +170,7 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
     <section id="pricing" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
       <SectionVideoBackdrop
         src="/videos/cargo-technical.mp4"
-        poster="/images/auto/gallery-1.png"
+        poster="/images/posters/gallery-1.webp"
         variant="soft"
         base="surface"
         lazy

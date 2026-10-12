@@ -248,7 +248,7 @@ const InquiryForm = ({
     <section id="enquire" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20 tw:text-brand-ink">
       <SectionVideoBackdrop
         src="/videos/test-drive-road.mp4"
-        poster="/images/auto/neptune-blue-2.png"
+        poster="/images/posters/neptune-blue-2.webp"
         variant="clear"
         base="surface"
         lazy

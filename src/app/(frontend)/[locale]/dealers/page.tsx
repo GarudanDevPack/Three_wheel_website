@@ -42,7 +42,7 @@ const DealersPage = async ({ params }: PageProps) => {
       <Preloader />
       <Header />
       <main className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-        <SectionBackdrop src="/images/auto/gallery-4.png" variant="soft" base="surface" />
+        <SectionBackdrop src="/images/auto/gallery-4.webp" variant="soft" base="surface" />
         <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
           <h1 className="tw:text-4xl tw:font-bold tw:text-brand-ink tw:md:text-5xl">{t('title')}</h1>
           <p className="tw:mt-2 tw:text-brand-ink/60">{t('intro')}</p>

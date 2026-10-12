@@ -9,8 +9,8 @@ import SectionVideoBackdrop from '@/components/ui/SectionVideoBackdrop'
 
 // Copy for each tab lives under `Design.<key>.{label,headline,copy,alt}`.
 const tabs = [
-  { key: 'powertrain', image: '/images/design/powertrain-chassis.png' },
-  { key: 'interior', image: '/images/design/interior-layout.png' },
+  { key: 'powertrain', image: '/images/design/powertrain-chassis.webp' },
+  { key: 'interior', image: '/images/design/interior-layout.webp' },
   { key: 'exterior', image: '/images/design/exterior-structure.jpg' },
 ] as const
 

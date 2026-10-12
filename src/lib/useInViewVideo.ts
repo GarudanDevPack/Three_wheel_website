@@ -6,8 +6,9 @@ import { useEffect, type RefObject } from 'react'
  * Plays a muted background video only while it is near the viewport and pauses it otherwise.
  * Pair with `preload="none"` (and no `autoPlay`) so nothing downloads until the section is close.
  * Skipped entirely for `prefers-reduced-motion`, leaving the poster in place.
+ * Pass `resetKey` (e.g. the video src) when the <video> element is swapped, so the new one is observed.
  */
-export function useInViewVideo(ref: RefObject<HTMLVideoElement | null>, enabled = true) {
+export function useInViewVideo(ref: RefObject<HTMLVideoElement | null>, enabled = true, resetKey?: unknown) {
   useEffect(() => {
     const video = ref.current
     if (!enabled || !video) return
@@ -23,5 +24,5 @@ export function useInViewVideo(ref: RefObject<HTMLVideoElement | null>, enabled 
     observer.observe(video)
 
     return () => observer.disconnect()
-  }, [ref, enabled])
+  }, [ref, enabled, resetKey])
 }

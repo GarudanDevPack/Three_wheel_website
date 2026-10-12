@@ -103,7 +103,7 @@ const FooterReveal = ({
           playsInline
           preload="none"
           aria-hidden="true"
-          poster="/images/auto/night-ride.jpg"
+          poster="/images/posters/night-ride.webp"
           className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:object-[65%_center]"
         >
           <source src="/videos/vehicles-driving.mp4" type="video/mp4" />

@@ -57,7 +57,7 @@ const defaultModels: ModelOption[] = [
     modelRange: '300km',
     availability: 'Available',
     shortDescription: null,
-    heroImage: { url: '/images/auto/neptune-blue-1.png', alt: 'Neptune three-wheeler, 300km model' },
+    heroImage: { url: '/images/auto/neptune-blue-1.webp', alt: 'Neptune three-wheeler, 300km model' },
     stats: [
       { label: 'range', value: 300, unit: 'km' },
       { label: 'topSpeed', value: 60, unit: 'km/h' },
@@ -70,7 +70,7 @@ const defaultModels: ModelOption[] = [
         swatchHex: '#6B9BC3',
         video: '/videos/color-blue.mp4',
         angleImages: [
-          { angleLabel: 'Front', image: { url: '/images/auto/neptune-blue-2.png', alt: 'Neptune Blue' } },
+          { angleLabel: 'Front', image: { url: '/images/auto/neptune-blue-2.webp', alt: 'Neptune Blue' } },
         ],
       },
       {
@@ -78,7 +78,7 @@ const defaultModels: ModelOption[] = [
         swatchHex: '#2E5E3A',
         video: '/videos/color-green.mp4',
         angleImages: [
-          { angleLabel: 'Front', image: { url: '/images/auto/green-1.png', alt: 'Forest Green' } },
+          { angleLabel: 'Front', image: { url: '/images/auto/green-1.webp', alt: 'Forest Green' } },
         ],
       },
       {
