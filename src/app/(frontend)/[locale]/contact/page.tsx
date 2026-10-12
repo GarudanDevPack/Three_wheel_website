@@ -31,7 +31,7 @@ const ContactPage = async ({ params }: PageProps) => {
       <Header />
       <main>
         <section className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-          <SectionBackdrop src="/images/auto/night-ride.jpg" variant="soft" base="surface" />
+          <SectionBackdrop src="/images/auto/night-ride.webp" variant="soft" base="surface" />
           <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center">
             <h1 className="tw:text-4xl tw:font-bold tw:text-brand-ink tw:md:text-5xl">{t('title')}</h1>
             <p className="tw:mt-4 tw:text-brand-ink/60">{t('intro')}</p>

@@ -46,7 +46,7 @@ const AboutPage = async ({ params }: PageProps) => {
       <Header />
       <main>
         <section className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20 tw:text-brand-ink">
-          <SectionBackdrop src="/images/auto/gallery-1.png" variant="soft" base="surface" />
+          <SectionBackdrop src="/images/auto/gallery-1.webp" variant="soft" base="surface" />
           <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center">
             <p className={`tw:text-sm tw:font-semibold tw:text-brand-blue ${caps}`}>{t('eyebrow')}</p>
             <h1 className="tw:mt-4 tw:text-4xl tw:font-bold tw:md:text-5xl">{t('title')}</h1>

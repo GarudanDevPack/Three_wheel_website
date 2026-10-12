@@ -34,7 +34,7 @@ export const fallbackNews: NewsItem[] = [
     excerpt:
       'Another fuel price hike has squeezed three-wheeler drivers, while fares stay unchanged. Here is how to work out what an electric three-wheeler costs per kilometre — using your own electricity tariff.',
     publishedDate: '2026-10-06T00:00:00.000Z',
-    cover: { url: '/images/auto/neptune-blue-2.png', alt: 'Neptune electric three-wheeler in blue' },
+    cover: { url: '/images/auto/neptune-blue-2.webp', alt: 'Neptune electric three-wheeler in blue' },
     sourceName: null,
     sourceUrl: null,
     seoTitle: 'Electric Three Wheeler Running Cost in Sri Lanka (2026 Guide)',
@@ -63,7 +63,7 @@ export const fallbackNews: NewsItem[] = [
     excerpt:
       'A Ministry of Transport and UNDP pilot shows electric three-wheelers can cut fuel and maintenance costs. What the shift means for the drivers behind Sri Lanka’s 1.2 million tuk-tuks.',
     publishedDate: '2026-10-03T00:00:00.000Z',
-    cover: { url: '/images/auto/green-1.png', alt: 'Green Neptune electric three-wheeler' },
+    cover: { url: '/images/auto/green-1.webp', alt: 'Green Neptune electric three-wheeler' },
     sourceName: null,
     sourceUrl: null,
     seoTitle: 'Electric Tuk Tuk Sri Lanka: The E-Three-Wheeler Transition Explained',
@@ -96,7 +96,7 @@ export const fallbackNews: NewsItem[] = [
     excerpt:
       'The NTC (Amendment) Act requires every three-wheeler driver to be registered, and new tyre standards apply to imports from 1 January 2027. What owners need to know — and how to stay road-ready.',
     publishedDate: '2026-09-29T00:00:00.000Z',
-    cover: { url: '/images/auto/gallery-3.png', alt: 'Neptune three-wheeler on the road' },
+    cover: { url: '/images/auto/gallery-3.webp', alt: 'Neptune three-wheeler on the road' },
     sourceName: null,
     sourceUrl: null,
     seoTitle: 'Three Wheeler Regulations Sri Lanka 2026: Driver Registration & Tyre Standards',

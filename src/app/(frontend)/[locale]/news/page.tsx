@@ -35,7 +35,7 @@ const NewsPage = async ({ params }: PageProps) => {
       <Header />
       <main>
         <section className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-          <SectionBackdrop src="/images/auto/night-ride.jpg" variant="soft" base="surface" />
+          <SectionBackdrop src="/images/auto/night-ride.webp" variant="soft" base="surface" />
           <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
             <p className="tw:text-sm tw:font-semibold tw:text-brand-blue">{t('eyebrow')}</p>
             <h1 className="tw:mt-2 tw:text-4xl tw:font-bold tw:text-brand-ink tw:md:text-5xl">{t('title')}</h1>

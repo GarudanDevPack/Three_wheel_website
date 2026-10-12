@@ -78,7 +78,7 @@ const TestimonialsCarousel = ({ items }: { items: TestimonialItem[] }) => {
 
   return (
     <section id="testimonials" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20">
-      <SectionBackdrop src="/images/auto/night-ride.jpg" variant="soft" base="surface-raised" />
+      <SectionBackdrop src="/images/auto/night-ride.webp" variant="soft" base="surface-raised" />
       <div
         ref={sectionRef}
         className="tw:relative tw:z-10 tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center tw:opacity-0"

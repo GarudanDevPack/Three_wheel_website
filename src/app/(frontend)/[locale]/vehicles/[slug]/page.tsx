@@ -189,7 +189,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
       <DetailAnchorNav links={anchorLinks.map((link) => ({ ...link, label: t(`nav.${link.label}`) }))} />
       <main>
         <section id="overview" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-16 tw:text-brand-ink">
-          <SectionBackdrop src="/images/auto/neptune-blue-1.png" variant="soft" base="surface" />
+          <SectionBackdrop src="/images/auto/neptune-blue-1.webp" variant="soft" base="surface" />
           <div className="tw:relative tw:z-10 tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
             <div>
               <h1 className="tw:text-4xl tw:font-bold">{vehicle.name}</h1>
@@ -228,7 +228,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
         {colors.length > 0 && (
           <ScrollReveal>
             <section id="colors" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20">
-              <SectionBackdrop src="/images/auto/night-ride.jpg" variant="soft" base="surface-raised" />
+              <SectionBackdrop src="/images/auto/night-ride.webp" variant="soft" base="surface-raised" />
               <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
                 <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">{t('colors')}</h2>
                 <div className="tw:mt-10">
@@ -281,7 +281,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
         {variants.length > 0 && (
           <ScrollReveal>
             <section id="specifications" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20">
-              <SectionBackdrop src="/images/auto/gallery-2.png" variant="soft" base="surface-raised" />
+              <SectionBackdrop src="/images/auto/gallery-2.webp" variant="soft" base="surface-raised" />
               <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-4xl tw:px-6">
                 <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">{t('specifications')}</h2>
                 <div className="tw:mt-8">

@@ -40,7 +40,7 @@ const AccessoryGrid = ({ accessories }: { accessories: Accessory[] }) => {
 
   return (
     <section className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20">
-      <SectionBackdrop src="/images/auto/gallery-4.png" variant="soft" base="surface-raised" />
+      <SectionBackdrop src="/images/auto/gallery-4.webp" variant="soft" base="surface-raised" />
       <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
         <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">{t('accessories')}</h2>
         <div ref={containerRef} className="tw:mt-10 tw:grid tw:gap-6 tw:sm:grid-cols-2 tw:lg:grid-cols-3">

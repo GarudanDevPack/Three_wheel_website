@@ -75,7 +75,8 @@ const Hero = async () => {
           muted
           loop
           playsInline
-          poster="/images/auto/neptune-blue-1.png"
+          preload="metadata"
+          poster="/images/posters/neptune-blue-1.webp"
           className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:object-center"
         >
           <source src="/videos/three-wheeler-reveal.mp4" type="video/mp4" />

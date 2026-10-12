@@ -10,7 +10,7 @@ type Dealer = { name: string; city?: string; address?: string; phone?: string; p
 // Background-free renders for the Elektrateq-style colour switcher. Add a colour = add an entry.
 const colours = [
   { key: 'black', hex: '#1c1c1e', src: '/images/auto/neptune-black-cutout.webp' },
-  { key: 'green', hex: '#1fa05a', src: '/images/auto/green-1.png' },
+  { key: 'green', hex: '#1fa05a', src: '/images/auto/green-1.webp' },
 ] as const
 
 type ColourKey = (typeof colours)[number]['key']

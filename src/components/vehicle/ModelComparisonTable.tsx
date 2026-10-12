@@ -67,7 +67,7 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
     <section id="compare" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
       <SectionVideoBackdrop
         src="/videos/design-backdrop.mp4"
-        poster="/images/auto/gallery-4.png"
+        poster="/images/posters/gallery-4.webp"
         variant="soft"
         base="surface"
         lazy
