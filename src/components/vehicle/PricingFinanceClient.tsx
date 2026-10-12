@@ -1,47 +1,46 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { animate, stagger, onScroll } from 'animejs'
 import type { AppLocale } from '@/i18n/routing'
+import { Link } from '@/i18n/navigation'
 import type { SiteSettingsData } from '@/lib/siteSettings'
 import { formatLkr, monthlyEmi } from '@/lib/format'
-import SectionVideoBackdrop from '@/components/ui/SectionVideoBackdrop'
 import Modal from '@/components/ui/Modal'
 import InquiryForm from '@/components/ui/InquiryForm'
+
+type FactIcon = 'range' | 'saving' | 'warranty' | 'battery' | 'payload' | 'gear'
+export type PricingFact = { icon: FactIcon; label: string; value: string }
 
 export type PricedModel = {
   id: string
   name: string
   modelRange: string
   availability: 'Available' | 'Upcoming'
+  isNew: boolean
   price: number | null
   priceNote: string | null
   /** Pre-offer price; only set when higher than `price`. */
   originalPrice: number | null
   offerLabel: string | null
+  downPayment: number | null
   monthlySaving: number | null
   image: { url: string; alt?: string | null } | null
-  rangeKm: number | null
+  facts: PricingFact[]
+  detailHref: string | null
 }
 
 type Financing = SiteSettingsData['financing']
+type ZeroPlan = { maxLoan: number; monthly: number; months: number; families: number }
+type Plan = 'bank' | 'zero'
 
 const sliderClasses = 'tw:mt-3 tw:w-full tw:cursor-pointer tw:accent-brand-blue'
 const maxSaving = 150_000
+const roundTo = (value: number, step: number) => Math.round(value / step) * step
 
-const SliderField = ({
-  id,
-  label,
-  display,
-  children,
-}: {
-  id: string
-  label: string
-  display: string
-  children: ReactNode
-}) => (
+const SliderField = ({ id, label, display, children }: { id: string; label: string; display: string; children: ReactNode }) => (
   <div>
     <div className="tw:flex tw:items-baseline tw:justify-between tw:gap-4">
       <label htmlFor={id} className="tw:text-sm tw:font-medium tw:text-brand-ink/70">
@@ -53,16 +52,14 @@ const SliderField = ({
   </div>
 )
 
-const chipIcons: Record<'range' | 'saving' | 'warranty' | 'battery', ReactNode> = {
+const factIcons: Record<FactIcon, ReactNode> = {
   range: (
     <>
       <path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
       <circle cx="12" cy="9.5" r="2.5" stroke="currentColor" strokeWidth="1.7" />
     </>
   ),
-  saving: (
-    <path d="M4 17l5-5 4 4 7-7M15 9h5v5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-  ),
+  saving: <path d="M4 17l5-5 4 4 7-7M15 9h5v5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />,
   warranty: (
     <>
       <path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6l7-3z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
@@ -75,13 +72,25 @@ const chipIcons: Record<'range' | 'saving' | 'warranty' | 'battery', ReactNode> 
       <path d="M10 3h4M10 10h4M10 14h4M10 18h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </>
   ),
+  payload: (
+    <>
+      <path d="M4 8l8-4 8 4v8l-8 4-8-4V8z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <path d="M4 8l8 4 8-4M12 12v8" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+    </>
+  ),
+  gear: (
+    <>
+      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </>
+  ),
 }
 
-const SpecChip = ({ icon, label, value }: { icon: keyof typeof chipIcons; label: string; value: string }) => (
+const FactChip = ({ icon, label, value }: PricingFact) => (
   <div className="tw:flex tw:items-start tw:gap-3 tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface/70 tw:p-3">
     <span className="tw:flex tw:h-9 tw:w-9 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-xl tw:bg-brand-blue/10 tw:text-brand-blue">
       <svg viewBox="0 0 24 24" className="tw:h-5 tw:w-5" fill="none" aria-hidden="true">
-        {chipIcons[icon]}
+        {factIcons[icon]}
       </svg>
     </span>
     <div className="tw:min-w-0">
@@ -91,59 +100,70 @@ const SpecChip = ({ icon, label, value }: { icon: keyof typeof chipIcons; label:
   </div>
 )
 
-const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; financing: Financing }) => {
+const PricingFinanceClient = ({
+  models,
+  financing,
+  zeroPlan,
+}: {
+  models: PricedModel[]
+  financing: Financing
+  zeroPlan: ZeroPlan
+}) => {
   const t = useTranslations('Pricing')
-  const tw = useTranslations('Warranty')
   const locale = useLocale() as AppLocale
   const sectionRef = useRef<HTMLDivElement>(null)
 
   const maxTenure = Math.max(6, financing.maxTenureMonths)
   const defaultTenure = Math.min(36, maxTenure)
-  const featured = models.find((model) => model.availability === 'Available') || models[0]
-  const others = models.filter((model) => model.id !== featured?.id)
+  const available = models.filter((model) => model.availability === 'Available')
+  const upcoming = models.filter((model) => model.availability !== 'Available')
+  const first = available[0] || models[0]
 
-  const [selectedId, setSelectedId] = useState(featured?.id)
-  const [priceInput, setPriceInput] = useState(featured?.price ? String(featured.price) : '')
-  const [downPct, setDownPct] = useState(financing.downPaymentPercent)
+  const defaultDown = (model?: PricedModel) =>
+    model?.price ? model.downPayment ?? roundTo((model.price * financing.downPaymentPercent) / 100, 5_000) : 0
+
+  const [selectedId, setSelectedId] = useState(first?.id)
+  const [plan, setPlan] = useState<Plan>('bank')
+  const [priceInput, setPriceInput] = useState(first?.price ? String(first.price) : '')
+  const [down, setDown] = useState(defaultDown(first))
   const [tenure, setTenure] = useState(defaultTenure)
   const [rate, setRate] = useState(financing.interestRate)
-  const [saving, setSaving] = useState(featured?.monthlySaving ?? 0)
+  const [saving, setSaving] = useState(first?.monthlySaving ?? 100_000)
   const [applyOpen, setApplyOpen] = useState(false)
 
+  const selected = models.find((model) => model.id === selectedId)
   const modelLabel = (model: PricedModel) => model.name || t('rangeModel', { range: model.modelRange })
-
-  const price = Number(priceInput) || 0
-  const down = (price * downPct) / 100
-  const loan = Math.max(0, price - down)
-  const emi = monthlyEmi(loan, rate, tenure)
-  const totalPayable = emi * tenure
-  const totalInterest = Math.max(0, totalPayable - loan)
-  const hasResult = price > 0
   const money = (amount: number) => formatLkr(amount, locale)
   const dash = '—'
 
-  // Fuel saving vs the monthly payment.
+  const price = Number(priceInput) || 0
+  const hasResult = price > 0
+  const maxDown = Math.max(5_000, roundTo(price * 0.6, 5_000))
+  const bankDown = Math.min(down, price)
+  const bankLoan = Math.max(0, price - bankDown)
+  const bankEmi = monthlyEmi(bankLoan, rate, tenure)
+
+  // Garudan interest-free plan: fixed instalments, the rest paid upfront.
+  const zeroLoan = Math.min(zeroPlan.maxLoan, price)
+  const zeroMonthly = zeroLoan > 0 ? Math.min(zeroPlan.monthly, zeroLoan / zeroPlan.months) : 0
+
+  const isZero = plan === 'zero'
+  const emi = isZero ? zeroMonthly : bankEmi
+  const months = isZero ? zeroPlan.months : tenure
+  const loan = isZero ? zeroLoan : bankLoan
+  const upfront = isZero ? Math.max(0, price - zeroLoan) : bankDown
+  const totalInterest = isZero ? 0 : Math.max(0, bankEmi * tenure - bankLoan)
+  const totalCost = upfront + emi * months
+
   const net = saving - emi
   const coversPct = emi > 0 ? Math.round((saving / emi) * 100) : 0
   const barMax = Math.max(saving, emi, 1)
-
-  const cardEstimate = useMemo(
-    () => (model: PricedModel) =>
-      model.price
-        ? monthlyEmi(
-            model.price * (1 - financing.downPaymentPercent / 100),
-            financing.interestRate,
-            defaultTenure,
-          )
-        : 0,
-    [financing.downPaymentPercent, financing.interestRate, defaultTenure],
-  )
+  const offerSaving = selected?.originalPrice && selected.price ? selected.originalPrice - selected.price : 0
 
   useEffect(() => {
     const section = sectionRef.current
     const items = section?.querySelectorAll('[data-pricing-reveal]')
     if (!section || !items?.length) return
-
     const animation = animate(items, {
       opacity: [0, 1],
       translateY: [32, 0],
@@ -160,21 +180,14 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
   const selectModel = (model: PricedModel) => {
     setSelectedId(model.id)
     setPriceInput(model.price ? String(model.price) : '')
+    setDown(defaultDown(model))
     if (model.monthlySaving) setSaving(model.monthlySaving)
   }
 
-  const selected = models.find((model) => model.id === selectedId)
-  const offerSaving = selected?.originalPrice && selected.price ? selected.originalPrice - selected.price : 0
+  const featured = selected && selected.availability === 'Available' ? selected : first
 
   return (
     <section id="pricing" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-      <SectionVideoBackdrop
-        src="/videos/cargo-technical.mp4"
-        poster="/images/posters/gallery-1.webp"
-        variant="soft"
-        base="surface"
-        lazy
-      />
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
         <div data-pricing-reveal className="tw:max-w-2xl tw:opacity-0">
           <p className="tw:text-sm tw:font-semibold tw:text-brand-blue">{t('eyebrow')}</p>
@@ -183,23 +196,46 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
         </div>
 
         <div className="tw:mt-10 tw:grid tw:gap-8 tw:lg:grid-cols-5">
+          {/* Model switcher + offer card */}
           <div data-pricing-reveal className="tw:flex tw:flex-col tw:gap-4 tw:opacity-0 tw:lg:col-span-2">
+            {available.length > 1 && (
+              <div role="tablist" aria-label={t('chooseModel')} className="tw:grid tw:grid-cols-2 tw:gap-2 tw:rounded-2xl tw:bg-surface-raised/80 tw:p-1.5">
+                {available.map((model) => (
+                  <button
+                    key={model.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={model.id === featured?.id}
+                    onClick={() => selectModel(model)}
+                    className={`tw:relative tw:cursor-pointer tw:rounded-xl tw:border-0 tw:px-3 tw:py-2.5 tw:text-sm tw:font-semibold tw:transition ${
+                      model.id === featured?.id ? 'tw:bg-brand-blue tw:text-white tw:shadow' : 'tw:bg-transparent tw:text-brand-ink/70 tw:hover:text-brand-ink'
+                    }`}
+                  >
+                    {modelLabel(model)}
+                    {model.isNew && (
+                      <span className="tw:absolute tw:-right-1 tw:-top-2 tw:rounded-full tw:bg-red-600 tw:px-1.5 tw:py-0.5 tw:text-[9px] tw:font-bold tw:uppercase tw:text-white">
+                        {t('new')}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {featured && (
-              <button
-                type="button"
-                onClick={() => selectModel(featured)}
-                aria-pressed={featured.id === selectedId}
-                className={`tw:group tw:relative tw:w-full tw:cursor-pointer tw:overflow-hidden tw:rounded-3xl tw:border tw:bg-surface-raised/90 tw:p-0 tw:text-left tw:backdrop-blur tw:transition tw:duration-300 tw:hover:-translate-y-1 ${
-                  featured.id === selectedId
-                    ? 'tw:border-brand-blue tw:shadow-[0_20px_45px_-20px_rgba(37,99,235,0.55)]'
-                    : 'tw:border-brand-ink/10 tw:hover:border-brand-blue/40'
-                }`}
+              <article
+                key={featured.id}
+                className="tw:overflow-hidden tw:rounded-3xl tw:border tw:border-brand-blue tw:bg-surface-raised/90 tw:shadow-[0_20px_45px_-20px_rgba(37,99,235,0.55)] tw:backdrop-blur"
               >
-                {featured.offerLabel && featured.originalPrice && featured.price && (
+                {featured.originalPrice && featured.price ? (
                   <div className="tw:bg-gradient-to-r tw:from-red-600 tw:to-rose-500 tw:px-5 tw:py-2.5 tw:text-center tw:text-xs tw:font-bold tw:uppercase tw:tracking-wider tw:text-white">
-                    {featured.offerLabel} · {t('save', { amount: money(featured.originalPrice - featured.price) })}
+                    {featured.offerLabel || t('limitedOffer')} · {t('save', { amount: money(featured.originalPrice - featured.price) })}
                   </div>
-                )}
+                ) : featured.downPayment ? (
+                  <div className="tw:bg-gradient-to-r tw:from-brand-blue tw:to-[#1e40af] tw:px-5 tw:py-2.5 tw:text-center tw:text-xs tw:font-bold tw:uppercase tw:tracking-wider tw:text-white">
+                    {t('downPaymentBadge', { amount: money(featured.downPayment) })}
+                  </div>
+                ) : null}
 
                 <div className="tw:relative tw:aspect-[16/10] tw:bg-gradient-to-b tw:from-brand-blue/10 tw:via-brand-blue/5 tw:to-transparent">
                   {featured.image && (
@@ -208,17 +244,11 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
                       alt={featured.image.alt || modelLabel(featured)}
                       fill
                       sizes="(min-width: 1024px) 40vw, 100vw"
-                      className="tw:object-contain tw:p-4 tw:transition tw:duration-500 tw:group-hover:scale-[1.03]"
+                      className="tw:object-contain tw:p-4"
                     />
                   )}
-                  <span
-                    className={`tw:absolute tw:right-4 tw:top-4 tw:rounded-full tw:px-2.5 tw:py-1 tw:text-[11px] tw:font-bold ${
-                      featured.availability === 'Available'
-                        ? 'tw:bg-brand-green/15 tw:text-emerald-700'
-                        : 'tw:bg-brand-ink/10 tw:text-brand-ink/60'
-                    }`}
-                  >
-                    {featured.availability === 'Available' ? t('available') : t('upcoming')}
+                  <span className="tw:absolute tw:right-4 tw:top-4 tw:rounded-full tw:bg-brand-green/15 tw:px-2.5 tw:py-1 tw:text-[11px] tw:font-bold tw:text-emerald-700">
+                    {t('available')}
                   </span>
                 </div>
 
@@ -233,100 +263,100 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
                         </p>
                       )}
                       <p className="tw:text-3xl tw:font-bold tw:tracking-tight tw:text-brand-ink">{money(featured.price)}</p>
-                      {cardEstimate(featured) > 0 && (
+                      {featured.priceNote && <p className="tw:mt-0.5 tw:text-xs tw:text-brand-ink/50">{featured.priceNote}</p>}
+                      {featured.downPayment && featured.originalPrice && (
                         <p className="tw:mt-1 tw:text-sm tw:font-semibold tw:text-brand-blue">
-                          {t('fromPerMonth', { amount: money(cardEstimate(featured)) })}
+                          {t('downPaymentBadge', { amount: money(featured.downPayment) })}
                         </p>
                       )}
                     </div>
                   ) : (
                     <p className="tw:mt-1 tw:text-2xl tw:font-bold tw:text-brand-ink">{t('priceOnRequest')}</p>
                   )}
-                  {featured.priceNote && <p className="tw:mt-1 tw:text-xs tw:text-brand-ink/50">{featured.priceNote}</p>}
 
-                  <div className="tw:mt-5 tw:grid tw:grid-cols-2 tw:gap-2.5">
-                    {featured.rangeKm && (
-                      <SpecChip icon="range" label={t('rangePerCharge')} value={`${featured.rangeKm} km`} />
-                    )}
-                    {featured.monthlySaving && (
-                      <SpecChip icon="saving" label={t('monthlySaving')} value={money(featured.monthlySaving)} />
-                    )}
-                    <SpecChip icon="warranty" label={t('warranty')} value={tw('vehicleValue')} />
-                    <SpecChip
-                      icon="battery"
-                      label={t('batteryWarranty')}
-                      value={`${tw('batteryValue')} / ${tw('batteryNote')}`}
-                    />
-                  </div>
+                  {featured.facts.length > 0 && (
+                    <div className="tw:mt-5 tw:grid tw:grid-cols-2 tw:gap-2.5">
+                      {featured.facts.map((fact) => (
+                        <FactChip key={fact.label} {...fact} />
+                      ))}
+                    </div>
+                  )}
+
+                  {featured.detailHref && (
+                    <Link href={featured.detailHref} className="tw:mt-5 tw:inline-flex tw:items-center tw:gap-1.5 tw:text-sm tw:font-semibold tw:text-brand-blue">
+                      {t('viewSpecs')} <span aria-hidden="true">→</span>
+                    </Link>
+                  )}
                 </div>
-              </button>
+              </article>
             )}
 
-            {others.map((model) => {
-              const isSelected = model.id === selectedId
-              return (
-                <button
-                  key={model.id}
-                  type="button"
-                  onClick={() => selectModel(model)}
-                  aria-pressed={isSelected}
-                  className={`tw:flex tw:w-full tw:cursor-pointer tw:items-center tw:justify-between tw:gap-3 tw:rounded-2xl tw:border tw:bg-surface-raised/70 tw:px-5 tw:py-3.5 tw:text-left tw:backdrop-blur tw:transition ${
-                    isSelected ? 'tw:border-brand-blue' : 'tw:border-brand-ink/10 tw:hover:border-brand-blue/40'
-                  }`}
-                >
-                  <div>
-                    <p className="tw:text-base tw:font-bold tw:text-brand-ink">{model.modelRange}</p>
-                    <p className="tw:text-xs tw:text-brand-ink/50">
-                      {model.price ? money(model.price) : t('priceOnRequest')}
-                    </p>
-                  </div>
-                  <span
-                    className={`tw:shrink-0 tw:rounded-full tw:px-2.5 tw:py-1 tw:text-[11px] tw:font-bold ${
-                      model.availability === 'Available'
-                        ? 'tw:bg-brand-green/15 tw:text-emerald-700'
-                        : 'tw:bg-brand-ink/10 tw:text-brand-ink/60'
-                    }`}
-                  >
-                    {model.availability === 'Available' ? t('available') : t('upcoming')}
-                  </span>
-                </button>
-              )
-            })}
+            {upcoming.map((model) => (
+              <div
+                key={model.id}
+                className="tw:flex tw:items-center tw:justify-between tw:gap-3 tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised/70 tw:px-5 tw:py-3.5 tw:backdrop-blur"
+              >
+                <div>
+                  <p className="tw:text-base tw:font-bold tw:text-brand-ink">{model.modelRange}</p>
+                  <p className="tw:text-xs tw:text-brand-ink/50">{t('priceOnRequest')}</p>
+                </div>
+                <span className="tw:shrink-0 tw:rounded-full tw:bg-brand-ink/10 tw:px-2.5 tw:py-1 tw:text-[11px] tw:font-bold tw:text-brand-ink/60">
+                  {t('upcoming')}
+                </span>
+              </div>
+            ))}
           </div>
 
+          {/* Calculator */}
           <div
             data-pricing-reveal
             className="tw:overflow-hidden tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:opacity-0 tw:shadow-[0_20px_50px_-20px_rgba(11,14,20,0.25)] tw:lg:col-span-3"
           >
             <div className="tw:bg-gradient-to-br tw:from-brand-blue tw:to-[#1e40af] tw:p-6 tw:text-white tw:sm:p-8">
+              <div role="tablist" aria-label={t('financePlan')} className="tw:mb-6 tw:inline-flex tw:rounded-full tw:bg-white/15 tw:p-1">
+                {(['bank', 'zero'] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    role="tab"
+                    aria-selected={plan === option}
+                    onClick={() => setPlan(option)}
+                    className={`tw:cursor-pointer tw:rounded-full tw:border-0 tw:px-4 tw:py-1.5 tw:text-xs tw:font-semibold tw:transition tw:sm:text-sm ${
+                      plan === option ? 'tw:bg-white tw:text-brand-blue' : 'tw:bg-transparent tw:text-white/80 tw:hover:text-white'
+                    }`}
+                  >
+                    {option === 'bank' ? t('planBank') : t('planZero')}
+                  </button>
+                ))}
+              </div>
+
               <p className="tw:text-sm tw:font-medium tw:text-white/75">{t('monthlyLabel')}</p>
               <p className="tw:mt-1 tw:text-4xl tw:font-bold tw:sm:text-5xl" aria-live="polite">
                 {hasResult ? money(emi) : dash}
               </p>
               <p className="tw:mt-1 tw:text-xs tw:text-white/60">
-                {t('over', { months: tenure, rate })}
-                {selected ? ` · ${selected.modelRange}` : ''}
+                {isZero ? t('zeroOver', { months }) : t('over', { months, rate })}
+                {selected ? ` · ${modelLabel(selected)}` : ''}
               </p>
-              {offerSaving > 0 && selected?.offerLabel && (
+              {offerSaving > 0 && (
                 <p className="tw:mt-3 tw:inline-flex tw:items-center tw:gap-2 tw:rounded-full tw:bg-white/15 tw:px-3 tw:py-1 tw:text-xs tw:font-semibold">
                   <span className="tw:h-1.5 tw:w-1.5 tw:rounded-full tw:bg-brand-green" aria-hidden="true" />
-                  {t('youSave', { amount: money(offerSaving), offer: selected.offerLabel })}
+                  {t('youSave', { amount: money(offerSaving), offer: selected?.offerLabel || t('limitedOffer') })}
                 </p>
               )}
               <dl className="tw:mt-6 tw:grid tw:grid-cols-3 tw:gap-4 tw:border-t tw:border-white/15 tw:pt-5">
                 {[
+                  { label: t('upfront'), value: upfront },
                   { label: t('loanAmount'), value: loan },
-                  { label: t('totalInterest'), value: totalInterest },
-                  { label: t('totalPayable'), value: totalPayable + down },
+                  { label: isZero ? t('totalInterest') : t('totalInterest'), value: totalInterest },
                 ].map((item) => (
                   <div key={item.label}>
                     <dt className="tw:text-[11px] tw:text-white/60">{item.label}</dt>
-                    <dd className="tw:m-0 tw:mt-1 tw:text-sm tw:font-semibold tw:sm:text-base">
-                      {hasResult ? money(item.value) : dash}
-                    </dd>
+                    <dd className="tw:m-0 tw:mt-1 tw:text-sm tw:font-semibold tw:sm:text-base">{hasResult ? money(item.value) : dash}</dd>
                   </div>
                 ))}
               </dl>
+              {hasResult && <p className="tw:mt-3 tw:text-[11px] tw:text-white/60">{t('totalCostLine', { amount: money(totalCost) })}</p>}
             </div>
 
             {hasResult && emi > 0 && (
@@ -343,10 +373,7 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
                         <span className="tw:font-semibold tw:text-brand-ink">{money(row.value)}</span>
                       </div>
                       <div className="tw:mt-1.5 tw:h-2.5 tw:overflow-hidden tw:rounded-full tw:bg-brand-ink/10">
-                        <div
-                          className={`tw:h-full tw:rounded-full tw:transition-[width] tw:duration-500 ${row.bar}`}
-                          style={{ width: `${(row.value / barMax) * 100}%` }}
-                        />
+                        <div className={`tw:h-full tw:rounded-full tw:transition-[width] tw:duration-500 ${row.bar}`} style={{ width: `${(row.value / barMax) * 100}%` }} />
                       </div>
                     </div>
                   ))}
@@ -357,9 +384,7 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
                     net >= 0 ? 'tw:bg-emerald-50 tw:text-emerald-800' : 'tw:bg-amber-50 tw:text-amber-800'
                   }`}
                 >
-                  {net >= 0
-                    ? t('coversPayment', { amount: money(net) })
-                    : t('coversPercent', { percent: coversPct })}
+                  {net >= 0 ? t('coversPayment', { amount: money(net) }) : t('coversPercent', { percent: coversPct })}
                 </p>
               </div>
             )}
@@ -380,53 +405,64 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
                     className="tw:w-full tw:border-0 tw:bg-transparent tw:py-3 tw:text-base tw:font-semibold tw:text-brand-ink tw:outline-none"
                   />
                 </div>
-                {!selected?.price && (
-                  <p className="tw:mt-1.5 tw:text-xs tw:text-brand-ink/50">{t('priceHint')}</p>
-                )}
               </div>
 
-              <SliderField
-                id="emi-down"
-                label={t('downPayment')}
-                display={`${downPct}%${hasResult ? ` · ${money(down)}` : ''}`}
-              >
-                <input
-                  id="emi-down"
-                  type="range"
-                  min={0}
-                  max={60}
-                  step={5}
-                  value={downPct}
-                  onChange={(event) => setDownPct(Number(event.target.value))}
-                  className={sliderClasses}
-                />
-              </SliderField>
+              {isZero ? (
+                <div className="tw:rounded-2xl tw:border tw:border-brand-green/30 tw:bg-brand-green/10 tw:p-5">
+                  <p className="tw:text-sm tw:font-bold tw:text-emerald-800">{t('zeroTitle')}</p>
+                  <p className="tw:mt-1 tw:text-sm tw:text-emerald-900/80">
+                    {t('zeroTerms', { amount: money(zeroPlan.maxLoan), monthly: money(zeroPlan.monthly), months: zeroPlan.months })}
+                  </p>
+                  <ul className="tw:mt-3 tw:list-disc tw:space-y-1 tw:pl-5 tw:text-xs tw:text-emerald-900/80">
+                    <li>{t('zeroEligibilityIncome')}</li>
+                    <li>{t('zeroEligibilityDriver')}</li>
+                  </ul>
+                  <p className="tw:mt-3 tw:inline-flex tw:rounded-full tw:bg-white tw:px-3 tw:py-1 tw:text-xs tw:font-bold tw:text-red-600">
+                    {t('zeroLimited', { count: zeroPlan.families })}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <SliderField id="emi-down" label={t('downPayment')} display={hasResult ? money(bankDown) : dash}>
+                    <input
+                      id="emi-down"
+                      type="range"
+                      min={0}
+                      max={maxDown}
+                      step={5_000}
+                      value={Math.min(down, maxDown)}
+                      onChange={(event) => setDown(Number(event.target.value))}
+                      className={sliderClasses}
+                    />
+                  </SliderField>
 
-              <SliderField id="emi-tenure" label={t('tenure')} display={t('months', { months: tenure })}>
-                <input
-                  id="emi-tenure"
-                  type="range"
-                  min={6}
-                  max={maxTenure}
-                  step={6}
-                  value={tenure}
-                  onChange={(event) => setTenure(Number(event.target.value))}
-                  className={sliderClasses}
-                />
-              </SliderField>
+                  <SliderField id="emi-tenure" label={t('tenure')} display={t('months', { months: tenure })}>
+                    <input
+                      id="emi-tenure"
+                      type="range"
+                      min={6}
+                      max={maxTenure}
+                      step={6}
+                      value={tenure}
+                      onChange={(event) => setTenure(Number(event.target.value))}
+                      className={sliderClasses}
+                    />
+                  </SliderField>
 
-              <SliderField id="emi-rate" label={t('interestRate')} display={`${rate}%`}>
-                <input
-                  id="emi-rate"
-                  type="range"
-                  min={0}
-                  max={30}
-                  step={0.5}
-                  value={rate}
-                  onChange={(event) => setRate(Number(event.target.value))}
-                  className={sliderClasses}
-                />
-              </SliderField>
+                  <SliderField id="emi-rate" label={t('interestRate')} display={`${rate}%`}>
+                    <input
+                      id="emi-rate"
+                      type="range"
+                      min={0}
+                      max={30}
+                      step={0.5}
+                      value={rate}
+                      onChange={(event) => setRate(Number(event.target.value))}
+                      className={sliderClasses}
+                    />
+                  </SliderField>
+                </>
+              )}
 
               <SliderField id="emi-saving" label={t('fuelSaving')} display={money(saving)}>
                 <input
@@ -446,7 +482,7 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
                 onClick={() => setApplyOpen(true)}
                 className="tw:inline-flex tw:w-full tw:cursor-pointer tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:border-0 tw:bg-brand-blue tw:px-6 tw:py-3.5 tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light"
               >
-                {t('apply')}
+                {isZero ? t('zeroApply') : t('apply')}
                 <svg viewBox="0 0 24 24" className="tw:h-4 tw:w-4" fill="none" aria-hidden="true">
                   <path d="M4 12h15M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -460,14 +496,7 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
                   <div className="tw:mt-3 tw:flex tw:flex-wrap tw:items-center tw:gap-6">
                     {financing.partners.map((partner) =>
                       partner.logo ? (
-                        <Image
-                          key={partner.name}
-                          src={partner.logo}
-                          alt={partner.name}
-                          width={96}
-                          height={32}
-                          className="tw:h-8 tw:w-auto tw:object-contain tw:opacity-70 tw:grayscale"
-                        />
+                        <Image key={partner.name} src={partner.logo} alt={partner.name} width={96} height={32} className="tw:h-8 tw:w-auto tw:object-contain tw:opacity-70 tw:grayscale" />
                       ) : (
                         <span key={partner.name} className="tw:text-sm tw:font-semibold tw:text-brand-ink/60">
                           {partner.name}
@@ -487,17 +516,19 @@ const PricingFinanceClient = ({ models, financing }: { models: PricedModel[]; fi
           compact
           lockType
           defaultType="Finance"
-          title={t('applyTitle')}
+          title={isZero ? t('zeroTitle') : t('applyTitle')}
           description={t('applyDescription')}
           defaultMessage={
             hasResult
-              ? t('applyMessage', {
-                  model: selected ? `${selected.modelRange} ${modelLabel(selected)}` : '',
-                  price: money(price),
-                  down: downPct,
-                  months: tenure,
-                  emi: money(emi),
-                }) + (saving > 0 ? ` ${t('applySaving', { saving: money(saving) })}` : '')
+              ? isZero
+                ? t('zeroApplyMessage', { model: selected ? modelLabel(selected) : '', monthly: money(emi), months })
+                : t('applyMessage', {
+                    model: selected ? modelLabel(selected) : '',
+                    price: money(price),
+                    down: money(bankDown),
+                    months,
+                    emi: money(emi),
+                  }) + (saving > 0 ? ` ${t('applySaving', { saving: money(saving) })}` : '')
               : undefined
           }
         />

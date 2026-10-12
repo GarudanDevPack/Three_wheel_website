@@ -182,6 +182,12 @@ export const Vehicles: CollectionConfig = {
           admin: { description: 'Optional pre-offer price (LKR). Shown struck through when higher than the price.' },
         },
         {
+          name: 'downPayment',
+          type: 'number',
+          min: 0,
+          admin: { description: 'Optional suggested down payment (LKR), e.g. 605000. Pre-fills the finance calculator.' },
+        },
+        {
           name: 'offerLabel',
           type: 'text',
           localized: true,

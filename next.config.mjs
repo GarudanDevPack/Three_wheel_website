@@ -22,6 +22,9 @@ const nextConfig = {
     return [
       { source: "/press", destination: "/news", permanent: true },
       { source: "/:locale(si|ta)/press", destination: "/:locale/news", permanent: true },
+      // Old flagship URL → the SEO model URL.
+      { source: "/vehicles/neptune", destination: "/vehicles/neptune-300-km", permanent: true },
+      { source: "/:locale(si|ta)/vehicles/neptune", destination: "/:locale/vehicles/neptune-300-km", permanent: true },
       // English is the default locale and lives at unprefixed URLs.
       { source: "/en", destination: "/", permanent: true },
       { source: "/en/:path*", destination: "/:path*", permanent: true },

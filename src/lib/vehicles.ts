@@ -2,6 +2,7 @@ import { cache } from 'react'
 import { getPayloadClient } from './payload'
 import type { AppLocale } from '@/i18n/routing'
 import type { Specs, Charging } from './specs'
+import { catalog } from './catalog'
 
 export type HeroStat = { value: number; unit?: string | null }
 
@@ -21,60 +22,39 @@ export type ModelVehicle = {
   offerLabel: string | null
   /** Estimated monthly fuel/running-cost saving vs a petrol three-wheeler (LKR). */
   monthlySaving: number | null
+  /** Suggested down payment (LKR), e.g. from the client's poster. */
+  downPayment: number | null
+  category: 'Passenger' | 'Cargo'
+  /** Honest range wording, e.g. "About 100 km on battery …". */
+  rangeNote: string | null
+  isNew: boolean
   heroStats: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'gradeability', HeroStat>>
   specs: Specs | null
   charging: Charging
 }
 
-// Only figures already published by the client (spec sheet + Mega Offer poster); the admin overrides them.
-const fallbackModels: ModelVehicle[] = [
-  {
-    id: 'placeholder-300',
-    slug: 'neptune',
-    name: '',
-    modelRange: '300km',
-    availability: 'Available',
-    heroImage: { url: '/images/auto/neptune-blue-1.webp', alt: 'Neptune three-wheeler, 300km model' },
-    price: 2_375_000,
-    showPrice: true,
-    priceNote: null,
-    originalPrice: 2_675_000,
-    offerLabel: 'Mega Offer',
-    monthlySaving: 100_000,
-    heroStats: {
-      range: { value: 300, unit: 'km' },
-      topSpeed: { value: 60, unit: 'km/h' },
-      peakPower: { value: 12, unit: 'kW' },
-      gradeability: { value: 15, unit: '%' },
-    },
-    specs: {
-      motor: { motorType: 'PMSM', ratedPower: '5 kW', maxPower: '12 kW', peakTorque: '67 Nm' },
-      dimensions: { kerbWeight: '285 kg' },
-    },
-    charging: {
-      chargerRating: '2kW / 30Ah off-board',
-      chargingTime: '8 hrs (20% → 100%)',
-      rangePerCharge: '300 km',
-    },
-  },
-  ...(['200km', '120km'] as const).map<ModelVehicle>((modelRange) => ({
-    id: `placeholder-${modelRange}`,
-    slug: null,
-    name: '',
-    modelRange,
-    availability: 'Upcoming',
-    heroImage: null,
-    price: null,
-    showPrice: false,
-    priceNote: null,
-    originalPrice: null,
-    offerLabel: null,
-    monthlySaving: null,
-    heroStats: {},
-    specs: null,
-    charging: null,
-  })),
-]
+// No database yet: built from the client-verified catalog (src/lib/catalog.ts); the admin overrides it.
+const fallbackModels: ModelVehicle[] = catalog.map((model) => ({
+  id: `catalog-${model.slug}`,
+  slug: model.status === 'Available' ? model.slug : null,
+  name: model.status === 'Available' ? model.name : '',
+  modelRange: model.modelRange,
+  availability: model.status,
+  heroImage: model.heroImage,
+  price: model.price,
+  showPrice: model.price !== null,
+  priceNote: model.priceNote ?? null,
+  originalPrice: model.originalPrice ?? null,
+  offerLabel: model.offerLabel ?? null,
+  monthlySaving: model.monthlySaving ?? null,
+  downPayment: model.downPayment ?? null,
+  category: model.category,
+  rangeNote: model.status === 'Available' ? model.rangeNote : null,
+  isNew: Boolean(model.isNew),
+  heroStats: model.heroStats,
+  specs: model.specs,
+  charging: model.charging,
+}))
 
 type StatDoc = { value?: number | null; unit?: string | null } | null | undefined
 
@@ -92,7 +72,9 @@ type VehicleDoc = {
     originalPrice?: number | null
     offerLabel?: string | null
     monthlySaving?: number | null
+    downPayment?: number | null
   } | null
+  category?: string | null
   heroStats?: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'gradeability', StatDoc>> | null
   variants?: Array<{ specs?: Specs | null; charging?: Charging }> | null
 }
@@ -128,6 +110,10 @@ export const getModelVehicles = cache(async (locale: AppLocale): Promise<ModelVe
         originalPrice: typeof doc.pricing?.originalPrice === 'number' ? doc.pricing.originalPrice : null,
         offerLabel: doc.pricing?.offerLabel || null,
         monthlySaving: typeof doc.pricing?.monthlySaving === 'number' ? doc.pricing.monthlySaving : null,
+        downPayment: typeof doc.pricing?.downPayment === 'number' ? doc.pricing.downPayment : null,
+        category: doc.category === 'Cargo' ? 'Cargo' : 'Passenger',
+        rangeNote: null,
+        isNew: false,
         heroStats: {
           range: toStat(stats.range),
           topSpeed: toStat(stats.topSpeed),

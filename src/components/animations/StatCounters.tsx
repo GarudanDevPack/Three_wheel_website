@@ -12,6 +12,8 @@ const StatCounters = ({ stats }: { stats: Stat[] }) => {
     if (!stats.length) return
 
     const targets = stats.map(() => ({ value: 0 }))
+    // Keep the source's decimal places (e.g. 27.8 %), so the counter never rounds a published figure.
+    const decimals = stats.map((stat) => (String(stat.value).split('.')[1] || '').length)
 
     const animation = animate(targets, {
       value: (_, index) => stats[index ?? 0].value,
@@ -21,7 +23,7 @@ const StatCounters = ({ stats }: { stats: Stat[] }) => {
       onUpdate: () => {
         targets.forEach((target, index) => {
           const el = valueRefs.current[index]
-          if (el) el.textContent = String(Math.round(target.value))
+          if (el) el.textContent = target.value.toFixed(decimals[index])
         })
       },
     })

@@ -12,7 +12,7 @@ type Status = 'idle' | 'loading' | 'offline' | 'error' | 'busy'
 export type AssistantContacts = {
   whatsapp: string
   headOffice: string
-  jaffna: string
+  hotline: string
 }
 
 const STORAGE_KEY = 'neptune-assistant-chat'
@@ -227,7 +227,7 @@ const AssistantChat = ({ contacts, onClose }: { contacts: AssistantContacts; onC
           </a>
           {[
             { label: t('callHeadOffice'), phone: contacts.headOffice },
-            { label: t('callJaffna'), phone: contacts.jaffna },
+            { label: t('callHotline'), phone: contacts.hotline },
           ].map((contact) => (
             <a
               key={contact.phone}

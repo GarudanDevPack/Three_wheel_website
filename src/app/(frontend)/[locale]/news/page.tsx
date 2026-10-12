@@ -50,6 +50,7 @@ const NewsPage = async ({ params }: PageProps) => {
                 <NewsCard
                   item={featured}
                   featured
+                  categoryLabel={featured.category ? t(`categories.${featured.category}`) : null}
                   dateLabel={formatDate(featured.publishedDate, locale)}
                   readMore={t('readMore')}
                 />
@@ -59,6 +60,7 @@ const NewsPage = async ({ params }: PageProps) => {
                       <NewsCard
                         key={item.id}
                         item={item}
+                        categoryLabel={item.category ? t(`categories.${item.category}`) : null}
                         dateLabel={formatDate(item.publishedDate, locale)}
                         readMore={t('readMore')}
                       />

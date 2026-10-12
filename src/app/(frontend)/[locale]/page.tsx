@@ -12,6 +12,8 @@ import PricingFinance from '@/components/vehicle/PricingFinance'
 import Testimonials from '@/components/vehicle/Testimonials'
 import ModelComparison from '@/components/vehicle/ModelComparison'
 import ChargingSection from '@/components/vehicle/ChargingSection'
+import RunningCost from '@/components/vehicle/RunningCost'
+import HomeFaq from '@/components/vehicle/HomeFaq'
 import Gallery from '@/components/vehicle/Gallery'
 import Dealers from '@/components/vehicle/Dealers'
 import AwardStrip from '@/components/vehicle/AwardStrip'
@@ -59,10 +61,14 @@ const HomePage = async ({ params }: PageProps) => {
         <ScrollReveal>
           <ChargingSection />
         </ScrollReveal>
+        <ScrollReveal>
+          <RunningCost />
+        </ScrollReveal>
         <Gallery />
         <Dealers />
         <AwardStrip />
         <HomeNews />
+        <HomeFaq />
         <InquiryForm />
       </main>
       <Footer />

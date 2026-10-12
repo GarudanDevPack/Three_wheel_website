@@ -2,6 +2,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import { getPayloadClient } from '@/lib/payload'
 import type { AppLocale } from '@/i18n/routing'
 import VehicleCard, { type VehicleCardData } from './VehicleCard'
+import { availableModels, toVehicleCard } from '@/lib/catalog'
 
 type RelatedVehiclesProps = {
   currentId: string
@@ -23,7 +24,8 @@ const RelatedVehicles = async ({ currentId, category }: RelatedVehiclesProps) =>
     })
     vehicles = (docs as unknown as VehicleCardData[]).filter((vehicle) => vehicle.id !== currentId).slice(0, 3)
   } catch {
-    // Payload/database not configured yet.
+    // Payload/database not configured yet — suggest the other catalog models.
+    vehicles = availableModels.map(toVehicleCard).filter((vehicle) => vehicle.id !== currentId)
   }
 
   if (!vehicles.length) return null

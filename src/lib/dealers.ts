@@ -18,9 +18,9 @@ export const jaffnaDealer = {
 
 /** Head office + Jaffna, shown until dealers are added in the admin. Names come from translations. */
 export const getFallbackDealers = (
-  settings: Pick<SiteSettingsData, 'address' | 'phone'>,
+  settings: Pick<SiteSettingsData, 'address' | 'phone' | 'otherPhones'>,
   names: { headOffice: string; jaffna: string },
 ): FallbackDealer[] => [
-  { name: names.headOffice, address: settings.address, phone: settings.phone },
+  { name: names.headOffice, address: settings.address, phone: settings.phone, phone2: settings.otherPhones[0] },
   { name: names.jaffna, ...jaffnaDealer },
 ]
