@@ -11,9 +11,10 @@ type Charging = {
   rangePerCharge?: string | null
 }
 
+// User Manual figures for the Long Range model (see src/lib/catalog.ts).
 const defaultCharging: Required<Charging> = {
-  chargerRating: '2kW / 30Ah off-board',
-  chargingTime: '8 hrs (20% → 100%)',
+  chargerRating: 'On-board · 32 A AC',
+  chargingTime: '~6 h (20% → 100%)',
   rangePerCharge: '300 km',
 }
 

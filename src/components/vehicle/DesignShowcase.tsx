@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
 import { animate, stagger, onScroll } from 'animejs'
 import { Link } from '@/i18n/navigation'
-import SectionVideoBackdrop from '@/components/ui/SectionVideoBackdrop'
 
 // Copy for each tab lives under `Design.<key>.{label,headline,copy,alt}`.
 const tabs = [
@@ -79,9 +78,8 @@ const DesignShowcase = () => {
     <section
       ref={sectionRef}
       id="design"
-      className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20 tw:text-brand-ink"
+      className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20 tw:text-brand-ink"
     >
-      <SectionVideoBackdrop src="/videos/design-backdrop.mp4" variant="soft" base="surface" />
 
       <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
         <p data-design-intro className={`tw:text-sm tw:font-semibold tw:text-brand-blue tw:opacity-0 ${caps}`}>
@@ -93,7 +91,7 @@ const DesignShowcase = () => {
             <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">{t(`${active.key}.headline`)}</h2>
             <p className="tw:mt-3 tw:max-w-md tw:text-brand-ink/70">{t(`${active.key}.copy`)}</p>
             <Link
-              href="/vehicles/neptune#build"
+              href="/vehicles/neptune-300-km#build"
               className="tw:mt-6 tw:inline-block tw:text-sm tw:font-semibold tw:text-brand-blue"
             >
               {t('seeBuild')} →

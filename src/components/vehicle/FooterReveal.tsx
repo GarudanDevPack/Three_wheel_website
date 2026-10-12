@@ -187,6 +187,9 @@ const FooterReveal = ({
             <Link href="/warranty" className="tw:transition tw:hover:text-white">
               {t('warranty')}
             </Link>
+            <Link href="/faq" className="tw:transition tw:hover:text-white">
+              {t('faq')}
+            </Link>
             <button
               type="button"
               onClick={openConsentSettings}

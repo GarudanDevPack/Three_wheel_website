@@ -25,6 +25,7 @@ const Footer = async () => {
   const contactRows: ContactRow[] = [
     { type: 'address', label: settings.address },
     { type: 'phone', label: settings.phone, href: tel(settings.phone) },
+    ...settings.otherPhones.map((phone) => ({ type: 'phone' as const, label: phone, href: tel(phone) })),
     ...(settings.email ? [{ type: 'email' as const, label: settings.email, href: `mailto:${settings.email}` }] : []),
   ]
 

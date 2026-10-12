@@ -7,7 +7,6 @@ import { animate, onScroll } from 'animejs'
 import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { formatLkr } from '@/lib/format'
-import SectionVideoBackdrop from '@/components/ui/SectionVideoBackdrop'
 
 export type ComparisonColumn = {
   id: string
@@ -64,14 +63,7 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
   const stickyCell = 'tw:sticky tw:left-0 tw:z-10 tw:bg-surface-raised'
 
   return (
-    <section id="compare" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-      <SectionVideoBackdrop
-        src="/videos/design-backdrop.mp4"
-        poster="/images/posters/gallery-4.webp"
-        variant="soft"
-        base="surface"
-        lazy
-      />
+    <section id="compare" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20">
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6 tw:opacity-0">
         <div className="tw:flex tw:flex-col tw:gap-6 tw:md:flex-row tw:md:items-end tw:md:justify-between">
           <div className="tw:max-w-2xl">
@@ -103,14 +95,14 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
                 </th>
                 {columns.map((column, col) => (
                   <th key={column.id} scope="col" className="tw:p-5 tw:text-left tw:align-top tw:font-normal">
-                    <div className="tw:relative tw:aspect-[4/3] tw:overflow-hidden tw:rounded-2xl tw:bg-surface">
+                    <div className="tw:relative tw:aspect-[4/3] tw:overflow-hidden tw:rounded-2xl tw:bg-gradient-to-b tw:from-white tw:to-surface">
                       {column.image ? (
                         <Image
                           src={column.image.url}
                           alt={column.image.alt || column.modelRange}
                           fill
                           sizes="220px"
-                          className="tw:object-cover"
+                          className="tw:object-contain tw:p-2"
                         />
                       ) : (
                         <div className="tw:flex tw:h-full tw:items-center tw:justify-center tw:text-xs tw:font-semibold tw:text-brand-ink/35">

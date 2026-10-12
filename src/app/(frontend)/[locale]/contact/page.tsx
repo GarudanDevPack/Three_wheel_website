@@ -37,9 +37,11 @@ const ContactPage = async ({ params }: PageProps) => {
             <p className="tw:mt-4 tw:text-brand-ink/60">{t('intro')}</p>
             <div className="tw:mt-8 tw:flex tw:flex-wrap tw:items-center tw:justify-center tw:gap-x-8 tw:gap-y-2 tw:text-sm tw:font-semibold tw:text-brand-ink/70">
               <span>{settings.address}</span>
-              <a href={`tel:${settings.phone.replace(/\s/g, '')}`} className="tw:transition tw:hover:text-brand-blue">
-                {settings.phone}
-              </a>
+              {[settings.phone, ...settings.otherPhones].map((phone) => (
+                <a key={phone} href={`tel:${phone.replace(/\s/g, '')}`} className="tw:transition tw:hover:text-brand-blue">
+                  {phone}
+                </a>
+              ))}
               <span>{settings.businessHours}</span>
             </div>
           </div>

@@ -7,6 +7,8 @@ export type FinancePartner = { name: string; logo?: string | null }
 export type SiteSettingsData = {
   address: string
   phone: string
+  /** Extra head-office numbers (mobile, hotline), shown after the main phone. */
+  otherPhones: string[]
   /** Number behind the floating WhatsApp button (can differ from the head-office phone). */
   whatsapp: string
   email?: string
@@ -29,14 +31,16 @@ export type SiteSettingsData = {
 }
 
 const fallback: SiteSettingsData = {
-  address: '13 Galle Rd, Dehiwala-Mount Lavinia 10370',
-  phone: '077 444 5909',
+  // Head office as printed on the client's posters (keep identical to the Google Business Profile).
+  address: 'No 13, Galle Road, Mount Lavinia, Colombo 10379',
+  phone: '021 785 6180',
+  otherPhones: ['077 396 9427', '077 444 5909'],
   whatsapp: '077 396 9427',
   email: undefined, // TODO: no company email supplied by client yet
   businessHours: 'Open 24 hours',
-  // TODO: client to supply the Facebook page and YouTube channel URLs.
+  // TODO: client to supply the YouTube channel URL.
   socialLinks: [
-    { platform: 'Facebook', url: 'https://www.facebook.com/' },
+    { platform: 'Facebook', url: 'https://www.facebook.com/share/g/1F6ezwwqtR/' },
     { platform: 'YouTube', url: 'https://www.youtube.com/' },
   ],
   // Calculator starting points only — visitors adjust them, and the admin sets the real figures.
@@ -83,6 +87,7 @@ export const getSiteSettings = cache(async (locale?: AppLocale): Promise<SiteSet
     return {
       address: settings.address || fallback.address,
       phone: settings.phone || fallback.phone,
+      otherPhones: settings.phone ? [] : fallback.otherPhones,
       whatsapp: settings.whatsapp || fallback.whatsapp,
       email: settings.email || fallback.email,
       businessHours: settings.businessHours || fallback.businessHours,

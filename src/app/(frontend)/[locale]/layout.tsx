@@ -13,7 +13,7 @@ import { jaffnaDealer } from '@/lib/dealers'
 import CookieConsent from '@/components/ui/CookieConsent'
 import Analytics from '@/components/ui/Analytics'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+import { siteUrl } from '@/lib/site'
 
 // Latin fonts everywhere; the Sinhala / Tamil script fonts only on the page language that needs them.
 const scriptFont: Record<string, string> = {
@@ -67,13 +67,32 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const facebookUrl = settings.socialLinks.find((link) => link.platform === 'Facebook')?.url
   const youtubeUrl = settings.socialLinks.find((link) => link.platform === 'YouTube')?.url
 
+  // Same name/address/phone as the footer and the Google Business Profile (NAP consistency).
+  const toE164 = (phone: string) => `+94${phone.replace(/\D/g, '').replace(/^0/, '')}`
+  const realProfiles = settings.socialLinks
+    .map((link) => link.url)
+    .filter((url): url is string => Boolean(url) && !/^https:\/\/www\.(facebook|youtube)\.com\/?$/.test(url!))
+  const postcode = settings.address.match(/\b\d{5}\b/)?.[0]
+
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
-    name: 'Neptune',
-    address: settings.address,
-    telephone: settings.phone,
-    openingHours: settings.businessHours,
+    '@type': 'AutoDealer',
+    name: 'Neptune Electric Three-Wheelers',
+    description: 'Electric three-wheelers built for daily loads, longer routes and lower running costs, by Garudan (Pvt) Ltd.',
+    url: siteUrl,
+    logo: `${siteUrl}/images/assistant/neptune-assistant.webp`,
+    image: `${siteUrl}/images/auto/neptune-blue-1.webp`,
+    telephone: toE164(settings.phone),
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: settings.address.replace(/,?\s*\d{5}$/, ''),
+      ...(postcode ? { postalCode: postcode } : {}),
+      addressCountry: 'LK',
+    },
+    ...(settings.businessHours === 'Open 24 hours'
+      ? { openingHoursSpecification: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '00:00', closes: '23:59' } }
+      : { openingHours: settings.businessHours }),
+    ...(realProfiles.length ? { sameAs: realProfiles } : {}),
   }
 
   return (
@@ -94,7 +113,11 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           {facebookUrl && <FacebookButton url={facebookUrl} />}
           <WhatsAppButton phone={settings.whatsapp} />
           <Assistant
-            contacts={{ whatsapp: settings.whatsapp, headOffice: settings.phone, jaffna: jaffnaDealer.phone }}
+            contacts={{
+              whatsapp: settings.whatsapp,
+              headOffice: settings.phone,
+              hotline: settings.otherPhones[settings.otherPhones.length - 1] ?? jaffnaDealer.phone,
+            }}
           />
           {settings.cookieConsent.enabled && (
             <CookieConsent

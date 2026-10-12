@@ -13,6 +13,7 @@ import type { AppLocale } from '@/i18n/routing'
 import { getNewsBySlug, getNewsList } from '@/lib/news'
 import { formatDate } from '@/lib/format'
 import { localeAlternates } from '@/lib/pageSeo'
+import { siteUrl } from '@/lib/site'
 
 export const revalidate = 300
 

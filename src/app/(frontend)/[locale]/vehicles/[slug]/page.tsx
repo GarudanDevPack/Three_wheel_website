@@ -25,10 +25,15 @@ import DealerLocator, { type Dealer } from '@/components/ui/DealerLocator'
 import FloatingEnquiryMenu from '@/components/ui/FloatingEnquiryMenu'
 import { getPayloadClient } from '@/lib/payload'
 import type { AppLocale } from '@/i18n/routing'
-import { localeAlternates } from '@/lib/pageSeo'
+import { localeAlternates, localizedPath } from '@/lib/pageSeo'
 import { formatLkr } from '@/lib/format'
+import { Link } from '@/i18n/navigation'
+import { availableModels, getCatalogModel, RUNNING_COST, type CatalogModel } from '@/lib/catalog'
+import { siteUrl } from '@/lib/site'
 
 export const revalidate = 300
+
+const perKmCost = (RUNNING_COST.monthlyElectricity / RUNNING_COST.monthlyKm).toFixed(1)
 
 type PageProps = { params: Promise<{ locale: AppLocale; slug: string }> }
 
@@ -59,7 +64,28 @@ type VehicleDoc = {
   maintenanceSchedulePdf?: MediaRef
   warrantyPolicyPdf?: MediaRef
   seo?: { metaTitle?: string | null; metaDescription?: string | null; ogImage?: MediaRef }
+  /** Set when the page is built from the client-verified catalog (no database yet). */
+  catalog?: CatalogModel | null
 }
+
+/** Catalog model → the vehicle document shape this page renders. */
+const fromCatalog = (model: CatalogModel): VehicleDoc => ({
+  id: `catalog-${model.slug}`,
+  name: model.name,
+  category: model.category,
+  shortDescription: model.seo.intro,
+  pricing: { price: model.price, showPrice: model.price !== null, priceNote: model.priceNote },
+  heroImage: model.heroImage,
+  variants: [{ variantName: model.name, fuelType: 'Electric', specs: model.specs, charging: model.charging }],
+  colors: model.colors.map((color) => ({
+    colorName: color.colorName,
+    swatchHex: color.swatchHex,
+    video: color.video ? { url: color.video } : null,
+    angleImages: color.image ? [{ angleLabel: 'Front', image: color.image }] : [],
+  })),
+  faqs: model.faqs,
+  catalog: model,
+})
 
 async function getVehicle(slug: string, locale: AppLocale): Promise<VehicleDoc | null> {
   try {
@@ -71,10 +97,12 @@ async function getVehicle(slug: string, locale: AppLocale): Promise<VehicleDoc |
       limit: 1,
       locale,
     })
-    return (docs[0] as VehicleDoc) || null
+    if (docs[0]) return docs[0] as VehicleDoc
   } catch {
-    return null
+    // Payload/database not configured yet — fall back to the catalog below.
   }
+  const model = getCatalogModel(slug)
+  return model && model.status === 'Available' ? fromCatalog(model) : null
 }
 
 async function getDealers(locale: AppLocale): Promise<Dealer[]> {
@@ -91,10 +119,11 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   try {
     const payload = await getPayloadClient()
     const { docs } = await payload.find({ collection: 'vehicles', limit: 1000 })
-    return docs.map((vehicle) => ({ slug: vehicle.slug as string }))
+    if (docs.length) return docs.map((vehicle) => ({ slug: vehicle.slug as string }))
   } catch {
-    return []
+    // No database yet — prerender the catalog models.
   }
+  return availableModels.map((model) => ({ slug: model.slug }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -102,12 +131,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const vehicle = await getVehicle(slug, locale)
   if (!vehicle) return {}
 
-  const title = vehicle.seo?.metaTitle || vehicle.name
-  const description = vehicle.seo?.metaDescription || vehicle.shortDescription || undefined
-  const images = vehicle.seo?.ogImage?.url ? [vehicle.seo.ogImage.url] : undefined
+  // Catalog titles already carry the brand, so they bypass the "%s | Neptune" template.
+  const catalogSeo = vehicle.catalog?.seo
+  const title = vehicle.seo?.metaTitle || catalogSeo?.title || vehicle.name
+  const description = vehicle.seo?.metaDescription || catalogSeo?.description || vehicle.shortDescription || undefined
+  const imageUrl = vehicle.seo?.ogImage?.url || vehicle.catalog?.heroImage?.url
+  const images = imageUrl ? [imageUrl] : undefined
 
   return {
-    title,
+    title: catalogSeo && !vehicle.seo?.metaTitle ? { absolute: title } : title,
     description,
     alternates: localeAlternates(`/vehicles/${slug}`, locale),
     openGraph: { title, description, siteName: 'Neptune', images },
@@ -120,6 +152,8 @@ const pdfLinks = (vehicle: VehicleDoc) =>
     { doc: vehicle.brochurePdf, label: 'brochure' },
     { doc: vehicle.maintenanceSchedulePdf, label: 'maintenance' },
     { doc: vehicle.warrantyPolicyPdf, label: 'warranty' },
+    // Catalog models: the client's User Manual & Service Book.
+    { doc: vehicle.catalog ? { url: '/docs/neptune-user-manual-service-book.pdf' } : null, label: 'manual' },
   ].filter((entry) => entry.doc?.url)
 
 const anchorLinks = [
@@ -151,13 +185,39 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
   const faqs = vehicle.faqs || []
   const documents = pdfLinks(vehicle)
 
+  const catalogModel = vehicle.catalog ?? null
+  const pagePath = `/vehicles/${slug}`
+  const absolute = (path: string) => new URL(path, siteUrl).toString()
+
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: vehicle.name,
     description: vehicle.shortDescription || undefined,
-    image: vehicle.heroImage?.url || undefined,
+    image: vehicle.heroImage?.url ? absolute(vehicle.heroImage.url) : undefined,
     brand: { '@type': 'Brand', name: 'Neptune' },
+    manufacturer: { '@type': 'Organization', name: 'Garudan (Pvt) Ltd' },
+    category: vehicle.category ? `${vehicle.category} electric three-wheeler` : 'Electric three-wheeler',
+    offers: price
+      ? {
+          '@type': 'Offer',
+          price,
+          priceCurrency: 'LKR',
+          availability: 'https://schema.org/InStock',
+          url: absolute(localizedPath(pagePath, locale)),
+          seller: { '@type': 'Organization', name: 'Neptune' },
+        }
+      : undefined,
+  }
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: absolute(localizedPath('/', locale)) },
+      { '@type': 'ListItem', position: 2, name: 'Vehicles', item: absolute(localizedPath('/vehicles', locale)) },
+      { '@type': 'ListItem', position: 3, name: vehicle.name, item: absolute(localizedPath(pagePath, locale)) },
+    ],
   }
 
   const faqJsonLd = faqs.length
@@ -178,6 +238,7 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       {faqJsonLd && (
         <script
           type="application/ld+json"
@@ -192,18 +253,58 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
           <SectionBackdrop src="/images/auto/neptune-blue-1.webp" variant="soft" base="surface" />
           <div className="tw:relative tw:z-10 tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
             <div>
-              <h1 className="tw:text-4xl tw:font-bold">{vehicle.name}</h1>
+              <nav aria-label={t('breadcrumb')} className="tw:mb-4 tw:text-xs tw:font-semibold tw:text-brand-ink/50">
+                <Link href="/" className="tw:hover:text-brand-blue">{t('home')}</Link>
+                <span className="tw:mx-2" aria-hidden="true">›</span>
+                <Link href="/vehicles" className="tw:hover:text-brand-blue">{t('vehicles')}</Link>
+                <span className="tw:mx-2" aria-hidden="true">›</span>
+                <span className="tw:text-brand-ink/70">{vehicle.name}</span>
+              </nav>
+              {catalogModel?.isNew && (
+                <span className="tw:mb-3 tw:inline-flex tw:rounded-full tw:bg-red-600 tw:px-3 tw:py-1 tw:text-xs tw:font-bold tw:uppercase tw:text-white">
+                  {t('newArrival')}
+                </span>
+              )}
+              <h1 className="tw:text-4xl tw:font-bold">{catalogModel?.seo.h1 ?? vehicle.name}</h1>
               {vehicle.shortDescription && (
                 <p className="tw:mt-4 tw:text-brand-ink/70">{vehicle.shortDescription}</p>
               )}
+              {catalogModel && (
+                <p className="tw:mt-3 tw:text-sm tw:text-brand-ink/70">
+                  <strong className="tw:text-brand-ink">{t('bestFor')}</strong> {catalogModel.seo.bestFor}
+                </p>
+              )}
               <div className="tw:mt-6 tw:inline-flex tw:flex-col tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised/80 tw:px-5 tw:py-4">
                 <span className="tw:text-xs tw:font-semibold tw:text-brand-ink/50">{t('price')}</span>
+                {price && catalogModel?.originalPrice && (
+                  <span className="tw:mt-1 tw:text-sm tw:text-brand-ink/45">
+                    <s>{formatLkr(catalogModel.originalPrice, locale)}</s>{' '}
+                    <span className="tw:font-bold tw:text-red-600">
+                      {t('save', { amount: formatLkr(catalogModel.originalPrice - price, locale) })}
+                    </span>
+                  </span>
+                )}
                 <span className="tw:mt-1 tw:text-2xl tw:font-bold tw:text-brand-ink">
                   {price ? formatLkr(price, locale) : t('priceOnRequest')}
                 </span>
                 {price && vehicle.pricing?.priceNote && (
-                  <span className="tw:mt-0.5 tw:text-xs tw:text-brand-ink/50">{vehicle.pricing.priceNote}</span>
+                  <span className="tw:mt-0.5 tw:text-xs tw:text-brand-ink/50">
+                    {vehicle.pricing.priceNote === 'Including VAT' ? t('inclVat') : vehicle.pricing.priceNote}
+                  </span>
                 )}
+                {catalogModel?.downPayment && (
+                  <span className="tw:mt-1 tw:text-sm tw:font-semibold tw:text-brand-blue">
+                    {t('downPayment', { amount: formatLkr(catalogModel.downPayment, locale) })}
+                  </span>
+                )}
+              </div>
+              <div className="tw:mt-6 tw:flex tw:flex-wrap tw:gap-3">
+                <Link href="/contact" className="tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light">
+                  {t('bookTestDrive')}
+                </Link>
+                <Link href="/#pricing" className="tw:rounded-full tw:border tw:border-brand-blue/40 tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-blue tw:transition tw:hover:border-brand-blue">
+                  {t('financeOptions')}
+                </Link>
               </div>
             </div>
             {vehicle.heroImage?.url && (
@@ -220,6 +321,65 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
             )}
           </div>
         </section>
+
+        {catalogModel && (
+          <section aria-labelledby="key-facts" className="tw:bg-surface-raised tw:py-16">
+            <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
+              <h2 id="key-facts" className="tw:text-3xl tw:font-bold tw:text-brand-ink">{t('keyFacts')}</h2>
+              <dl className="tw:mt-8 tw:grid tw:grid-cols-2 tw:gap-4 tw:md:grid-cols-3 tw:lg:grid-cols-6">
+                {catalogModel.keyFacts.map((fact) => (
+                  <div key={fact.label} className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface tw:p-4">
+                    <dt className="tw:text-xs tw:font-semibold tw:text-brand-ink/50">{fact.label}</dt>
+                    <dd className="tw:m-0 tw:mt-1 tw:text-base tw:font-bold tw:text-brand-ink">{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <p className="tw:mt-3 tw:text-xs tw:text-brand-ink/50">{catalogModel.rangeNote}</p>
+
+              <div className="tw:mt-12 tw:grid tw:gap-8 tw:lg:grid-cols-3">
+                <div className="tw:rounded-3xl tw:bg-surface tw:p-6">
+                  <h3 className="tw:text-lg tw:font-bold tw:text-brand-ink">{t('features')}</h3>
+                  <ul className="tw:mt-4 tw:list-disc tw:space-y-2 tw:pl-5 tw:text-sm tw:text-brand-ink/75">
+                    {catalogModel.features.map((feature) => (
+                      <li key={feature}>{feature}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="tw:rounded-3xl tw:bg-surface tw:p-6">
+                  <h3 className="tw:text-lg tw:font-bold tw:text-brand-ink">{t('runningCost')}</h3>
+                  <p className="tw:mt-4 tw:text-3xl tw:font-bold tw:text-brand-blue">≈ Rs. {perKmCost}</p>
+                  <p className="tw:text-sm tw:text-brand-ink/60">{t('perKm')}</p>
+                  <p className="tw:mt-3 tw:text-sm tw:text-brand-ink/75">
+                    {t('runningCostText', {
+                      cost: RUNNING_COST.monthlyElectricity.toLocaleString('en-US'),
+                      km: RUNNING_COST.monthlyKm.toLocaleString('en-US'),
+                    })}
+                  </p>
+                  <p className="tw:mt-2 tw:text-xs tw:text-brand-ink/50">{t('runningCostAssumptions')}</p>
+                </div>
+                {catalogModel.warranty && (
+                  <div className="tw:rounded-3xl tw:bg-surface tw:p-6">
+                    <h3 className="tw:text-lg tw:font-bold tw:text-brand-ink">{t('warrantyService')}</h3>
+                    <dl className="tw:mt-4 tw:space-y-3 tw:text-sm">
+                      <div>
+                        <dt className="tw:text-xs tw:font-semibold tw:text-brand-ink/50">{t('vehicleWarranty')}</dt>
+                        <dd className="tw:m-0 tw:font-bold tw:text-brand-ink">{catalogModel.warranty.vehicle}</dd>
+                      </div>
+                      <div>
+                        <dt className="tw:text-xs tw:font-semibold tw:text-brand-ink/50">{t('batteryWarranty')}</dt>
+                        <dd className="tw:m-0 tw:font-bold tw:text-brand-ink">{catalogModel.warranty.battery}</dd>
+                      </div>
+                    </dl>
+                    <p className="tw:mt-3 tw:text-sm tw:text-brand-ink/75">{t('serviceText')}</p>
+                    <Link href="/warranty" className="tw:mt-3 tw:inline-flex tw:text-sm tw:font-semibold tw:text-brand-blue">
+                      {t('warrantyLink')} →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         <ScrollReveal>
           <FeatureThemes />

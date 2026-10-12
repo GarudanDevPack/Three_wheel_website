@@ -5,13 +5,16 @@ import StatCounters from '@/components/animations/LazyStatCounters'
 import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { getPayloadClient } from '@/lib/payload'
+import { catalog } from '@/lib/catalog'
 
 // Labels are message keys under `Specs.rows`, translated at render time.
+// Flagship figures from the User Manual (via src/lib/catalog.ts).
+const flagship = catalog[0].heroStats
 const defaultStats: Stat[] = [
-  { label: 'range', value: 300, unit: 'km' },
-  { label: 'topSpeed', value: 60, unit: 'km/h' },
-  { label: 'peakPower', value: 12, unit: 'kW' },
-  { label: 'gradeabilityStat', value: 15, unit: '%' },
+  { label: 'range', ...flagship.range! },
+  { label: 'topSpeed', ...flagship.topSpeed! },
+  { label: 'peakPower', ...flagship.peakPower! },
+  { label: 'gradeabilityStat', ...flagship.gradeability! },
 ]
 
 type HeroStatField = { value?: number | null; unit?: string | null } | null | undefined

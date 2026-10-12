@@ -4,6 +4,7 @@ import type { AppLocale } from '@/i18n/routing'
 import { type AngleImage } from '@/components/animations/ColorSpin360'
 import { type ModelOption } from './ModelSelectorClient'
 import ModelSelectorClient from './LazyModelSelectorClient'
+import { catalog } from '@/lib/catalog'
 
 type VehicleSummaryDoc = {
   id: string
@@ -49,69 +50,30 @@ const buildStats = (heroStats?: {
     .map(([label, stat]) => ({ label, value: stat.value, unit: stat.unit || undefined }))
 }
 
-const defaultModels: ModelOption[] = [
-  {
-    id: 'placeholder-300',
-    slug: 'neptune',
-    name: '',
-    modelRange: '300km',
-    availability: 'Available',
-    shortDescription: null,
-    heroImage: { url: '/images/auto/neptune-blue-1.webp', alt: 'Neptune three-wheeler, 300km model' },
-    stats: [
-      { label: 'range', value: 300, unit: 'km' },
-      { label: 'topSpeed', value: 60, unit: 'km/h' },
-      { label: 'peakPower', value: 12, unit: 'kW' },
-      { label: 'gradeabilityStat', value: 15, unit: '%' },
-    ],
-    colors: [
-      {
-        colorName: 'Neptune Blue',
-        swatchHex: '#6B9BC3',
-        video: '/videos/color-blue.mp4',
-        angleImages: [
-          { angleLabel: 'Front', image: { url: '/images/auto/neptune-blue-2.webp', alt: 'Neptune Blue' } },
-        ],
-      },
-      {
-        colorName: 'Forest Green',
-        swatchHex: '#2E5E3A',
-        video: '/videos/color-green.mp4',
-        angleImages: [
-          { angleLabel: 'Front', image: { url: '/images/auto/green-1.webp', alt: 'Forest Green' } },
-        ],
-      },
-      {
-        colorName: 'Stealth Black',
-        swatchHex: '#1a1a1a',
-        video: '/videos/color-black.mp4',
-        angleImages: [],
-      },
-    ],
-  },
-  {
-    id: 'placeholder-200',
-    slug: null,
-    name: '',
-    modelRange: '200km',
-    availability: 'Upcoming',
-    shortDescription: null,
-    heroImage: null,
-    stats: [],
-    colors: [],
-  },
-  {
-    id: 'placeholder-120',
-    slug: null,
-    name: '',
-    modelRange: '120km',
-    availability: 'Upcoming',
-    shortDescription: null,
-    heroImage: null,
-    stats: [],
-    colors: [],
-  },
-]
+// No database yet: built from the client-verified catalog (src/lib/catalog.ts).
+const defaultModels: ModelOption[] = catalog.map((model) => ({
+  id: `catalog-${model.slug}`,
+  slug: model.status === 'Available' ? model.slug : null,
+  name: model.status === 'Available' ? model.name : '',
+  modelRange: model.modelRange,
+  availability: model.status,
+  shortDescription: null,
+  heroImage: model.heroImage,
+  stats: buildStats(model.heroStats),
+  colors: model.colors.map((color) => ({
+    colorName: color.colorName,
+    swatchHex: color.swatchHex,
+    video: color.video ?? null,
+    angleImages: color.image ? [{ angleLabel: 'Front', image: color.image }] : [],
+  })),
+}))
+
+const descriptionKey = (model: ModelOption) =>
+  model.availability !== 'Available'
+    ? 'upcomingDescription'
+    : model.id === 'catalog-neptune-ev-cargo'
+      ? 'cargoDescription'
+      : 'flagshipDescription'
 
 const ModelSelector = async () => {
   const locale = (await getLocale()) as AppLocale
@@ -162,9 +124,7 @@ const ModelSelector = async () => {
   const localized = models.map((model) => ({
     ...model,
     name: model.name || t('rangeModel', { range: model.modelRange }),
-    shortDescription:
-      model.shortDescription ??
-      (model.availability === 'Available' ? t('flagshipDescription') : t('upcomingDescription')),
+    shortDescription: model.shortDescription ?? t(descriptionKey(model)),
     stats: model.stats.map((stat) => ({ ...stat, label: ts(stat.label) })),
   }))
 
