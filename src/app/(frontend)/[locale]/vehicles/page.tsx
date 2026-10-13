@@ -87,13 +87,9 @@ const VehiclesPage = async ({ params }: PageProps) => {
                   {catalog.map((model) => (
                     <tr key={model.slug} className="tw:border-t tw:border-brand-ink/10">
                       <th scope="row" className="tw:px-4 tw:py-3 tw:font-semibold tw:text-brand-ink">
-                        {model.status === 'Available' ? (
-                          <Link href={`/vehicles/${model.slug}`} className="tw:text-brand-blue tw:underline-offset-2 tw:hover:underline">
-                            {model.name}
-                          </Link>
-                        ) : (
-                          model.name
-                        )}
+                        <Link href={`/vehicles/${model.slug}`} className="tw:text-brand-blue tw:underline-offset-2 tw:hover:underline">
+                          {model.name}
+                        </Link>
                       </th>
                       {model.status === 'Available' ? (
                         <>
@@ -105,7 +101,11 @@ const VehiclesPage = async ({ params }: PageProps) => {
                           <td className="tw:px-4 tw:py-3 tw:font-semibold tw:text-brand-ink">{model.price ? formatLkr(model.price, locale) : '—'}</td>
                         </>
                       ) : (
-                        <td colSpan={6} className="tw:px-4 tw:py-3 tw:text-brand-ink/50">{t('comingSoon')}</td>
+                        <td colSpan={6} className="tw:px-4 tw:py-3">
+                          <span className="tw:rounded-full tw:bg-brand-blue/10 tw:px-3 tw:py-1 tw:text-xs tw:font-bold tw:text-brand-blue">
+                            {t('comingSoon')}
+                          </span>
+                        </td>
                       )}
                     </tr>
                   ))}

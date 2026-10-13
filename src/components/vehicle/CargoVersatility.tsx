@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { animate, onScroll } from 'animejs'
+import { animate } from 'animejs'
 import { useInViewVideo } from '@/lib/useInViewVideo'
+import { prefersReducedMotion, revealOnScroll } from '@/lib/reveal'
 
 type Mode = 'passenger' | 'cargo'
 
@@ -21,23 +22,20 @@ const CargoVersatility = () => {
   // Fetch/play only near the viewport; re-attach when the mode swaps the <video>.
   useInViewVideo(videoRef, true, mode)
 
-  useEffect(() => {
-    if (!visualRef.current) return
-    const animation = animate(visualRef.current, {
-      opacity: [0, 1],
-      translateX: [200, 0],
-      scale: [0.92, 1],
-      duration: 1100,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: visualRef.current }),
-    })
-    return () => {
-      animation.revert()
-    }
-  }, [])
+  useEffect(
+    () =>
+      revealOnScroll(visualRef.current, visualRef.current, {
+        opacity: [0, 1],
+        translateX: [200, 0],
+        scale: [0.92, 1],
+        duration: 1100,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   useEffect(() => {
-    if (!panelRef.current) return
+    if (!panelRef.current || prefersReducedMotion()) return
     const animation = animate(panelRef.current, {
       opacity: [0, 1],
       translateY: [16, 0],
@@ -82,7 +80,7 @@ const CargoVersatility = () => {
           </div>
         </div>
 
-        <div ref={visualRef} className="tw:opacity-0">
+        <div ref={visualRef}>
           <div ref={panelRef} key={mode} className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:p-6">
             {/* Both clips are 16:9 on white — keep the full frame and the same size when switching tabs. */}
             <div className="tw:relative tw:aspect-video tw:w-full tw:overflow-hidden tw:rounded-xl tw:bg-white">

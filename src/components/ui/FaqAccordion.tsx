@@ -25,7 +25,7 @@ const FaqAccordion = ({ items, defaultOpen = 0 }: FaqAccordionProps) => {
           <div
             key={item.question}
             className={`tw:rounded-2xl tw:border tw:bg-surface tw:transition-[border-color,box-shadow] tw:duration-200 ${
-              isOpen ? 'tw:border-brand-blue/40 tw:shadow-[0_12px_30px_-18px_rgba(37,99,235,0.45)]' : 'tw:border-brand-ink/10'
+              isOpen ? 'tw:border-brand-blue/40 tw:shadow-accent' : 'tw:border-brand-ink/10'
             }`}
           >
             <h3 className="tw:m-0">

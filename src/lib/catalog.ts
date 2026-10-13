@@ -1,3 +1,4 @@
+import type { AppLocale } from '@/i18n/routing'
 import type { Specs, Charging } from './specs'
 
 /**
@@ -34,6 +35,8 @@ export type CatalogModel = {
   /** Estimated monthly petrol saving vs a petrol three-wheeler (client figure). */
   monthlySaving?: number | null
   heroImage: { url: string; alt: string } | null
+  /** Full-bleed studio photo for the home pricing card; falls back to `heroImage` (shown contained). */
+  pricingImage?: { url: string; alt: string } | null
   heroStats: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'gradeability', { value: number; unit: string }>>
   keyFacts: Array<{ label: string; value: string }>
   features: string[]
@@ -49,6 +52,7 @@ export const WARRANTY = { vehicle: '2 years / 50,000 km', battery: '5 years, unl
 
 /** Client campaign figures used across the site (running cost, finance offer). */
 export const RUNNING_COST = { monthlyElectricity: 12_000, monthlyKm: 5_500 }
+// TODO(client): offer validity date and full eligibility wording — not shown until supplied.
 export const GARUDAN_ZERO_FINANCE = { maxLoan: 1_000_000, monthly: 20_000, months: 50, families: 200 }
 
 const passengerSpecs: Specs = {
@@ -97,6 +101,10 @@ export const catalog: CatalogModel[] = [
     priceNote: 'Including VAT',
     monthlySaving: 100_000,
     heroImage: { url: '/images/auto/neptune-blue-1.webp', alt: 'Neptune Long Range 300 km electric three-wheeler in blue' },
+    pricingImage: {
+      url: '/images/auto/neptune-300km-studio-blue.webp',
+      alt: 'Neptune Long Range 300 km electric three-wheeler in light blue, studio view',
+    },
     heroStats: {
       range: { value: 300, unit: 'km' },
       topSpeed: { value: 60, unit: 'km/h' },
@@ -247,6 +255,9 @@ export const catalog: CatalogModel[] = [
 ]
 
 export const availableModels = catalog.filter((model) => model.status === 'Available')
+
+/** Languages the catalog model copy is written in (only English so far; si/ta pages are noindex). */
+export const catalogModelLocales: readonly AppLocale[] = ['en']
 export const getCatalogModel = (slug: string) => catalog.find((model) => model.slug === slug) || null
 
 /** Catalog model → the shape `VehicleCard` renders (used while there is no database). */

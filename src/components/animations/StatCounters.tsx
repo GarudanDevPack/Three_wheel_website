@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { animate, stagger } from 'animejs'
+import { prefersReducedMotion } from '@/lib/reveal'
 
 export type Stat = { label: string; value: number; unit?: string }
 
@@ -9,7 +10,7 @@ const StatCounters = ({ stats }: { stats: Stat[] }) => {
   const valueRefs = useRef<Array<HTMLSpanElement | null>>([])
 
   useEffect(() => {
-    if (!stats.length) return
+    if (!stats.length || prefersReducedMotion()) return
 
     const targets = stats.map(() => ({ value: 0 }))
     // Keep the source's decimal places (e.g. 27.8 %), so the counter never rounds a published figure.
@@ -45,7 +46,8 @@ const StatCounters = ({ stats }: { stats: Stat[] }) => {
                 valueRefs.current[index] = el
               }}
             >
-              0
+              {/* Real figure in the HTML (crawlers, no-JS, reduced motion); the effect counts up to it. */}
+              {stat.value}
             </span>
             {stat.unit && (
               <span className="tw:ml-1 tw:text-base tw:font-semibold tw:text-white/70">

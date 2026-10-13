@@ -10,6 +10,8 @@ import { getPayloadClient } from '@/lib/payload'
 import { getPageMetadata } from '@/lib/pageSeo'
 import { getSiteSettings } from '@/lib/siteSettings'
 import { getFallbackDealers } from '@/lib/dealers'
+import JsonLd from '@/components/seo/JsonLd'
+import { breadcrumbJsonLd } from '@/lib/jsonLd'
 
 export const revalidate = 300
 
@@ -24,7 +26,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 const DealersPage = async ({ params }: PageProps) => {
   const { locale } = await params
   setRequestLocale(locale)
-  const [t, tDealers] = await Promise.all([getTranslations('DealersPage'), getTranslations('Dealers')])
+  const [t, tDealers, tc] = await Promise.all([
+    getTranslations('DealersPage'),
+    getTranslations('Dealers'),
+    getTranslations('Breadcrumbs'),
+  ])
   let dealers: Dealer[] = []
 
   try {
@@ -39,6 +45,7 @@ const DealersPage = async ({ params }: PageProps) => {
 
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd(locale, tc('home'), [{ name: tc('dealers'), path: '/dealers' }])} />
       <Preloader />
       <Header />
       <main className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">

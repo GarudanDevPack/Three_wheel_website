@@ -20,6 +20,13 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // One canonical host: bare domain → www (Vercel already forces HTTPS).
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "neptunesl.lk" }],
+        destination: "https://www.neptunesl.lk/:path*",
+        permanent: true,
+      },
       { source: "/press", destination: "/news", permanent: true },
       { source: "/:locale(si|ta)/press", destination: "/:locale/news", permanent: true },
       // Old flagship URL → the SEO model URL.
@@ -29,6 +36,14 @@ const nextConfig = {
       { source: "/en", destination: "/", permanent: true },
       { source: "/en/:path*", destination: "/:path*", permanent: true },
     ];
+  },
+  // Search, filter and preview variants of a page must not be indexed (the clean URL is canonical).
+  async headers() {
+    return ["q", "filter", "preview", "draft"].map((key) => ({
+      source: "/:path*",
+      has: [{ type: "query", key }],
+      headers: [{ key: "X-Robots-Tag", value: "noindex, follow" }],
+    }));
   },
   // English pages are served from the [locale] segment without a /en prefix.
   // Done with rewrites rather than middleware: Next 15.3's edge middleware runtime

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import AssistantChat, { type AssistantContacts } from './AssistantChat'
 
 // Section id → invitation message under `FloatingWidget` (home page). Other pages use `greeting`.
@@ -95,7 +95,8 @@ const AssistantLauncher = ({ contacts }: { contacts: AssistantContacts }) => {
   const message = !open && !bubbleHidden && messageKey ? t(messageKey) : null
 
   return (
-    <>
+    // "user": transform animations (bob, pop-in) are skipped for reduced-motion visitors.
+    <MotionConfig reducedMotion="user">
       <AnimatePresence>{open && <AssistantChat contacts={contacts} onClose={closeChat} />}</AnimatePresence>
 
       <div className="tw:pointer-events-none tw:fixed tw:bottom-6 tw:right-6 tw:z-[70] tw:flex tw:items-end tw:gap-3">
@@ -146,7 +147,10 @@ const AssistantLauncher = ({ contacts }: { contacts: AssistantContacts }) => {
           className="tw:pointer-events-auto tw:relative tw:h-16 tw:w-16 tw:shrink-0 tw:cursor-pointer tw:rounded-full tw:border-0 tw:bg-transparent tw:p-0 tw:shadow-[0_12px_30px_-8px_rgba(11,14,20,0.55)]"
         >
           {!seen && !open && (
-            <span aria-hidden="true" className="tw:absolute tw:inset-0 tw:animate-ping tw:rounded-full tw:bg-brand-blue/40" />
+            <span
+              aria-hidden="true"
+              className="tw:absolute tw:inset-0 tw:animate-ping tw:rounded-full tw:motion-reduce:hidden tw:bg-brand-blue/40"
+            />
           )}
           <Image
             src="/images/assistant/neptune-assistant-192.webp"
@@ -165,7 +169,7 @@ const AssistantLauncher = ({ contacts }: { contacts: AssistantContacts }) => {
           )}
         </motion.button>
       </div>
-    </>
+    </MotionConfig>
   )
 }
 

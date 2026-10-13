@@ -8,6 +8,8 @@ import SectionBackdrop from '@/components/ui/SectionBackdrop'
 import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { getPageMetadata } from '@/lib/pageSeo'
+import JsonLd from '@/components/seo/JsonLd'
+import { faqPageJsonLd } from '@/lib/jsonLd'
 
 export const revalidate = 300
 
@@ -29,19 +31,11 @@ const AboutPage = async ({ params }: PageProps) => {
   const caps = locale === 'en' ? 'tw:uppercase tw:tracking-widest' : ''
 
   const faqs = faqKeys.map((key) => ({ question: t(`faq.${key}.q`), answer: t(`faq.${key}.a`) }))
-  const faqJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqs.map((faq) => ({
-      '@type': 'Question',
-      name: faq.question,
-      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-    })),
-  }
+  const faqJsonLd = faqPageJsonLd(faqs)
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <JsonLd data={faqJsonLd} />
       <Preloader />
       <Header />
       <main>

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isLoggedIn } from './access'
+import { seoField } from '../fields/seo'
 
 const toSlug = (value: string) =>
   value
@@ -73,13 +74,7 @@ export const News: CollectionConfig = {
         { name: 'url', type: 'text' },
       ],
     },
-    {
-      name: 'seo',
-      type: 'group',
-      fields: [
-        { name: 'metaTitle', type: 'text', localized: true },
-        { name: 'metaDescription', type: 'textarea', localized: true },
-      ],
-    },
+    // The cover image is the link preview for articles.
+    seoField({ ogImage: false }),
   ],
 }

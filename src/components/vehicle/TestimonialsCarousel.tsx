@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { animate, onScroll } from 'animejs'
+import { animate } from 'animejs'
+import { prefersReducedMotion, revealOnScroll } from '@/lib/reveal'
 import SectionBackdrop from '@/components/ui/SectionBackdrop'
 
 export type TestimonialItem = {
@@ -43,22 +44,19 @@ const TestimonialsCarousel = ({ items }: { items: TestimonialItem[] }) => {
 
   const go = useCallback((next: number) => setIndex((next + count) % count), [count])
 
-  useEffect(() => {
-    if (!sectionRef.current) return
-    const animation = animate(sectionRef.current, {
-      opacity: [0, 1],
-      translateY: [32, 0],
-      duration: 700,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: sectionRef.current }),
-    })
-    return () => {
-      animation.revert()
-    }
-  }, [])
+  useEffect(
+    () =>
+      revealOnScroll(sectionRef.current, sectionRef.current, {
+        opacity: [0, 1],
+        translateY: [32, 0],
+        duration: 700,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   useEffect(() => {
-    if (!cardRef.current) return
+    if (!cardRef.current || prefersReducedMotion()) return
     const animation = animate(cardRef.current, {
       opacity: [0, 1],
       translateY: [14, 0],
@@ -71,7 +69,8 @@ const TestimonialsCarousel = ({ items }: { items: TestimonialItem[] }) => {
   }, [index])
 
   useEffect(() => {
-    if (count < 2 || paused) return
+    // No auto-advance for visitors who asked for reduced motion; the arrows still work.
+    if (count < 2 || paused || prefersReducedMotion()) return
     const timer = window.setTimeout(() => go(index + 1), AUTO_ADVANCE_MS)
     return () => window.clearTimeout(timer)
   }, [index, paused, count, go])
@@ -81,7 +80,7 @@ const TestimonialsCarousel = ({ items }: { items: TestimonialItem[] }) => {
       <SectionBackdrop src="/images/auto/night-ride.webp" variant="soft" base="surface-raised" />
       <div
         ref={sectionRef}
-        className="tw:relative tw:z-10 tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center tw:opacity-0"
+        className="tw:relative tw:z-10 tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
@@ -104,7 +103,7 @@ const TestimonialsCarousel = ({ items }: { items: TestimonialItem[] }) => {
             ref={cardRef}
             key={active.id}
             aria-live="polite"
-            className="tw:m-0 tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface/90 tw:px-6 tw:py-10 tw:shadow-[0_20px_50px_-24px_rgba(11,14,20,0.3)] tw:backdrop-blur tw:sm:px-12"
+            className="tw:m-0 tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface/90 tw:px-6 tw:py-10 tw:shadow-card tw:backdrop-blur tw:sm:px-12"
           >
             <div className="tw:flex tw:justify-center tw:gap-1" aria-label={t('rating', { rating: active.rating })}>
               {Array.from({ length: 5 }, (_, star) => (

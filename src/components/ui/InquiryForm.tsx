@@ -3,9 +3,13 @@
 import { useEffect, useRef } from 'react'
 import { useActionState } from 'react'
 import { useTranslations } from 'next-intl'
-import { animate, stagger, onScroll } from 'animejs'
+import { stagger } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 import { submitInquiry, type InquiryFormState, type InquiryType } from '@/app/(frontend)/actions/inquiries'
 import { trackEvent } from '@/lib/analytics'
+import { Link } from '@/i18n/navigation'
+import { catalog } from '@/lib/catalog'
+import { jaffnaDealer } from '@/lib/dealers'
 import SectionVideoBackdrop from './SectionVideoBackdrop'
 
 const initialState: InquiryFormState = { status: 'idle' }
@@ -98,47 +102,45 @@ const InquiryForm = ({
   const heading = title || t('title')
   const intro = description || t('description')
 
+  // What was sent, for the GA4 events once the server confirms the submission.
+  const submitted = useRef<{ type: string; model: string; dealer: string }>({ type: defaultType, model: '', dealer: '' })
+
   useEffect(() => {
-    if (state.status === 'success') trackEvent('generate_lead', { inquiry_type: defaultType })
-  }, [state.status, defaultType])
+    if (state.status !== 'success') return
+    const { type, model, dealer } = submitted.current
+    trackEvent('generate_lead', { inquiry_type: type })
+    trackEvent('test_drive_submit', { inquiry_type: type, model: model || 'not_set', dealer: dealer || 'not_set' })
+  }, [state])
 
   useEffect(() => {
     if (compact) return
     const section = sectionRef.current
-    const card = cardRef.current
-    const introItems = section?.querySelectorAll('[data-intro-item]')
-    if (!section || !card) return
-
-    const animations = [
-      animate(card, {
+    const cleanups = [
+      revealOnScroll(section, cardRef.current, { opacity: [0, 1], translateY: [40, 0], duration: 600, ease: 'outQuad' }),
+      revealOnScroll(section, section?.querySelectorAll('[data-intro-item]'), {
         opacity: [0, 1],
-        translateY: [40, 0],
+        translateY: [24, 0],
+        delay: stagger(100),
         duration: 600,
         ease: 'outQuad',
-        autoplay: onScroll({ target: section }),
       }),
     ]
-
-    if (introItems?.length) {
-      animations.push(
-        animate(introItems, {
-          opacity: [0, 1],
-          translateY: [24, 0],
-          delay: stagger(100),
-          duration: 600,
-          ease: 'outQuad',
-          autoplay: onScroll({ target: section }),
-        }),
-      )
-    }
-
-    return () => {
-      animations.forEach((animation) => animation.revert())
-    }
+    return () => cleanups.forEach((cleanup) => cleanup())
   }, [compact])
 
   const form = (
-    <form action={formAction} className="tw:grid tw:gap-4 tw:sm:grid-cols-2">
+    <form
+      action={formAction}
+      onSubmit={(event) => {
+        const data = new FormData(event.currentTarget)
+        submitted.current = {
+          type: String(data.get('type') || defaultType),
+          model: String(data.get('model') || relatedVehicleName || ''),
+          dealer: String(data.get('dealer') || ''),
+        }
+      }}
+      className="tw:grid tw:gap-4 tw:sm:grid-cols-2"
+    >
       {relatedVehicleId && <input type="hidden" name="relatedVehicle" value={relatedVehicleId} />}
       {lockType ? (
         <input type="hidden" name="type" value={defaultType} />
@@ -177,6 +179,45 @@ const InquiryForm = ({
           <input id="inquiry-phone" name="phone" required placeholder="077 123 4567" className={fieldClasses} />
         </div>
       </div>
+      {!relatedVehicleId && (
+        <div>
+          <label htmlFor="inquiry-model" className={labelClasses}>
+            {t('modelLabel')}
+          </label>
+          <div className={fieldRowClasses}>
+            <TagIcon />
+            <select id="inquiry-model" name="model" defaultValue="" className={fieldClasses}>
+              <option value="" className="tw:text-brand-ink">
+                {t('modelAny')}
+              </option>
+              {catalog.map((model) => (
+                <option key={model.slug} value={model.name} className="tw:text-brand-ink">
+                  {model.status === 'Available' ? model.name : `${model.name} (${t('upcoming')})`}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+      <div className={relatedVehicleId ? 'tw:sm:col-span-2' : undefined}>
+        <label htmlFor="inquiry-dealer" className={labelClasses}>
+          {t('dealerLabel')}
+        </label>
+        <div className={fieldRowClasses}>
+          <TagIcon />
+          <select id="inquiry-dealer" name="dealer" defaultValue="" className={fieldClasses}>
+            <option value="" className="tw:text-brand-ink">
+              {t('dealerAny')}
+            </option>
+            <option value="Head office" className="tw:text-brand-ink">
+              {t('dealerHeadOffice')}
+            </option>
+            <option value={jaffnaDealer.city} className="tw:text-brand-ink">
+              {t('dealerJaffna')}
+            </option>
+          </select>
+        </div>
+      </div>
       <div className="tw:sm:col-span-2">
         <label htmlFor="inquiry-email" className={labelClasses}>
           {t('emailLabel')}
@@ -204,6 +245,15 @@ const InquiryForm = ({
           />
         </div>
       </div>
+      <p className="tw:text-xs tw:leading-relaxed tw:text-brand-ink/55 tw:sm:col-span-2">
+        {t.rich('consent', {
+          privacy: (chunks) => (
+            <Link href="/privacy-policy" className="tw:font-semibold tw:text-brand-blue tw:underline tw:underline-offset-2">
+              {chunks}
+            </Link>
+          ),
+        })}
+      </p>
       <button
         type="submit"
         disabled={pending}
@@ -255,20 +305,20 @@ const InquiryForm = ({
       />
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
         <div>
-          <h2 data-intro-item className="tw:text-3xl tw:font-bold tw:opacity-0">
+          <h2 data-intro-item className="tw:text-3xl tw:font-bold">
             {heading}
           </h2>
-          <p data-intro-item className="tw:mt-2 tw:max-w-md tw:text-brand-ink/70 tw:opacity-0">
+          <p data-intro-item className="tw:mt-2 tw:max-w-md tw:text-brand-ink/70">
             {intro}
           </p>
           {relatedVehicleName && (
-            <p data-intro-item className="tw:mt-2 tw:text-sm tw:font-semibold tw:text-brand-blue-light tw:opacity-0">
+            <p data-intro-item className="tw:mt-2 tw:text-sm tw:font-semibold tw:text-brand-blue-light">
               {t('regarding', { name: relatedVehicleName })}
             </p>
           )}
           <ul className="tw:mt-8 tw:space-y-4 tw:p-0">
             {steps.map((step, index) => (
-              <li key={step} data-intro-item className="tw:flex tw:list-none tw:items-center tw:gap-3 tw:opacity-0">
+              <li key={step} data-intro-item className="tw:flex tw:list-none tw:items-center tw:gap-3">
                 <span className="tw:flex tw:h-7 tw:w-7 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue-light/15 tw:text-sm tw:font-semibold tw:text-brand-blue-light">
                   {index + 1}
                 </span>
@@ -284,7 +334,7 @@ const InquiryForm = ({
 
         <div
           ref={cardRef}
-          className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:p-8 tw:opacity-0"
+          className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:p-8"
         >
           {form}
           {status}

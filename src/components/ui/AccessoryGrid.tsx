@@ -3,7 +3,8 @@
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { animate, stagger, onScroll } from 'animejs'
+import { stagger } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 import SectionBackdrop from '@/components/ui/SectionBackdrop'
 
 export type Accessory = {
@@ -17,24 +18,17 @@ const AccessoryGrid = ({ accessories }: { accessories: Accessory[] }) => {
   const t = useTranslations('VehicleDetail')
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const container = containerRef.current
-    const tiles = container?.querySelectorAll('[data-accessory-card]')
-    if (!container || !tiles?.length) return
-
-    const animation = animate(tiles, {
-      opacity: [0, 1],
-      translateY: [40, 0],
-      delay: stagger(100),
-      duration: 600,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: container }),
-    })
-
-    return () => {
-      animation.revert()
-    }
-  }, [])
+  useEffect(
+    () =>
+      revealOnScroll(containerRef.current, containerRef.current?.querySelectorAll('[data-accessory-card]'), {
+        opacity: [0, 1],
+        translateY: [40, 0],
+        delay: stagger(100),
+        duration: 600,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   if (!accessories.length) return null
 
@@ -48,7 +42,7 @@ const AccessoryGrid = ({ accessories }: { accessories: Accessory[] }) => {
             <div
               key={accessory.id}
               data-accessory-card
-              className="tw:group tw:overflow-hidden tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface tw:opacity-0 tw:transition tw:duration-300 tw:hover:-translate-y-1 tw:hover:shadow-lg"
+              className="tw:group tw:overflow-hidden tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface tw:transition tw:duration-300 tw:hover:-translate-y-1 tw:hover:shadow-lg"
             >
               {accessory.image?.url && (
                 <div className="tw:relative tw:aspect-square tw:overflow-hidden">

@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isLoggedIn } from './access'
+import { seoField } from '../fields/seo'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -15,14 +16,6 @@ export const Pages: CollectionConfig = {
   },
   fields: [
     { name: 'slug', type: 'text', required: true, unique: true, index: true },
-    {
-      name: 'seo',
-      type: 'group',
-      fields: [
-        { name: 'metaTitle', type: 'text', localized: true },
-        { name: 'metaDescription', type: 'textarea', localized: true },
-        { name: 'ogImage', type: 'upload', relationTo: 'media' },
-      ],
-    },
+    seoField(),
   ],
 }

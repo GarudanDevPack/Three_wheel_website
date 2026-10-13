@@ -8,6 +8,8 @@ import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { getPageMetadata } from '@/lib/pageSeo'
 import { getSiteSettings } from '@/lib/siteSettings'
+import JsonLd from '@/components/seo/JsonLd'
+import { faqPageJsonLd } from '@/lib/jsonLd'
 
 export const revalidate = 300
 
@@ -29,23 +31,13 @@ const FaqPage = async ({ params }: PageProps) => {
   const groups = t.raw('groups') as FaqGroup[]
 
   // The site's one FAQPage block: every question on this page.
-  const faqJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: groups.flatMap((group) =>
-      group.items.map((item) => ({
-        '@type': 'Question',
-        name: item.question,
-        acceptedAnswer: { '@type': 'Answer', text: item.answer },
-      })),
-    ),
-  }
+  const faqJsonLd = faqPageJsonLd(groups.flatMap((group) => group.items))
 
   const phones = [settings.phone, ...settings.otherPhones]
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <JsonLd data={faqJsonLd} />
       <Preloader />
       <Header />
       <main>

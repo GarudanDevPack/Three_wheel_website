@@ -3,12 +3,14 @@
 import { useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { useInViewVideo } from '@/lib/useInViewVideo'
+import { webmFor } from '@/lib/media'
 
 const ColorVideoSpin = ({ src, label }: { src: string; label: string }) => {
   const t = useTranslations('Viewer')
   const videoRef = useRef<HTMLVideoElement>(null)
   // Only fetch/play the turntable once it is near the viewport.
   useInViewVideo(videoRef, true, src)
+  const webm = webmFor(src)
 
   return (
     <div className="tw:select-none">
@@ -23,6 +25,7 @@ const ColorVideoSpin = ({ src, label }: { src: string; label: string }) => {
           aria-label={t('turntable', { label })}
           className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover"
         >
+          {webm && <source src={webm} type="video/webm" />}
           <source src={src} type="video/mp4" />
         </video>
       </div>

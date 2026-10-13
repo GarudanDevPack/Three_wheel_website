@@ -19,12 +19,13 @@
   in preflight's broader box-sizing/margin resets.
 */
 @layer base {
-  /* The Google Fonts <link> in the root layout loads these; without this rule
-     the browser falls back to its default serif. Noto covers Sinhala/Tamil. */
+  /* Font variables come from next/font in the locale layout (self-hosted). Noto covers Sinhala/Tamil
+     and is only defined on those language pages, so the fallbacks below are skipped elsewhere. */
   :root {
-    --neptune-font-sans: 'Inter', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui, sans-serif;
-    --neptune-font-display: 'Red Hat Display', 'Noto Sans Sinhala', 'Noto Sans Tamil', system-ui,
-      sans-serif;
+    --neptune-font-sans: var(--font-inter), var(--font-noto-sinhala, system-ui), var(--font-noto-tamil, system-ui),
+      system-ui, sans-serif;
+    --neptune-font-display: var(--font-red-hat), var(--font-noto-sinhala, system-ui),
+      var(--font-noto-tamil, system-ui), system-ui, sans-serif;
   }
   body {
     margin: 0;
@@ -41,6 +42,14 @@
   a {
     color: inherit;
     text-decoration: inherit;
+  }
+  /* One keyboard focus ring sitewide: blue outline over a white halo, so it reads on light
+     sections, dark bands and blue panels alike. Utilities (e.g. tw:outline-none + a custom ring
+     on inputs) still win because they sit in a later layer. */
+  :where(a, button, input, select, textarea, summary, [role='tab'], [tabindex]:not([tabindex='-1'])):focus-visible {
+    outline: 2px solid var(--color-brand-blue);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px #fff;
   }
   button,
   input,
@@ -156,6 +165,49 @@
   .gallery-marquee:hover {
     animation-play-state: paused;
   }
+
+  /* Hero entrance (HeroEntrance.tsx): CSS-only so the headline never waits on JavaScript.
+     Duration/delay come from inline styles. */
+  @keyframes hero-enter-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+  @keyframes hero-enter-scale {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+  }
+  @keyframes hero-enter-drive {
+    from {
+      opacity: 0;
+      transform: translateX(160px);
+    }
+  }
+  .hero-enter-up,
+  .hero-enter-scale {
+    animation: hero-enter-up 0.6s ease-out both;
+  }
+  .hero-enter-scale {
+    animation-name: hero-enter-scale;
+  }
+  /* Slight overshoot, like the spring it replaces. */
+  .hero-enter-drive {
+    animation: hero-enter-drive 0.8s cubic-bezier(0.22, 1.25, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-sweep,
+    .charger-pulse,
+    .gallery-marquee,
+    .hero-enter-up,
+    .hero-enter-scale,
+    .hero-enter-drive {
+      animation: none;
+    }
+  }
 }
 
 @theme {
@@ -177,4 +229,11 @@
      together with the brand-blue accent. */
   --color-surface: #f5f9ff;
   --color-surface-raised: #e9f1fb;
+
+  /* Elevation scale — use these instead of one-off shadow-[…] values.
+     card: resting panels/tables · raised: floating media and featured panels · accent: blue glow
+     for the one highlighted item (selected price card, open FAQ). */
+  --shadow-card: 0 20px 50px -24px rgb(11 14 20 / 0.25);
+  --shadow-raised: 0 30px 60px -30px rgb(11 14 20 / 0.35);
+  --shadow-accent: 0 20px 45px -20px rgb(37 99 235 / 0.5);
 }

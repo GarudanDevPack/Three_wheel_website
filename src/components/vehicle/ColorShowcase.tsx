@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { animate } from 'animejs'
+import { prefersReducedMotion } from '@/lib/reveal'
 import { type AngleImage } from '@/components/animations/ColorSpin360'
 import ColorSpin360 from '@/components/animations/LazyColorSpin360'
 import ColorVideoSpin from '@/components/animations/LazyColorVideoSpin'
@@ -19,7 +20,7 @@ const ColorShowcase = ({ colors }: { colors: ShowcaseColor[] }) => {
   const active = colors[activeIndex] || colors[0]
 
   useEffect(() => {
-    if (!panelRef.current) return
+    if (!panelRef.current || prefersReducedMotion()) return
     const animation = animate(panelRef.current, {
       opacity: [0, 1],
       translateY: [16, 0],
@@ -38,7 +39,7 @@ const ColorShowcase = ({ colors }: { colors: ShowcaseColor[] }) => {
       <div
         key={active.colorName}
         ref={panelRef}
-        className="tw:w-full tw:max-w-md tw:overflow-hidden tw:rounded-2xl tw:border tw:border-brand-blue-light/20 tw:bg-brand-ink tw:p-4 tw:shadow-[0_0_24px_-6px_rgba(56,225,255,0.35)]"
+        className="tw:w-full tw:max-w-md tw:overflow-hidden tw:rounded-2xl tw:border tw:border-brand-blue-light/20 tw:bg-brand-ink tw:p-4 tw:shadow-accent"
       >
         {active.video ? (
           <ColorVideoSpin src={active.video} label={active.colorName} />

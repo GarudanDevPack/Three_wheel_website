@@ -1,7 +1,7 @@
 import { cache } from 'react'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import { getPayloadClient } from './payload'
-import type { AppLocale } from '@/i18n/routing'
+import { routing, type AppLocale } from '@/i18n/routing'
 
 export type NewsItem = {
   id: string
@@ -546,3 +546,14 @@ export const getNewsBySlug = cache(async (locale: AppLocale, slug: string): Prom
   const item = fallbackNews.find((entry) => entry.slug === slug)
   return item ? localize(item, locale) : null
 })
+
+/**
+ * Languages an article really exists in. Built-in articles without a Sinhala/Tamil version would show
+ * English text on /si and /ta, so those pages are noindex and left out of hreflang and the sitemap.
+ * CMS articles are translated in the admin, so all languages are assumed.
+ */
+export const newsLocales = (slug: string): AppLocale[] => {
+  const builtIn = fallbackNews.find((item) => item.slug === slug)
+  if (!builtIn) return [...routing.locales]
+  return routing.locales.filter((code) => code === 'en' || Boolean(builtIn.translations?.[code]))
+}

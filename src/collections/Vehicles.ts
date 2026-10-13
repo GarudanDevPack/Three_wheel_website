@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { isLoggedIn } from './access'
+import { seoField } from '../fields/seo'
 
 const specFields: CollectionConfig['fields'] = [
   {
@@ -341,14 +342,6 @@ export const Vehicles: CollectionConfig = {
     { name: 'brochurePdf', type: 'upload', relationTo: 'media' },
     { name: 'maintenanceSchedulePdf', type: 'upload', relationTo: 'media' },
     { name: 'warrantyPolicyPdf', type: 'upload', relationTo: 'media' },
-    {
-      name: 'seo',
-      type: 'group',
-      fields: [
-        { name: 'metaTitle', type: 'text', localized: true },
-        { name: 'metaDescription', type: 'textarea', localized: true },
-        { name: 'ogImage', type: 'upload', relationTo: 'media' },
-      ],
-    },
+    seoField(),
   ],
 }

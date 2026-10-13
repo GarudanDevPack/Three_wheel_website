@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { animate, stagger, onScroll } from 'animejs'
+import { stagger } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 
 type Dealer = { name: string; city?: string; address?: string; phone?: string; phone2?: string }
 
@@ -25,38 +26,24 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
 
   useEffect(() => {
     const section = sectionRef.current
-    const container = containerRef.current
-    const cards = container?.querySelectorAll('[data-dealer-card]')
-    if (!section || !container || !cards?.length) return
-
-    const animations = [
-      animate(cards, {
+    const cleanups = [
+      revealOnScroll(section, containerRef.current?.querySelectorAll('[data-dealer-card]'), {
         opacity: [0, 1],
         translateY: [40, 0],
         delay: stagger(120),
         duration: 600,
         ease: 'outQuad',
-        autoplay: onScroll({ target: section }),
+      }),
+      // Slides in from beyond the right edge as the section scrolls into view.
+      revealOnScroll(section, photoRef.current, {
+        opacity: [0, 1],
+        translateX: ['60%', '0%'],
+        scale: [0.96, 1],
+        duration: 900,
+        ease: 'outCubic',
       }),
     ]
-
-    if (photoRef.current) {
-      animations.push(
-        // Slides in from beyond the right edge as the section scrolls into view.
-        animate(photoRef.current, {
-          opacity: [0, 1],
-          translateX: ['60%', '0%'],
-          scale: [0.96, 1],
-          duration: 900,
-          ease: 'outCubic',
-          autoplay: onScroll({ target: section }),
-        }),
-      )
-    }
-
-    return () => {
-      animations.forEach((animation) => animation.revert())
-    }
+    return () => cleanups.forEach((cleanup) => cleanup())
   }, [])
 
   return (
@@ -66,7 +53,7 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
           <div
             key={dealer.name}
             data-dealer-card
-            className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface tw:p-6 tw:opacity-0 tw:transition tw:hover:border-brand-ink/20"
+            className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface tw:p-6 tw:transition tw:hover:border-brand-ink/20"
           >
             <div className="tw:flex tw:items-center tw:gap-3">
               <span className="tw:flex tw:h-10 tw:w-10 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue/15">
@@ -116,7 +103,7 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
       </div>
 
       {/* Floating studio stage: background-free vehicle, ground shadow and colour dots (Elektrateq-style). */}
-      <div ref={photoRef} className="tw:relative tw:opacity-0 tw:md:pr-16">
+      <div ref={photoRef} className="tw:relative tw:md:pr-16">
         <div className="tw:relative tw:aspect-[16/12] tw:w-full tw:md:scale-110">
           <div
             aria-hidden="true"

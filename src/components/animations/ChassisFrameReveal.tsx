@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { animate, stagger, onScroll } from 'animejs'
+import { stagger } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 
 export type ChassisImage = { url: string; alt: string; caption?: string }
 
@@ -17,24 +18,17 @@ const ChassisFrameReveal = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const container = containerRef.current
-    const tiles = container?.querySelectorAll('[data-chassis-tile]')
-    if (!container || !tiles?.length) return
-
-    const animation = animate(tiles, {
-      opacity: [0, 1],
-      translateY: [40, 0],
-      delay: stagger(120),
-      duration: 600,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: container }),
-    })
-
-    return () => {
-      animation.revert()
-    }
-  }, [])
+  useEffect(
+    () =>
+      revealOnScroll(containerRef.current, containerRef.current?.querySelectorAll('[data-chassis-tile]'), {
+        opacity: [0, 1],
+        translateY: [40, 0],
+        delay: stagger(120),
+        duration: 600,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   if (!images.length) return null
 
@@ -51,7 +45,7 @@ const ChassisFrameReveal = ({
             <div
               key={index}
               data-chassis-tile
-              className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-brand-ink/10 tw:opacity-0"
+              className="tw:overflow-hidden tw:rounded-2xl tw:bg-surface tw:border tw:border-brand-ink/10"
             >
               <div className="tw:relative tw:aspect-[4/3]">
                 <Image

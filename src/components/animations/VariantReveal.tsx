@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { useRef, useState } from 'react'
 import { createTimeline } from 'animejs'
+import { prefersReducedMotion } from '@/lib/reveal'
 
 export type RevealVariant = {
   variantName: string
@@ -25,7 +26,7 @@ const VariantReveal = ({ variants }: { variants: RevealVariant[] }) => {
 
   const goTo = (index: number) => {
     const el = contentRef.current
-    if (!el) {
+    if (!el || prefersReducedMotion()) {
       setActiveIndex(index)
       return
     }
