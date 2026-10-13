@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { animate, onScroll } from 'animejs'
+import { prefersReducedMotion } from '@/lib/reveal'
 
 export type ExplodedPart = {
   partName: string
@@ -55,6 +56,13 @@ const BuildSequence = ({ parts }: { parts: ExplodedPart[] }) => {
         const rotate = lerp(exploded.rotate ?? 0, assembled.rotate ?? 0, state.progress)
         el.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`
       })
+    }
+
+    // Reduced motion: show the vehicle assembled, no scroll-driven movement.
+    if (prefersReducedMotion()) {
+      state.progress = 1
+      applyProgress()
+      return
     }
 
     applyProgress()

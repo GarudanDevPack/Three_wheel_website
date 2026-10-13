@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { animate, stagger, onScroll } from 'animejs'
+import { stagger } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 
 export type Award = {
   awardName: string
@@ -13,24 +14,17 @@ export type Award = {
 const AwardBadges = ({ awards }: { awards: Award[] }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const container = containerRef.current
-    const badges = container?.querySelectorAll('[data-award-badge]')
-    if (!container || !badges?.length) return
-
-    const animation = animate(badges, {
-      opacity: [0, 1],
-      translateY: [20, 0],
-      delay: stagger(80),
-      duration: 500,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: container }),
-    })
-
-    return () => {
-      animation.revert()
-    }
-  }, [])
+  useEffect(
+    () =>
+      revealOnScroll(containerRef.current, containerRef.current?.querySelectorAll('[data-award-badge]'), {
+        opacity: [0, 1],
+        translateY: [20, 0],
+        delay: stagger(80),
+        duration: 500,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   return (
     <div
@@ -41,7 +35,7 @@ const AwardBadges = ({ awards }: { awards: Award[] }) => {
         <div
           key={`${award.awardName}-${index}`}
           data-award-badge
-          className="tw:flex tw:flex-col tw:items-center tw:gap-2 tw:opacity-0"
+          className="tw:flex tw:flex-col tw:items-center tw:gap-2"
         >
           {award.awardImage?.url ? (
             <div className="tw:relative tw:h-16 tw:w-16">

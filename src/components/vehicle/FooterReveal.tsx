@@ -5,7 +5,8 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { openConsentSettings } from '@/lib/analytics'
 import { useInViewVideo } from '@/lib/useInViewVideo'
-import { animate, stagger, onScroll } from 'animejs'
+import { stagger } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 
 export type ContactRow = { type: 'address' | 'phone' | 'email'; label: string; href?: string }
 export type ContactGroup = { heading: string; rows: ContactRow[] }
@@ -60,34 +61,17 @@ const FooterReveal = ({
 
   useEffect(() => {
     const container = containerRef.current
-    const rows = container?.querySelectorAll('[data-contact-row]')
-    if (!container || !rows?.length) return
-
-    const animations = [
-      animate(rows, {
+    const cleanups = [
+      revealOnScroll(container, container?.querySelectorAll('[data-contact-row]'), {
         opacity: [0, 1],
         translateY: [40, 0],
         delay: stagger(120),
         duration: 600,
         ease: 'outQuad',
-        autoplay: onScroll({ target: container }),
       }),
+      revealOnScroll(container, mediaRef.current, { opacity: [0, 1], duration: 900, ease: 'outQuad' }),
     ]
-
-    if (mediaRef.current) {
-      animations.push(
-        animate(mediaRef.current, {
-          opacity: [0, 1],
-          duration: 900,
-          ease: 'outQuad',
-          autoplay: onScroll({ target: container }),
-        }),
-      )
-    }
-
-    return () => {
-      animations.forEach((animation) => animation.revert())
-    }
+    return () => cleanups.forEach((cleanup) => cleanup())
   }, [])
 
   // The footer is on every page, so only fetch and play the video once it is near the viewport.
@@ -95,7 +79,7 @@ const FooterReveal = ({
 
   return (
     <footer className="tw:relative tw:overflow-hidden tw:bg-brand-ink tw:text-white">
-      <div ref={mediaRef} className="tw:absolute tw:inset-0 tw:opacity-0">
+      <div ref={mediaRef} className="tw:absolute tw:inset-0">
         <video
           ref={videoRef}
           muted
@@ -122,11 +106,11 @@ const FooterReveal = ({
           <div className="tw:grid tw:max-w-2xl tw:gap-8 tw:md:grid-cols-2">
             {[{ heading: t('headOfficeHeading'), rows: contactRows }, ...branches].map((group) => (
               <div key={group.heading} className="tw:space-y-4">
-                <p data-contact-row className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wider tw:text-brand-blue-light tw:opacity-0">
+                <p data-contact-row className="tw:text-xs tw:font-semibold tw:uppercase tw:tracking-wider tw:text-brand-blue-light">
                   {group.heading}
                 </p>
                 {group.rows.map((row) => (
-                  <div key={`${row.type}-${row.label}`} data-contact-row className="tw:flex tw:items-center tw:gap-3 tw:opacity-0">
+                  <div key={`${row.type}-${row.label}`} data-contact-row className="tw:flex tw:items-center tw:gap-3">
                     <svg viewBox="0 0 24 24" className="tw:h-5 tw:w-5 tw:shrink-0" fill="none" aria-hidden="true">
                       {icons[row.type].icon}
                       {icons[row.type].extra}
@@ -143,7 +127,7 @@ const FooterReveal = ({
               </div>
             ))}
           </div>
-          <div data-contact-row className="tw:flex tw:items-center tw:gap-4 tw:opacity-0">
+          <div data-contact-row className="tw:flex tw:items-center tw:gap-4">
             {socialLinks.map((social) =>
               social.url ? (
                 <a

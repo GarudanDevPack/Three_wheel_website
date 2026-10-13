@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
-import { animate, stagger, onScroll } from 'animejs'
+import { animate, stagger } from 'animejs'
 import { Link } from '@/i18n/navigation'
+import { prefersReducedMotion, revealOnScroll } from '@/lib/reveal'
 
 // Copy for each tab lives under `Design.<key>.{label,headline,copy,alt}`.
 const tabs = [
@@ -26,43 +27,30 @@ const DesignShowcase = () => {
 
   useEffect(() => {
     const section = sectionRef.current
-    const items = section?.querySelectorAll('[data-design-intro]')
-    if (!section || !items?.length) return
-
-    const animations = [
-      animate(items, {
+    const cleanups = [
+      revealOnScroll(section, section?.querySelectorAll('[data-design-intro]'), {
         opacity: [0, 1],
         translateY: [24, 0],
         delay: stagger(100),
         duration: 600,
         ease: 'outQuad',
-        autoplay: onScroll({ target: section }),
+      }),
+      // The image frame slides in from the right once, as the section scrolls into view.
+      revealOnScroll(section, mediaRef.current, {
+        opacity: [0, 1],
+        translateX: ['60%', '0%'],
+        scale: [0.96, 1],
+        duration: 900,
+        ease: 'outCubic',
       }),
     ]
-
-    // The image frame slides in from the right once, as the section scrolls into view.
-    if (mediaRef.current) {
-      animations.push(
-        animate(mediaRef.current, {
-          opacity: [0, 1],
-          translateX: ['60%', '0%'],
-          scale: [0.96, 1],
-          duration: 900,
-          ease: 'outCubic',
-          autoplay: onScroll({ target: section }),
-        }),
-      )
-    }
-
-    return () => {
-      animations.forEach((animation) => animation.revert())
-    }
+    return () => cleanups.forEach((cleanup) => cleanup())
   }, [])
 
   // Tab switches only cross-fade the copy and the picture inside the (already visible) frame.
   useEffect(() => {
     const targets = [textRef.current, imageRef.current].filter((el): el is HTMLDivElement => Boolean(el))
-    if (!targets.length) return
+    if (!targets.length || prefersReducedMotion()) return
     const animation = animate(targets, {
       opacity: [0, 1],
       translateY: [16, 0],
@@ -82,7 +70,7 @@ const DesignShowcase = () => {
     >
 
       <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
-        <p data-design-intro className={`tw:text-sm tw:font-semibold tw:text-brand-blue tw:opacity-0 ${caps}`}>
+        <p data-design-intro className={`tw:text-sm tw:font-semibold tw:text-brand-blue ${caps}`}>
           {t('eyebrow')}
         </p>
 
@@ -100,7 +88,7 @@ const DesignShowcase = () => {
 
           <div
             ref={mediaRef}
-            className="tw:relative tw:aspect-[4/3] tw:w-full tw:overflow-hidden tw:rounded-2xl tw:bg-surface-raised/60 tw:opacity-0 tw:shadow-[0_30px_60px_-30px_rgba(11,14,20,0.35)]"
+            className="tw:relative tw:aspect-[4/3] tw:w-full tw:overflow-hidden tw:rounded-2xl tw:bg-surface-raised/60 tw:shadow-raised"
           >
             <div ref={imageRef} key={active.key} className="tw:absolute tw:inset-0">
               <Image
@@ -114,7 +102,7 @@ const DesignShowcase = () => {
           </div>
         </div>
 
-        <div data-design-intro className="tw:mt-10 tw:flex tw:flex-wrap tw:items-center tw:justify-center tw:gap-3 tw:opacity-0">
+        <div data-design-intro className="tw:mt-10 tw:flex tw:flex-wrap tw:items-center tw:justify-center tw:gap-3">
           {tabs.map((tab, index) => (
             <div key={tab.key} className="tw:flex tw:items-center tw:gap-3">
               <button

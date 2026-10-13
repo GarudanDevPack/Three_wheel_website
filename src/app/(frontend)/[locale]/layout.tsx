@@ -1,9 +1,12 @@
 import type { Metadata } from 'next'
+import { Inter, Noto_Sans_Sinhala, Noto_Sans_Tamil, Red_Hat_Display } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { NextIntlClientProvider, hasLocale } from 'next-intl'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import '@/styles/tailwind.css'
-import { routing } from '@/i18n/routing'
+import { routing, type AppLocale } from '@/i18n/routing'
+import { defaultOgImage, localizedPath, socialMetadata } from '@/lib/pageSeo'
+import JsonLd from '@/components/seo/JsonLd'
 import { getSiteSettings } from '@/lib/siteSettings'
 import WhatsAppButton from '@/components/ui/WhatsAppButton'
 import FacebookButton from '@/components/ui/FacebookButton'
@@ -12,16 +15,17 @@ import Assistant from '@/components/assistant/LazyAssistant'
 import { jaffnaDealer } from '@/lib/dealers'
 import CookieConsent from '@/components/ui/CookieConsent'
 import Analytics from '@/components/ui/Analytics'
+import LinkTracking from '@/components/ui/LinkTracking'
 
 import { siteUrl } from '@/lib/site'
 
-// Latin fonts everywhere; the Sinhala / Tamil script fonts only on the page language that needs them.
-const scriptFont: Record<string, string> = {
-  si: '&family=Noto+Sans+Sinhala:wght@400..700',
-  ta: '&family=Noto+Sans+Tamil:wght@400..700',
-}
-const fontStylesheet = (locale: string) =>
-  `https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Red+Hat+Display:wght@300..900${scriptFont[locale] ?? ''}&display=swap`
+// Self-hosted by next/font (no Google Fonts request at runtime). Latin fonts are preloaded; the
+// Sinhala / Tamil script fonts are only applied, and so only downloaded, on the language that needs them.
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' })
+const redHatDisplay = Red_Hat_Display({ subsets: ['latin'], display: 'swap', variable: '--font-red-hat' })
+const notoSinhala = Noto_Sans_Sinhala({ subsets: ['sinhala'], display: 'swap', preload: false, variable: '--font-noto-sinhala' })
+const notoTamil = Noto_Sans_Tamil({ subsets: ['tamil'], display: 'swap', preload: false, variable: '--font-noto-tamil' })
+const scriptFont: Record<string, string> = { si: notoSinhala.variable, ta: notoTamil.variable }
 
 type LayoutProps = {
   children: React.ReactNode
@@ -42,19 +46,11 @@ export async function generateMetadata({ params }: Pick<LayoutProps, 'params'>):
     metadataBase: new URL(siteUrl),
     title: { default: title, template: '%s | Neptune' },
     description,
-    openGraph: {
-      title,
-      description,
-      siteName: 'Neptune',
-      locale,
-      images: ['/images/auto/neptune-blue-1.webp'],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: ['/images/auto/neptune-blue-1.webp'],
-    },
+    ...socialMetadata(locale as AppLocale, { title, description, url: localizedPath('/', locale as AppLocale) }),
+    // Search Console HTML-tag verification (DNS verification needs no code).
+    ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
+      ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
+      : {}),
   }
 }
 
@@ -72,20 +68,24 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const realProfiles = settings.socialLinks
     .map((link) => link.url)
     .filter((url): url is string => Boolean(url) && !/^https:\/\/www\.(facebook|youtube)\.com\/?$/.test(url!))
+  // "No 13, Galle Road, Mount Lavinia, Colombo 10379" → street / locality / postcode (same as the footer).
   const postcode = settings.address.match(/\b\d{5}\b/)?.[0]
+  const addressParts = settings.address.replace(/\s*\d{5}\s*$/, '').split(',').map((part) => part.trim())
+  const locality = addressParts.length > 1 ? addressParts.pop() : undefined
 
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'AutoDealer',
-    name: 'Neptune Electric Three-Wheelers',
+    name: 'Neptune',
     description: 'Electric three-wheelers built for daily loads, longer routes and lower running costs, by Garudan (Pvt) Ltd.',
     url: siteUrl,
-    logo: `${siteUrl}/images/assistant/neptune-assistant.webp`,
-    image: `${siteUrl}/images/auto/neptune-blue-1.webp`,
+    logo: `${siteUrl}/icon.png`,
+    image: `${siteUrl}${defaultOgImage.url}`,
     telephone: toE164(settings.phone),
     address: {
       '@type': 'PostalAddress',
-      streetAddress: settings.address.replace(/,?\s*\d{5}$/, ''),
+      streetAddress: addressParts.join(', '),
+      ...(locality ? { addressLocality: locality } : {}),
       ...(postcode ? { postalCode: postcode } : {}),
       addressCountry: 'LK',
     },
@@ -96,15 +96,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   }
 
   return (
-    <html lang={locale}>
+    <html lang={locale} className={`${inter.variable} ${redHatDisplay.variable} ${scriptFont[locale] ?? ''}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href={fontStylesheet(locale)} rel="stylesheet" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
-        />
+        <JsonLd data={localBusinessJsonLd} />
       </head>
       <body id="scrool">
         <NextIntlClientProvider>
@@ -127,6 +121,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             />
           )}
           <Analytics measurementId={settings.gaMeasurementId} />
+          <LinkTracking />
         </NextIntlClientProvider>
       </body>
     </html>

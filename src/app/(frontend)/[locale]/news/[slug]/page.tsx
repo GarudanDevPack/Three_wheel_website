@@ -10,10 +10,12 @@ import NewsCard from '@/components/news/NewsCard'
 import NewsReveal from '@/components/news/NewsReveal'
 import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
-import { getNewsBySlug, getNewsList } from '@/lib/news'
+import { getNewsBySlug, getNewsList, newsLocales } from '@/lib/news'
 import { formatDate } from '@/lib/format'
-import { localeAlternates } from '@/lib/pageSeo'
+import { localeAlternates, localizedPath, socialMetadata } from '@/lib/pageSeo'
 import { siteUrl } from '@/lib/site'
+import JsonLd from '@/components/seo/JsonLd'
+import { absoluteUrl, breadcrumbJsonLd } from '@/lib/jsonLd'
 
 export const revalidate = 300
 
@@ -25,15 +27,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!item) return {}
 
   const title = item.seoTitle || item.title
-  const description = item.seoDescription || item.excerpt || undefined
-  const images = item.cover ? [item.cover.url] : undefined
+  const description = item.seoDescription || item.excerpt || ''
+  const path = `/news/${slug}`
+  const social = socialMetadata(locale, { title, description, url: localizedPath(path, locale), image: item.cover?.url })
+
+  const locales = newsLocales(slug)
 
   return {
     title,
     description,
-    alternates: localeAlternates(`/news/${slug}`, locale),
-    openGraph: { type: 'article', title, description, siteName: 'Neptune', images, publishedTime: item.publishedDate },
-    twitter: { card: 'summary_large_image', title, description, images },
+    alternates: localeAlternates(path, locale, locales),
+    // Not translated into this language yet: shown in English, but kept out of the index.
+    ...(locales.includes(locale) ? {} : { robots: { index: false, follow: true } }),
+    ...social,
+    openGraph: { ...social.openGraph, type: 'article', publishedTime: item.publishedDate },
   }
 }
 
@@ -43,23 +50,26 @@ const NewsArticlePage = async ({ params }: PageProps) => {
   const item = await getNewsBySlug(locale, slug)
   if (!item) notFound()
 
-  const t = await getTranslations('News')
+  const [t, tc] = await Promise.all([getTranslations('News'), getTranslations('Breadcrumbs')])
   const more = (await getNewsList(locale, 4)).filter((other) => other.id !== item.id).slice(0, 3)
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const pagePath = `/news/${slug}`
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: item.title,
     description: item.excerpt || undefined,
-    image: item.cover ? [new URL(item.cover.url, siteUrl).toString()] : undefined,
+    image: item.cover ? [absoluteUrl(item.cover.url)] : undefined,
     datePublished: item.publishedDate,
-    publisher: { '@type': 'Organization', name: 'Neptune' },
+    mainEntityOfPage: absoluteUrl(localizedPath(pagePath, locale)),
+    author: { '@type': 'Organization', name: 'Neptune' },
+    publisher: { '@type': 'Organization', name: 'Neptune', logo: { '@type': 'ImageObject', url: absoluteUrl('/icon.png') } },
   }
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+      <JsonLd data={articleJsonLd} />
+      <JsonLd data={breadcrumbJsonLd(locale, tc('home'), [{ name: tc('news'), path: '/news' }, { name: item.title, path: pagePath }])} />
       <Preloader />
       <Header />
       <main className="tw:bg-surface">

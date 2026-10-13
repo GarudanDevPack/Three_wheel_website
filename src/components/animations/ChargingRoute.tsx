@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { createDrawable, createMotionPath, animate, onScroll } from 'animejs'
+import { prefersReducedMotion } from '@/lib/reveal'
 
 const ChargingRoute = ({ rangeLabel }: { rangeLabel: string }) => {
   const sectionRef = useRef<HTMLDivElement>(null)
@@ -30,6 +31,9 @@ const ChargingRoute = ({ rangeLabel }: { rangeLabel: string }) => {
   useEffect(() => {
     const section = sectionRef.current
     if (!isNearViewport || !section) return
+    // Reduced motion: the route stays fully drawn and the flowing dots stay hidden.
+    if (prefersReducedMotion()) return
+    ;[dot1Ref.current, dot2Ref.current].forEach((dot) => dot?.removeAttribute('visibility'))
 
     const drawables = createDrawable('#charging-route-path')
     const drawAnimation = animate(drawables, {
@@ -69,8 +73,8 @@ const ChargingRoute = ({ rangeLabel }: { rangeLabel: string }) => {
           strokeWidth="2"
           strokeLinecap="round"
         />
-        <circle ref={dot1Ref} r="3.5" fill="#8fb8ff" />
-        <circle ref={dot2Ref} r="3.5" fill="#8fb8ff" />
+        <circle ref={dot1Ref} r="3.5" fill="#8fb8ff" visibility="hidden" />
+        <circle ref={dot2Ref} r="3.5" fill="#8fb8ff" visibility="hidden" />
         <circle cx="40" cy="200" r="6" fill="#3b82f6" className="charger-pulse" />
         <g transform="translate(226, 4) scale(0.6)" opacity="0.7">
           <path

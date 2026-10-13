@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useCallback } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { animate, onScroll } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 
 const ZoomIcon = () => (
   <svg viewBox="0 0 24 24" className="tw:h-6 tw:w-6 tw:text-white" fill="none" aria-hidden="true">
@@ -21,22 +21,16 @@ const GalleryReveal = ({ photos }: { photos: Photo[] }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
 
-  useEffect(() => {
-    const container = containerRef.current
-    if (!container) return
-
-    const animation = animate(container, {
-      opacity: [0, 1],
-      translateY: [40, 0],
-      duration: 600,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: container }),
-    })
-
-    return () => {
-      animation.revert()
-    }
-  }, [])
+  useEffect(
+    () =>
+      revealOnScroll(containerRef.current, containerRef.current, {
+        opacity: [0, 1],
+        translateY: [40, 0],
+        duration: 600,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   const close = useCallback(() => setActiveIndex(null), [])
   const showPrev = useCallback(
@@ -61,7 +55,7 @@ const GalleryReveal = ({ photos }: { photos: Photo[] }) => {
 
   return (
     <>
-      <div ref={containerRef} className="tw:mt-10 tw:overflow-hidden tw:opacity-0">
+      <div ref={containerRef} className="tw:mt-10 tw:overflow-hidden">
         <div className="gallery-marquee tw:flex tw:w-max tw:gap-4">
           {photos.map((photo, index) => (
             <button

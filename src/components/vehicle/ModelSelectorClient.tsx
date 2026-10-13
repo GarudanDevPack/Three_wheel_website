@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { animate } from 'animejs'
+import { prefersReducedMotion } from '@/lib/reveal'
 import { Link } from '@/i18n/navigation'
 import { type Stat } from '@/components/animations/StatCounters'
 import { type AngleImage } from '@/components/animations/ColorSpin360'
@@ -35,7 +36,7 @@ const ModelSelectorClient = ({ models }: { models: ModelOption[] }) => {
   const active = models[activeIndex]
 
   useEffect(() => {
-    if (!panelRef.current) return
+    if (!panelRef.current || prefersReducedMotion()) return
     const animation = animate(panelRef.current, {
       opacity: [0, 1],
       translateY: [16, 0],
@@ -121,8 +122,16 @@ const ModelSelectorClient = ({ models }: { models: ModelOption[] }) => {
                 >
                   {t('viewDetails')} →
                 </Link>
+              ) : active.slug ? (
+                // Upcoming model: its own (noindex) coming-soon page.
+                <Link
+                  href={`/vehicles/${active.slug}`}
+                  className="tw:inline-block tw:rounded-full tw:border tw:border-brand-ink/20 tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-ink/70 tw:transition tw:hover:border-brand-ink/40"
+                >
+                  {t('comingSoon')} →
+                </Link>
               ) : (
-                <span className="tw:inline-block tw:cursor-not-allowed tw:rounded-full tw:border tw:border-brand-ink/20 tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-ink/40">
+                <span className="tw:inline-block tw:rounded-full tw:border tw:border-brand-ink/20 tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-ink/40">
                   {t('specsSoon')}
                 </span>
               )}
@@ -133,8 +142,10 @@ const ModelSelectorClient = ({ models }: { models: ModelOption[] }) => {
             {active.colors.length > 0 ? (
               <ColorShowcase colors={active.colors} />
             ) : (
-              <div className="tw:flex tw:aspect-square tw:items-center tw:justify-center tw:rounded-2xl tw:border tw:border-dashed tw:border-white/20 tw:bg-brand-ink tw:text-center tw:text-sm tw:text-white/40">
-                {t('photosSoon')}
+              <div className="tw:flex tw:aspect-square tw:items-center tw:justify-center tw:rounded-2xl tw:border tw:border-dashed tw:border-white/20 tw:bg-brand-ink">
+                <span className="tw:rounded-full tw:bg-white/10 tw:px-4 tw:py-1.5 tw:text-sm tw:font-bold tw:text-white">
+                  {t('comingSoon')}
+                </span>
               </div>
             )}
           </div>

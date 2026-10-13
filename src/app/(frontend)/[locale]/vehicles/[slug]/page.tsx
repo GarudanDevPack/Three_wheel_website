@@ -24,12 +24,14 @@ import FaqAccordion, { type FaqItem } from '@/components/ui/FaqAccordion'
 import DealerLocator, { type Dealer } from '@/components/ui/DealerLocator'
 import FloatingEnquiryMenu from '@/components/ui/FloatingEnquiryMenu'
 import { getPayloadClient } from '@/lib/payload'
-import type { AppLocale } from '@/i18n/routing'
-import { localeAlternates, localizedPath } from '@/lib/pageSeo'
+import { routing, type AppLocale } from '@/i18n/routing'
+import { localeAlternates, localizedPath, socialMetadata } from '@/lib/pageSeo'
 import { formatLkr } from '@/lib/format'
 import { Link } from '@/i18n/navigation'
-import { availableModels, getCatalogModel, RUNNING_COST, type CatalogModel } from '@/lib/catalog'
-import { siteUrl } from '@/lib/site'
+import { catalog, catalogModelLocales, getCatalogModel, RUNNING_COST, type CatalogModel } from '@/lib/catalog'
+import JsonLd from '@/components/seo/JsonLd'
+import { absoluteUrl, breadcrumbJsonLd, faqPageJsonLd } from '@/lib/jsonLd'
+import UpcomingModel from '@/components/vehicle/UpcomingModel'
 
 export const revalidate = 300
 
@@ -123,27 +125,49 @@ export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   } catch {
     // No database yet — prerender the catalog models.
   }
-  return availableModels.map((model) => ({ slug: model.slug }))
+  return catalog.map((model) => ({ slug: model.slug }))
+}
+
+/** Catalog model that is announced but not on sale (only when no CMS record exists for the slug). */
+const upcomingModel = (slug: string) => {
+  const model = getCatalogModel(slug)
+  return model?.status === 'Upcoming' ? model : null
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug, locale } = await params
   const vehicle = await getVehicle(slug, locale)
-  if (!vehicle) return {}
+  if (!vehicle) {
+    const upcoming = upcomingModel(slug)
+    if (!upcoming) return {}
+    // Coming-soon page: kept out of the index until it has real content.
+    const path = `/vehicles/${slug}`
+    return {
+      title: { absolute: upcoming.seo.title },
+      description: upcoming.seo.description,
+      robots: { index: false, follow: true },
+      alternates: localeAlternates(path, locale),
+      ...socialMetadata(locale, { title: upcoming.seo.title, description: upcoming.seo.description, url: localizedPath(path, locale) }),
+    }
+  }
 
   // Catalog titles already carry the brand, so they bypass the "%s | Neptune" template.
   const catalogSeo = vehicle.catalog?.seo
   const title = vehicle.seo?.metaTitle || catalogSeo?.title || vehicle.name
   const description = vehicle.seo?.metaDescription || catalogSeo?.description || vehicle.shortDescription || undefined
-  const imageUrl = vehicle.seo?.ogImage?.url || vehicle.catalog?.heroImage?.url
-  const images = imageUrl ? [imageUrl] : undefined
+  // Prefer a photo on a real background (studio render) over a transparent cut-out for link previews.
+  const image = vehicle.seo?.ogImage?.url || vehicle.catalog?.pricingImage?.url || vehicle.catalog?.heroImage?.url
+  const path = `/vehicles/${slug}`
+  // Catalog copy (H1, intro, FAQs) is English-only; CMS records are translated in the admin.
+  const locales = vehicle.catalog ? catalogModelLocales : routing.locales
 
   return {
     title: catalogSeo && !vehicle.seo?.metaTitle ? { absolute: title } : title,
     description,
-    alternates: localeAlternates(`/vehicles/${slug}`, locale),
-    openGraph: { title, description, siteName: 'Neptune', images },
-    twitter: { card: 'summary_large_image', title, description, images },
+    alternates: localeAlternates(path, locale, locales),
+    // Half-translated (English model copy under /si or /ta): shown, but kept out of the index.
+    ...(locales.includes(locale) ? {} : { robots: { index: false, follow: true } }),
+    ...socialMetadata(locale, { title, description: description || '', url: localizedPath(path, locale), image }),
   }
 }
 
@@ -167,9 +191,13 @@ const anchorLinks = [
 const VehicleDetailPage = async ({ params }: PageProps) => {
   const { slug, locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations('VehicleDetail')
+  const [t, tc] = await Promise.all([getTranslations('VehicleDetail'), getTranslations('Breadcrumbs')])
   const [vehicle, dealers] = await Promise.all([getVehicle(slug, locale), getDealers(locale)])
-  if (!vehicle) notFound()
+  if (!vehicle) {
+    const upcoming = upcomingModel(slug)
+    if (upcoming) return <UpcomingModel model={upcoming} />
+    notFound()
+  }
   const price =
     vehicle.pricing?.showPrice !== false && typeof vehicle.pricing?.price === 'number' && vehicle.pricing.price > 0
       ? vehicle.pricing.price
@@ -187,64 +215,41 @@ const VehicleDetailPage = async ({ params }: PageProps) => {
 
   const catalogModel = vehicle.catalog ?? null
   const pagePath = `/vehicles/${slug}`
-  const absolute = (path: string) => new URL(path, siteUrl).toString()
+  const productImage = catalogModel?.pricingImage?.url || vehicle.heroImage?.url
 
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: vehicle.name,
     description: vehicle.shortDescription || undefined,
-    image: vehicle.heroImage?.url ? absolute(vehicle.heroImage.url) : undefined,
+    image: productImage ? absoluteUrl(productImage) : undefined,
     brand: { '@type': 'Brand', name: 'Neptune' },
     manufacturer: { '@type': 'Organization', name: 'Garudan (Pvt) Ltd' },
     category: vehicle.category ? `${vehicle.category} electric three-wheeler` : 'Electric three-wheeler',
+    // Only a real, published price becomes an Offer; no ratings/reviews until real ones exist.
     offers: price
       ? {
           '@type': 'Offer',
           price,
           priceCurrency: 'LKR',
-          availability: 'https://schema.org/InStock',
-          url: absolute(localizedPath(pagePath, locale)),
+          availability:
+            catalogModel?.status === 'Upcoming' ? 'https://schema.org/PreOrder' : 'https://schema.org/InStock',
+          url: absoluteUrl(localizedPath(pagePath, locale)),
           seller: { '@type': 'Organization', name: 'Neptune' },
         }
       : undefined,
   }
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: absolute(localizedPath('/', locale)) },
-      { '@type': 'ListItem', position: 2, name: 'Vehicles', item: absolute(localizedPath('/vehicles', locale)) },
-      { '@type': 'ListItem', position: 3, name: vehicle.name, item: absolute(localizedPath(pagePath, locale)) },
-    ],
-  }
-
-  const faqJsonLd = faqs.length
-    ? {
-        '@context': 'https://schema.org',
-        '@type': 'FAQPage',
-        mainEntity: faqs.map((faq) => ({
-          '@type': 'Question',
-          name: faq.question,
-          acceptedAnswer: { '@type': 'Answer', text: faq.answer },
-        })),
-      }
-    : null
-
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      <JsonLd data={productJsonLd} />
+      <JsonLd
+        data={breadcrumbJsonLd(locale, tc('home'), [
+          { name: tc('vehicles'), path: '/vehicles' },
+          { name: vehicle.name, path: pagePath },
+        ])}
       />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
-      {faqJsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-        />
-      )}
+      <JsonLd data={faqPageJsonLd(faqs)} />
       <Preloader />
       <Header />
       <DetailAnchorNav links={anchorLinks.map((link) => ({ ...link, label: t(`nav.${link.label}`) }))} />

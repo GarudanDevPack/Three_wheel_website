@@ -1,9 +1,9 @@
 import type { MetadataRoute } from 'next'
 import { getPayloadClient } from '@/lib/payload'
-import { routing } from '@/i18n/routing'
+import { routing, type AppLocale } from '@/i18n/routing'
 import { localizedPath } from '@/lib/pageSeo'
-import { fallbackNews } from '@/lib/news'
-import { availableModels } from '@/lib/catalog'
+import { fallbackNews, newsLocales } from '@/lib/news'
+import { availableModels, catalogModelLocales } from '@/lib/catalog'
 import { siteUrl } from '@/lib/site'
 
 export const revalidate = 300
@@ -21,14 +21,16 @@ const staticRoutes = [
   '/faq',
 ]
 
-const entriesFor = (path: string, lastModified: Date): MetadataRoute.Sitemap =>
-  routing.locales.map((locale) => ({
+const entriesFor = (
+  path: string,
+  lastModified: Date,
+  locales: readonly AppLocale[] = routing.locales,
+): MetadataRoute.Sitemap =>
+  locales.map((locale) => ({
     url: `${siteUrl}${localizedPath(path, locale)}`,
     lastModified,
     alternates: {
-      languages: Object.fromEntries(
-        routing.locales.map((code) => [code, `${siteUrl}${localizedPath(path, code)}`]),
-      ),
+      languages: Object.fromEntries(locales.map((code) => [code, `${siteUrl}${localizedPath(path, code)}`])),
     },
   }))
 
@@ -54,10 +56,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch {
     // Payload/database not configured yet — list the catalog model pages and built-in articles instead.
     availableModels.forEach((model) => {
-      entries.push(...entriesFor(`/vehicles/${model.slug}`, new Date()))
+      entries.push(...entriesFor(`/vehicles/${model.slug}`, new Date(), catalogModelLocales))
     })
     fallbackNews.forEach((item) => {
-      entries.push(...entriesFor(`/news/${item.slug}`, new Date(item.publishedDate)))
+      entries.push(...entriesFor(`/news/${item.slug}`, new Date(item.publishedDate), newsLocales(item.slug)))
     })
   }
 

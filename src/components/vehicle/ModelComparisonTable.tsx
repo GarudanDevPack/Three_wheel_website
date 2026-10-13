@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
-import { animate, onScroll } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { formatLkr } from '@/lib/format'
@@ -46,25 +46,22 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
         .filter((group) => group.rows.length > 0)
     : groups
 
-  useEffect(() => {
-    if (!sectionRef.current) return
-    const animation = animate(sectionRef.current, {
-      opacity: [0, 1],
-      translateY: [32, 0],
-      duration: 700,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: sectionRef.current }),
-    })
-    return () => {
-      animation.revert()
-    }
-  }, [])
+  useEffect(
+    () =>
+      revealOnScroll(sectionRef.current, sectionRef.current, {
+        opacity: [0, 1],
+        translateY: [32, 0],
+        duration: 700,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   const stickyCell = 'tw:sticky tw:left-0 tw:z-10 tw:bg-surface-raised'
 
   return (
     <section id="compare" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface-raised tw:py-20">
-      <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6 tw:opacity-0">
+      <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
         <div className="tw:flex tw:flex-col tw:gap-6 tw:md:flex-row tw:md:items-end tw:md:justify-between">
           <div className="tw:max-w-2xl">
             <p className="tw:text-sm tw:font-semibold tw:text-brand-blue">{t('eyebrow')}</p>
@@ -86,7 +83,7 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
           </label>
         </div>
 
-        <div className="tw:mt-10 tw:overflow-x-auto tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:shadow-[0_20px_50px_-24px_rgba(11,14,20,0.25)]">
+        <div className="tw:mt-10 tw:overflow-x-auto tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:shadow-card">
           <table className="tw:w-full tw:min-w-[720px] tw:border-collapse tw:text-sm">
             <thead>
               <tr>
@@ -105,8 +102,10 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
                           className="tw:object-contain tw:p-2"
                         />
                       ) : (
-                        <div className="tw:flex tw:h-full tw:items-center tw:justify-center tw:text-xs tw:font-semibold tw:text-brand-ink/35">
-                          {t('photoSoon')}
+                        <div className="tw:flex tw:h-full tw:items-center tw:justify-center">
+                          <span className="tw:rounded-full tw:bg-brand-blue/10 tw:px-3 tw:py-1 tw:text-xs tw:font-bold tw:text-brand-blue">
+                            {t('comingSoon')}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -137,6 +136,13 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
                         >
                           {t('viewDetails')}
                         </Link>
+                      ) : column.slug ? (
+                        <Link
+                          href={`/vehicles/${column.slug}`}
+                          className="tw:inline-flex tw:rounded-full tw:border tw:border-brand-ink/15 tw:px-4 tw:py-2 tw:text-xs tw:font-semibold tw:text-brand-ink/60 tw:transition tw:hover:border-brand-ink/35"
+                        >
+                          {t('comingSoon')} →
+                        </Link>
                       ) : (
                         <span className="tw:inline-flex tw:rounded-full tw:border tw:border-brand-ink/15 tw:px-4 tw:py-2 tw:text-xs tw:font-semibold tw:text-brand-ink/45">
                           {t('comingSoon')}
@@ -156,7 +162,7 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
                 </tr>
               )}
               {visibleGroups.map((group) => (
-                <ComparisonRows key={group.key} group={group} columns={columns} label={ts(`categories.${group.key}`)} rowLabel={(key) => ts(`rows.${key}`)} stickyCell={stickyCell} />
+                <ComparisonRows key={group.key} group={group} columns={columns} hasData={hasData} label={ts(`categories.${group.key}`)} rowLabel={(key) => ts(`rows.${key}`)} stickyCell={stickyCell} />
               ))}
             </tbody>
           </table>
@@ -169,12 +175,15 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
 const ComparisonRows = ({
   group,
   columns,
+  hasData,
   label,
   rowLabel,
   stickyCell,
 }: {
   group: ComparisonGroup
   columns: ComparisonColumn[]
+  /** Models without any specs yet get blank cells (their header already says "Coming soon"). */
+  hasData: boolean[]
   label: string
   rowLabel: (key: string) => string
   stickyCell: string
@@ -195,7 +204,7 @@ const ComparisonRows = ({
             key={columns[col].id}
             className={`tw:px-5 tw:py-3 ${value ? 'tw:font-semibold tw:text-brand-ink' : 'tw:text-brand-ink/30'}`}
           >
-            {value || '—'}
+            {value || (hasData[col] ? '—' : '')}
           </td>
         ))}
       </tr>

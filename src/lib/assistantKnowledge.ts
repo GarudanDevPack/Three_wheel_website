@@ -75,7 +75,7 @@ Price notice:
 - Raw material, parts and battery costs in Sri Lanka are rising, so NEPTUNE EV prices may increase next month. Customers who want today's price should book soon.
 
 Long Range technical details (User Manual):
-- PMS motor 5 kW rated / 10 kW peak, 60 V; fixed gear; drive modes Eco, Power, Climb; top speed 60 km/h; gradeability 27.8%.
+- PMS motor 5 kW rated / 10 kW peak, 60 V; fixed gear; drive modes Eco, Power, Climb; top speed 60 km/h; hill-climbing ability (gradient) 27.8% (call it that, not "gradeability").
 - 20 kWh LiFePO4 battery (64 V); IP67 motor and battery; on-board charger with 32 A AC socket on a properly earthed 220–240 V home supply; about 6 hours from 20% to 100% (slow charge about 12 hours).
 - Driver + 3 seats; payload 320 kg; kerb weight 480 kg; 2780 × 1275 × 1700 mm; hydraulic drum brakes, hill hold, regenerative braking; tyres 4.00-12 at 30 psi front / 35 psi rear.
 

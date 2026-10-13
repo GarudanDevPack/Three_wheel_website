@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Image from 'next/image'
 import { useLocale, useTranslations } from 'next-intl'
-import { animate, stagger, onScroll } from 'animejs'
+import { stagger } from 'animejs'
+import { revealOnScroll } from '@/lib/reveal'
 import type { AppLocale } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
 import type { SiteSettingsData } from '@/lib/siteSettings'
 import { formatLkr, monthlyEmi } from '@/lib/format'
+import { trackEvent } from '@/lib/analytics'
 import Modal from '@/components/ui/Modal'
 import InquiryForm from '@/components/ui/InquiryForm'
 
@@ -28,6 +30,8 @@ export type PricedModel = {
   downPayment: number | null
   monthlySaving: number | null
   image: { url: string; alt?: string | null } | null
+  /** `cover` for full-bleed studio photos, `contain` (default) for transparent cut-outs. */
+  imageFit?: 'cover' | 'contain'
   facts: PricingFact[]
   detailHref: string | null
 }
@@ -160,22 +164,30 @@ const PricingFinanceClient = ({
   const barMax = Math.max(saving, emi, 1)
   const offerSaving = selected?.originalPrice && selected.price ? selected.originalPrice - selected.price : 0
 
+  // GA4 `finance_calc_use`: once per page view, the first time the visitor changes any calculator input.
+  const calcTouched = useRef<'initial' | 'ready' | 'sent'>('initial')
   useEffect(() => {
-    const section = sectionRef.current
-    const items = section?.querySelectorAll('[data-pricing-reveal]')
-    if (!section || !items?.length) return
-    const animation = animate(items, {
-      opacity: [0, 1],
-      translateY: [32, 0],
-      delay: stagger(120),
-      duration: 650,
-      ease: 'outQuad',
-      autoplay: onScroll({ target: section }),
-    })
-    return () => {
-      animation.revert()
+    if (calcTouched.current === 'initial') {
+      calcTouched.current = 'ready'
+      return
     }
-  }, [])
+    if (calcTouched.current === 'sent') return
+    calcTouched.current = 'sent'
+    trackEvent('finance_calc_use', { plan, model: selected ? modelLabel(selected) : 'custom' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, plan, priceInput, down, tenure, rate, saving])
+
+  useEffect(
+    () =>
+      revealOnScroll(sectionRef.current, sectionRef.current?.querySelectorAll('[data-pricing-reveal]'), {
+        opacity: [0, 1],
+        translateY: [32, 0],
+        delay: stagger(120),
+        duration: 650,
+        ease: 'outQuad',
+      }),
+    [],
+  )
 
   const selectModel = (model: PricedModel) => {
     setSelectedId(model.id)
@@ -189,7 +201,7 @@ const PricingFinanceClient = ({
   return (
     <section id="pricing" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
-        <div data-pricing-reveal className="tw:max-w-2xl tw:opacity-0">
+        <div data-pricing-reveal className="tw:max-w-2xl">
           <p className="tw:text-sm tw:font-semibold tw:text-brand-blue">{t('eyebrow')}</p>
           <h2 className="tw:mt-2 tw:text-3xl tw:font-bold tw:text-brand-ink tw:md:text-4xl">{t('title')}</h2>
           <p className="tw:mt-3 tw:text-brand-ink/70">{t('intro')}</p>
@@ -197,7 +209,7 @@ const PricingFinanceClient = ({
 
         <div className="tw:mt-10 tw:grid tw:gap-8 tw:lg:grid-cols-5">
           {/* Model switcher + offer card */}
-          <div data-pricing-reveal className="tw:flex tw:flex-col tw:gap-4 tw:opacity-0 tw:lg:col-span-2">
+          <div data-pricing-reveal className="tw:flex tw:flex-col tw:gap-4 tw:lg:col-span-2">
             {available.length > 1 && (
               <div role="tablist" aria-label={t('chooseModel')} className="tw:grid tw:grid-cols-2 tw:gap-2 tw:rounded-2xl tw:bg-surface-raised/80 tw:p-1.5">
                 {available.map((model) => (
@@ -225,7 +237,7 @@ const PricingFinanceClient = ({
             {featured && (
               <article
                 key={featured.id}
-                className="tw:overflow-hidden tw:rounded-3xl tw:border tw:border-brand-blue tw:bg-surface-raised/90 tw:shadow-[0_20px_45px_-20px_rgba(37,99,235,0.55)] tw:backdrop-blur"
+                className="tw:overflow-hidden tw:rounded-3xl tw:border tw:border-brand-blue tw:bg-surface-raised/90 tw:shadow-accent tw:backdrop-blur"
               >
                 {featured.originalPrice && featured.price ? (
                   <div className="tw:bg-gradient-to-r tw:from-red-600 tw:to-rose-500 tw:px-5 tw:py-2.5 tw:text-center tw:text-xs tw:font-bold tw:uppercase tw:tracking-wider tw:text-white">
@@ -244,7 +256,7 @@ const PricingFinanceClient = ({
                       alt={featured.image.alt || modelLabel(featured)}
                       fill
                       sizes="(min-width: 1024px) 40vw, 100vw"
-                      className="tw:object-contain tw:p-4"
+                      className={featured.imageFit === 'cover' ? 'tw:object-cover' : 'tw:object-contain tw:p-4'}
                     />
                   )}
                   <span className="tw:absolute tw:right-4 tw:top-4 tw:rounded-full tw:bg-brand-green/15 tw:px-2.5 tw:py-1 tw:text-[11px] tw:font-bold tw:text-emerald-700">
@@ -282,6 +294,19 @@ const PricingFinanceClient = ({
                     </div>
                   )}
 
+                  {/* Offer conditions next to the price (same figures as the 0% tab in the calculator). */}
+                  {featured.price && featured.availability === 'Available' && (
+                    <div className="tw:mt-5 tw:rounded-2xl tw:bg-brand-green/10 tw:p-4 tw:text-sm">
+                      <p className="tw:font-semibold tw:text-brand-ink">{t('zeroTitle')}</p>
+                      <p className="tw:mt-1 tw:text-brand-ink/70">
+                        {t('zeroTerms', { amount: money(zeroPlan.maxLoan), monthly: money(zeroPlan.monthly), months: zeroPlan.months })}
+                      </p>
+                      <p className="tw:mt-1 tw:text-xs tw:text-brand-ink/60">
+                        {t('zeroEligibilityIncome')} · {t('zeroEligibilityDriver')} · {t('zeroLimited', { count: zeroPlan.families })}
+                      </p>
+                    </div>
+                  )}
+
                   {featured.detailHref && (
                     <Link href={featured.detailHref} className="tw:mt-5 tw:inline-flex tw:items-center tw:gap-1.5 tw:text-sm tw:font-semibold tw:text-brand-blue">
                       {t('viewSpecs')} <span aria-hidden="true">→</span>
@@ -310,7 +335,7 @@ const PricingFinanceClient = ({
           {/* Calculator */}
           <div
             data-pricing-reveal
-            className="tw:overflow-hidden tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:opacity-0 tw:shadow-[0_20px_50px_-20px_rgba(11,14,20,0.25)] tw:lg:col-span-3"
+            className="tw:overflow-hidden tw:rounded-3xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:shadow-card tw:lg:col-span-3"
           >
             <div className="tw:bg-gradient-to-br tw:from-brand-blue tw:to-[#1e40af] tw:p-6 tw:text-white tw:sm:p-8">
               <div role="tablist" aria-label={t('financePlan')} className="tw:mb-6 tw:inline-flex tw:rounded-full tw:bg-white/15 tw:p-1">
@@ -395,7 +420,7 @@ const PricingFinanceClient = ({
                   {t('vehiclePrice')}
                 </label>
                 <div className="tw:mt-2 tw:flex tw:items-center tw:gap-2 tw:rounded-xl tw:border tw:border-brand-ink/10 tw:bg-surface tw:px-4 tw:focus-within:ring-2 tw:focus-within:ring-brand-blue-light">
-                  <span className="tw:text-sm tw:font-semibold tw:text-brand-ink/50">LKR</span>
+                  <span className="tw:text-sm tw:font-semibold tw:text-brand-ink/50">Rs.</span>
                   <input
                     id="emi-price"
                     inputMode="numeric"
@@ -461,6 +486,9 @@ const PricingFinanceClient = ({
                       className={sliderClasses}
                     />
                   </SliderField>
+                  <p className="tw:-mt-2 tw:text-xs tw:text-brand-ink/50">
+                    {t('rateNote', { rate: financing.interestRate })}
+                  </p>
                 </>
               )}
 

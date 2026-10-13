@@ -58,7 +58,15 @@
       "success": "Thanks! Our team will reach out shortly.",
       "missingFields": "Name and phone number are required.",
       "failed": "We could not submit your enquiry right now. Please try again later."
-    }
+    },
+    "modelLabel": "Model",
+    "modelAny": "Not sure yet",
+    "upcoming": "coming soon",
+    "dealerLabel": "Nearest dealer",
+    "dealerAny": "Any / not sure",
+    "dealerHeadOffice": "Head office, Mount Lavinia",
+    "dealerJaffna": "Jaffna",
+    "consent": "By submitting, you agree that Neptune may contact you about this enquiry by phone, WhatsApp or email. Read our <privacy>privacy policy</privacy>."
   },
   "EnquiryMenu": {
     "toggle": "Enquire about this vehicle",
@@ -73,7 +81,7 @@
   "Hero": {
     "eyebrow": "Neptune Electric Three-Wheeler",
     "title": "Electric three-wheelers built to carry your business further",
-    "intro": "Neptune builds rugged electric three-wheelers for daily loads, longer routes and lower running costs: up to 300 km on a single charge (250–300 km depending on load and speed).",
+    "intro": "Neptune builds rugged electric three-wheelers, the electric tuk tuk made for Sri Lankan roads: daily loads, longer routes and lower running costs, with up to 300 km on a single charge (250–300 km depending on load and speed).",
     "testDrive": "Book a Test Drive",
     "compare": "Compare Models",
     "pricing": "See pricing"
@@ -88,8 +96,8 @@
     "upcomingDescription": "Specs coming soon.",
     "viewDetails": "View full details",
     "specsSoon": "Specs coming soon",
-    "photosSoon": "Model photos & colors coming soon",
-    "cargoDescription": "Electric cargo three-wheeler with a heavy-duty box, 500 kg payload and optional rooftop solar."
+    "cargoDescription": "Electric cargo three-wheeler with a heavy-duty box, 500 kg payload and optional rooftop solar.",
+    "comingSoon": "Coming soon"
   },
   "FloatingWidget": {
     "greeting": "Hey there! I'm ready to help with any questions about Neptune.",
@@ -492,7 +500,8 @@
     "zeroEligibilityDriver": "Applicant must be a three-wheeler driver",
     "zeroLimited": "Limited to the first {count} families",
     "zeroApply": "Register for the 0% plan",
-    "zeroApplyMessage": "I'd like to register for the Garudan interest-free plan for the {model} ({monthly} a month for {months} months)."
+    "zeroApplyMessage": "I'd like to register for the Garudan interest-free plan for the {model} ({monthly} a month for {months} months).",
+    "rateNote": "{rate}% p.a. is an example bank / leasing rate. Your lender sets the final rate. The Garudan 0% plan is a separate option."
   },
   "Testimonials": {
     "eyebrow": "Testimonials",
@@ -512,7 +521,6 @@
     "available": "Available",
     "upcoming": "Upcoming",
     "priceOnRequest": "Price on request",
-    "photoSoon": "Photo coming soon",
     "specsSoon": "Full specs coming soon",
     "viewDetails": "View details",
     "comingSoon": "Coming soon",
@@ -555,14 +563,14 @@
       "tyres": "Tyres",
       "electricals": "Electricals",
       "dimensions": "Dimensions",
-      "gradeability": "Gradeability",
+      "gradeability": "Hill-climbing ability (gradient)",
       "charging": "Charging"
     },
     "rows": {
       "range": "Range",
       "topSpeed": "Top speed",
       "peakPower": "Peak power",
-      "gradeabilityStat": "Gradeability",
+      "gradeabilityStat": "Hill-climbing ability (gradient)",
       "motorType": "Motor type",
       "ratedPower": "Rated power",
       "maxPower": "Max power",
@@ -597,7 +605,7 @@
       "overallWidth": "Overall width",
       "wheelTrack": "Wheel track",
       "wheelbase": "Wheelbase",
-      "gradeability": "Gradeability",
+      "gradeability": "Hill-climbing ability (gradient)",
       "charger": "Charger",
       "chargingTime": "Charging time (20% → 100%)",
       "rangePerCharge": "Range per charge"
@@ -616,7 +624,6 @@
     "zero": {
       "engineOil": "Zero engine oil",
       "grease": "Zero grease",
-      "clutch": "No clutch",
       "cables": "No clutch or gear cables"
     },
     "benefits": {
@@ -758,5 +765,18 @@
         ]
       }
     ]
+  },
+  "Breadcrumbs": {
+    "home": "Home",
+    "news": "News",
+    "vehicles": "Vehicles",
+    "dealers": "Dealers"
+  },
+  "UpcomingModel": {
+    "comingSoon": "Coming soon",
+    "cta": "Register your interest",
+    "note": "Price, specifications and photos will be published at launch.",
+    "availableNow": "Available now",
+    "allVehicles": "All vehicles"
   }
 }

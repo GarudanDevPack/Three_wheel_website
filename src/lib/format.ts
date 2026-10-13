@@ -1,11 +1,11 @@
 import { intlLocale, type AppLocale } from '@/i18n/routing'
 
-export const formatLkr = (amount: number, locale: AppLocale) =>
-  new Intl.NumberFormat(intlLocale[locale], {
-    style: 'currency',
-    currency: 'LKR',
-    maximumFractionDigits: 0,
-  }).format(Math.round(amount))
+/**
+ * Prices are shown as "Rs. 2,675,000" in every language (the form used on the posters and in the copy).
+ * Grouping is fixed to en-LK so si/ta pages never switch to other digit or separator styles.
+ */
+export const formatLkr = (amount: number, _locale?: AppLocale) =>
+  `Rs. ${new Intl.NumberFormat('en-LK', { maximumFractionDigits: 0 }).format(Math.round(amount))}`
 
 export const formatDate = (iso: string, locale: AppLocale) =>
   new Intl.DateTimeFormat(intlLocale[locale], { day: 'numeric', month: 'long', year: 'numeric' }).format(

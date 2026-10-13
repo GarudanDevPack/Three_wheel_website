@@ -5,7 +5,7 @@ const SpecsTable = ({ rows }: { rows: SpecRow[] }) => {
   if (!populated.length) return null
 
   return (
-    <table className="tw:w-full tw:border-collapse tw:overflow-hidden tw:rounded-xl tw:bg-surface-raised tw:text-sm">
+    <table className="tw:w-full tw:border-collapse tw:overflow-hidden tw:rounded-2xl tw:bg-surface-raised tw:text-sm">
       <tbody>
         {populated.map((row) => (
           <tr key={row.label} className="tw:border-b tw:border-brand-ink/10 tw:last:border-0">

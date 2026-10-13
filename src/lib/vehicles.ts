@@ -36,7 +36,7 @@ export type ModelVehicle = {
 // No database yet: built from the client-verified catalog (src/lib/catalog.ts); the admin overrides it.
 const fallbackModels: ModelVehicle[] = catalog.map((model) => ({
   id: `catalog-${model.slug}`,
-  slug: model.status === 'Available' ? model.slug : null,
+  slug: model.slug,
   name: model.status === 'Available' ? model.name : '',
   modelRange: model.modelRange,
   availability: model.status,

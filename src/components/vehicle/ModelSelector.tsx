@@ -53,7 +53,7 @@ const buildStats = (heroStats?: {
 // No database yet: built from the client-verified catalog (src/lib/catalog.ts).
 const defaultModels: ModelOption[] = catalog.map((model) => ({
   id: `catalog-${model.slug}`,
-  slug: model.status === 'Available' ? model.slug : null,
+  slug: model.slug,
   name: model.status === 'Available' ? model.name : '',
   modelRange: model.modelRange,
   availability: model.status,

@@ -26,6 +26,8 @@ export async function submitInquiry(
   const email = String(formData.get('email') || '').trim()
   const message = String(formData.get('message') || '').trim()
   const relatedVehicle = String(formData.get('relatedVehicle') || '').trim()
+  const model = String(formData.get('model') || '').trim().slice(0, 100)
+  const dealer = String(formData.get('dealer') || '').trim().slice(0, 100)
 
   if (!name || !phone) {
     return { status: 'error', messageKey: 'missingFields' }
@@ -42,6 +44,8 @@ export async function submitInquiry(
         email: email || undefined,
         message: message || undefined,
         relatedVehicle: relatedVehicle || undefined,
+        model: model || undefined,
+        dealer: dealer || undefined,
       },
     })
     return { status: 'success', messageKey: 'success' }

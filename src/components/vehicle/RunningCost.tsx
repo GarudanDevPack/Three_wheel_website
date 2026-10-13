@@ -1,8 +1,9 @@
 import { getTranslations } from 'next-intl/server'
 import { Link } from '@/i18n/navigation'
 import { RUNNING_COST } from '@/lib/catalog'
+import { formatLkr } from '@/lib/format'
 
-const zeroItems = ['engineOil', 'grease', 'clutch', 'cables'] as const
+const zeroItems = ['engineOil', 'grease', 'cables'] as const
 const benefitItems = ['electricity', 'savings', 'maintenance'] as const
 
 /** "Why switch to an electric tuk tuk?" — client running-cost figures with the assumptions spelled out. */
@@ -11,7 +12,7 @@ const RunningCost = async () => {
   const perKm = (RUNNING_COST.monthlyElectricity / RUNNING_COST.monthlyKm).toFixed(1)
 
   const stats = [
-    { value: `Rs. ${RUNNING_COST.monthlyElectricity.toLocaleString('en-US')}`, label: t('statElectricity') },
+    { value: formatLkr(RUNNING_COST.monthlyElectricity), label: t('statElectricity') },
     { value: `${RUNNING_COST.monthlyKm.toLocaleString('en-US')} km`, label: t('statDistance') },
     { value: `≈ Rs. ${perKm}`, label: t('statPerKm') },
   ]
@@ -44,7 +45,7 @@ const RunningCost = async () => {
             <h3 className="tw:text-xl tw:font-bold tw:text-brand-ink">{t('zeroTitle')}</h3>
             <ul className="tw:mt-5 tw:grid tw:list-none tw:gap-3 tw:p-0 tw:sm:grid-cols-2">
               {zeroItems.map((item) => (
-                <li key={item} className="tw:flex tw:items-center tw:gap-3 tw:rounded-2xl tw:bg-surface tw:px-4 tw:py-3">
+                <li key={item} className="tw:flex tw:items-center tw:gap-3 tw:rounded-2xl tw:bg-surface tw:px-4 tw:py-3 tw:sm:last:odd:col-span-2">
                   <span className="tw:flex tw:h-8 tw:w-8 tw:shrink-0 tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-green/15 tw:text-sm tw:font-bold tw:text-emerald-700">
                     0
                   </span>

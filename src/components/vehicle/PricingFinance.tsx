@@ -3,6 +3,7 @@ import type { AppLocale } from '@/i18n/routing'
 import { getModelVehicles, publicPrice } from '@/lib/vehicles'
 import { getSiteSettings } from '@/lib/siteSettings'
 import { getCatalogModel, GARUDAN_ZERO_FINANCE } from '@/lib/catalog'
+import { formatLkr } from '@/lib/format'
 import PricingFinanceClient, { type PricedModel, type PricingFact } from './PricingFinanceClient'
 
 const PricingFinance = async () => {
@@ -29,7 +30,7 @@ const PricingFinance = async () => {
       } else {
         const range = vehicle.heroStats.range?.value
         if (range) facts.push({ icon: 'range', label: t('rangePerCharge'), value: t('upToKm', { km: range }) })
-        if (vehicle.monthlySaving) facts.push({ icon: 'saving', label: t('monthlySaving'), value: `LKR ${vehicle.monthlySaving.toLocaleString('en-US')}` })
+        if (vehicle.monthlySaving) facts.push({ icon: 'saving', label: t('monthlySaving'), value: formatLkr(vehicle.monthlySaving) })
         facts.push({ icon: 'warranty', label: t('warranty'), value: tw('vehicleValue') })
         facts.push({ icon: 'battery', label: t('batteryWarranty'), value: `${tw('batteryValue')} / ${tw('batteryNote')}` })
       }
@@ -48,7 +49,9 @@ const PricingFinance = async () => {
       offerLabel: vehicle.offerLabel === 'Limited-time offer' ? t('limitedOffer') : vehicle.offerLabel,
       downPayment: vehicle.downPayment,
       monthlySaving: vehicle.monthlySaving,
-      image: vehicle.heroImage,
+      image: catalogModel?.pricingImage ?? vehicle.heroImage,
+      // Studio photos fill the frame; transparent cut-outs stay contained on the gradient.
+      imageFit: catalogModel?.pricingImage ? 'cover' : 'contain',
       facts,
       detailHref: catalogModel && vehicle.availability === 'Available' ? `/vehicles/${catalogModel.slug}` : null,
     }

@@ -27,6 +27,9 @@ export const Inquiries: CollectionConfig = {
     { name: 'email', type: 'email' },
     { name: 'message', type: 'textarea' },
     { name: 'relatedVehicle', type: 'relationship', relationTo: 'vehicles' },
+    // Chosen in the form's selectors (plain text so catalog models without a CMS record still work).
+    { name: 'model', type: 'text' },
+    { name: 'dealer', type: 'text' },
     {
       name: 'status',
       type: 'select',
