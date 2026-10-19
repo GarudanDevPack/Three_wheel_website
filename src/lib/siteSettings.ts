@@ -1,6 +1,32 @@
 import { cache } from 'react'
 import { getPayloadClient } from './payload'
 import type { AppLocale } from '@/i18n/routing'
+import { GARUDAN_ZERO_FINANCE } from './catalog'
+
+/** The Garudan interest-free plan, edited in the CMS (SiteSettings → Financing). */
+export type InterestFreePlan = {
+  /** False when switched off in the CMS or past `validUntil` (see `planActive`). */
+  enabled: boolean
+  maxLoan: number
+  monthly: number
+  months: number
+  families: number
+  /** CMS wording of who qualifies; when empty the site's translated default wording is shown. */
+  eligibility?: string
+  /** ISO date; the plan hides itself after this day. Unknown today, so not set. */
+  validUntil?: string
+}
+
+/** One warranty wording; empty fields fall back to the translated Warranty.* messages. */
+export type WarrantyText = { vehicle?: string; battery?: string; serviceCondition?: string }
+
+/** True while an offer/plan is live: enabled and not past its end date (checked at render time). */
+export const isStillValid = (validUntil?: string | null, now = new Date()) => {
+  if (!validUntil) return true
+  const end = new Date(validUntil)
+  end.setHours(23, 59, 59, 999) // valid through the whole last day
+  return now.getTime() <= end.getTime()
+}
 
 export type FinancePartner = { name: string; logo?: string | null }
 
@@ -20,7 +46,9 @@ export type SiteSettingsData = {
     maxTenureMonths: number
     disclaimer?: string
     partners: FinancePartner[]
+    interestFreePlan: InterestFreePlan
   }
+  warranty: WarrantyText
   gaMeasurementId?: string
   cookieConsent: {
     enabled: boolean
@@ -44,7 +72,15 @@ const fallback: SiteSettingsData = {
     { platform: 'YouTube', url: 'https://www.youtube.com/' },
   ],
   // Calculator starting points only — visitors adjust them, and the admin sets the real figures.
-  financing: { interestRate: 15, downPaymentPercent: 20, maxTenureMonths: 60, partners: [] },
+  financing: {
+    interestRate: 15,
+    downPaymentPercent: 20,
+    maxTenureMonths: 60,
+    partners: [],
+    // Terms from the client's posters (see GARUDAN_ZERO_FINANCE). No end date has been published.
+    interestFreePlan: { enabled: true, ...GARUDAN_ZERO_FINANCE },
+  },
+  warranty: {},
   gaMeasurementId: undefined,
   cookieConsent: { enabled: true },
 }
@@ -62,7 +98,17 @@ type SettingsDoc = {
     maxTenureMonths?: number | null
     disclaimer?: string | null
     partners?: Array<{ name: string; logo?: { url?: string | null } | null }> | null
+    interestFreePlan?: {
+      enabled?: boolean | null
+      maxLoan?: number | null
+      monthly?: number | null
+      months?: number | null
+      families?: number | null
+      eligibility?: string | null
+      validUntil?: string | null
+    } | null
   } | null
+  warranty?: { vehicle?: string | null; battery?: string | null; serviceCondition?: string | null } | null
   analytics?: { gaMeasurementId?: string | null } | null
   cookieConsent?: {
     enabled?: boolean | null
@@ -101,6 +147,25 @@ export const getSiteSettings = cache(async (locale?: AppLocale): Promise<SiteSet
           name: partner.name,
           logo: partner.logo?.url || null,
         })),
+        interestFreePlan: (() => {
+          const plan = financing?.interestFreePlan
+          const base = fallback.financing.interestFreePlan
+          const validUntil = plan?.validUntil || undefined
+          return {
+            enabled: (plan?.enabled ?? true) && isStillValid(validUntil),
+            maxLoan: plan?.maxLoan ?? base.maxLoan,
+            monthly: plan?.monthly ?? base.monthly,
+            months: plan?.months ?? base.months,
+            families: plan?.families ?? base.families,
+            eligibility: plan?.eligibility || undefined,
+            validUntil,
+          }
+        })(),
+      },
+      warranty: {
+        vehicle: settings.warranty?.vehicle || undefined,
+        battery: settings.warranty?.battery || undefined,
+        serviceCondition: settings.warranty?.serviceCondition || undefined,
       },
       gaMeasurementId: settings.analytics?.gaMeasurementId || undefined,
       cookieConsent: {

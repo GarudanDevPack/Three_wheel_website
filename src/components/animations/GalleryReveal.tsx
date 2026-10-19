@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useCallback } from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { revealOnScroll } from '@/lib/reveal'
+import { prefersReducedMotion, revealOnScroll } from '@/lib/reveal'
 
 const ZoomIcon = () => (
   <svg viewBox="0 0 24 24" className="tw:h-6 tw:w-6 tw:text-white" fill="none" aria-hidden="true">
@@ -20,6 +20,10 @@ const GalleryReveal = ({ photos }: { photos: Photo[] }) => {
   const t = useTranslations('Gallery')
   const containerRef = useRef<HTMLDivElement>(null)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  // The marquee needs a second copy of the strip to loop seamlessly. It is added only in the browser
+  // (and not at all under reduced motion), so the HTML lists each photo once.
+  const [looping, setLooping] = useState(false)
+  useEffect(() => setLooping(!prefersReducedMotion()), [])
 
   useEffect(
     () =>
@@ -56,7 +60,7 @@ const GalleryReveal = ({ photos }: { photos: Photo[] }) => {
   return (
     <>
       <div ref={containerRef} className="tw:mt-10 tw:overflow-hidden">
-        <div className="gallery-marquee tw:flex tw:w-max tw:gap-4">
+        <div className={`${looping ? 'gallery-marquee ' : ''}tw:flex tw:w-max tw:gap-4`}>
           {photos.map((photo, index) => (
             <button
               key={photo.src}
@@ -79,21 +83,22 @@ const GalleryReveal = ({ photos }: { photos: Photo[] }) => {
               </div>
             </button>
           ))}
-          {photos.map((photo) => (
-            <div
-              key={`${photo.src}-duplicate`}
-              aria-hidden="true"
-              className="tw:relative tw:aspect-[3/4] tw:w-56 tw:shrink-0 tw:overflow-hidden tw:rounded-xl tw:sm:w-64 tw:md:w-72"
-            >
-              <Image
-                src={photo.src}
-                alt=""
-                fill
-                sizes="(min-width: 768px) 288px, (min-width: 640px) 256px, 224px"
-                className="tw:object-cover"
-              />
-            </div>
-          ))}
+          {looping &&
+            photos.map((photo) => (
+              <div
+                key={`${photo.src}-duplicate`}
+                aria-hidden="true"
+                className="tw:relative tw:aspect-[3/4] tw:w-56 tw:shrink-0 tw:overflow-hidden tw:rounded-xl tw:sm:w-64 tw:md:w-72"
+              >
+                <Image
+                  src={photo.src}
+                  alt=""
+                  fill
+                  sizes="(min-width: 768px) 288px, (min-width: 640px) 256px, 224px"
+                  className="tw:object-cover"
+                />
+              </div>
+            ))}
         </div>
       </div>
 
@@ -132,10 +137,7 @@ const GalleryReveal = ({ photos }: { photos: Photo[] }) => {
           >
             ›
           </button>
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="tw:relative tw:h-[80vh] tw:w-full tw:max-w-4xl"
-          >
+          <div onClick={(e) => e.stopPropagation()} className="tw:relative tw:h-[80vh] tw:w-full tw:max-w-4xl">
             <Image
               src={photos[activeIndex].src}
               alt={photos[activeIndex].alt}

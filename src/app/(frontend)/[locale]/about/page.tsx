@@ -31,7 +31,7 @@ const AboutPage = async ({ params }: PageProps) => {
   const caps = locale === 'en' ? 'tw:uppercase tw:tracking-widest' : ''
 
   const faqs = faqKeys.map((key) => ({ question: t(`faq.${key}.q`), answer: t(`faq.${key}.a`) }))
-  const faqJsonLd = faqPageJsonLd(faqs)
+  const faqJsonLd = faqPageJsonLd(faqs, locale)
 
   return (
     <>

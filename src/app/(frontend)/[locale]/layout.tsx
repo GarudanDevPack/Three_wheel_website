@@ -9,6 +9,7 @@ import { defaultOgImage, localizedPath, socialMetadata } from '@/lib/pageSeo'
 import JsonLd from '@/components/seo/JsonLd'
 import { getSiteSettings } from '@/lib/siteSettings'
 import WhatsAppButton from '@/components/ui/WhatsAppButton'
+import MobileCtaBar from '@/components/ui/MobileCtaBar'
 import FacebookButton from '@/components/ui/FacebookButton'
 import YouTubeButton from '@/components/ui/YouTubeButton'
 import Assistant from '@/components/assistant/LazyAssistant'
@@ -16,6 +17,7 @@ import { jaffnaDealer } from '@/lib/dealers'
 import CookieConsent from '@/components/ui/CookieConsent'
 import Analytics from '@/components/ui/Analytics'
 import LinkTracking from '@/components/ui/LinkTracking'
+import LanguageSuggestion from '@/components/ui/LanguageSuggestion'
 
 import { siteUrl } from '@/lib/site'
 
@@ -59,7 +61,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   if (!hasLocale(routing.locales, locale)) notFound()
   setRequestLocale(locale)
 
-  const settings = await getSiteSettings(locale)
+  const [settings, tMeta] = await Promise.all([getSiteSettings(locale), getTranslations({ locale, namespace: 'Meta' })])
   const facebookUrl = settings.socialLinks.find((link) => link.platform === 'Facebook')?.url
   const youtubeUrl = settings.socialLinks.find((link) => link.platform === 'YouTube')?.url
 
@@ -77,7 +79,8 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     '@context': 'https://schema.org',
     '@type': 'AutoDealer',
     name: 'Neptune',
-    description: 'Electric three-wheelers built for daily loads, longer routes and lower running costs, by Garudan (Pvt) Ltd.',
+    // Same language as the page (the site description from that locale's message file).
+    description: tMeta('siteDescription'),
     url: siteUrl,
     logo: `${siteUrl}/icon.png`,
     image: `${siteUrl}${defaultOgImage.url}`,
@@ -100,12 +103,14 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         <JsonLd data={localBusinessJsonLd} />
       </head>
-      <body id="scrool">
+      {/* Bottom padding on phones/tablets so the sticky contact bar never covers the footer. */}
+      <body id="scrool" className="tw:pb-[76px] tw:lg:pb-0">
         <NextIntlClientProvider>
           {children}
           {youtubeUrl && <YouTubeButton url={youtubeUrl} />}
           {facebookUrl && <FacebookButton url={facebookUrl} />}
           <WhatsAppButton phone={settings.whatsapp} />
+          <MobileCtaBar phone={settings.phone} whatsapp={settings.whatsapp} />
           <Assistant
             contacts={{
               whatsapp: settings.whatsapp,
@@ -120,8 +125,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
               declineLabel={settings.cookieConsent.declineLabel}
             />
           )}
-          <Analytics measurementId={settings.gaMeasurementId} />
+          {/* GA4 ID from the environment; the older CMS field is only a fallback. */}
+          <Analytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || settings.gaMeasurementId} />
           <LinkTracking />
+          <LanguageSuggestion />
         </NextIntlClientProvider>
       </body>
     </html>

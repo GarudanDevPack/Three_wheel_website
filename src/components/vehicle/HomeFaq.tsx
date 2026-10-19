@@ -16,7 +16,7 @@ const HomeFaq = async () => {
   const items = t.raw('top') as FaqItem[]
 
   return (
-    <section id="faq" className="tw:bg-surface-raised tw:py-20">
+    <section id="faq" data-track-location="faq" className="tw:bg-surface-raised tw:py-20">
       <div className="tw:mx-auto tw:grid tw:max-w-6xl tw:gap-10 tw:px-6 tw:lg:grid-cols-12">
         <div className="tw:lg:col-span-5">
           <div className="tw:lg:sticky tw:lg:top-28">

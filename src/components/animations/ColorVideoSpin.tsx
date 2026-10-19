@@ -1,34 +1,24 @@
 'use client'
 
-import { useRef } from 'react'
 import { useTranslations } from 'next-intl'
-import { useInViewVideo } from '@/lib/useInViewVideo'
-import { webmFor } from '@/lib/media'
+import OptimizedVideo from '@/components/ui/OptimizedVideo'
 
-const ColorVideoSpin = ({ src, label }: { src: string; label: string }) => {
+type ColorVideoSpinProps = { src: string; webm?: string | null; poster?: string | null; label: string }
+
+const ColorVideoSpin = ({ src, webm, poster, label }: ColorVideoSpinProps) => {
   const t = useTranslations('Viewer')
-  const videoRef = useRef<HTMLVideoElement>(null)
-  // Only fetch/play the turntable once it is near the viewport.
-  useInViewVideo(videoRef, true, src)
-  const webm = webmFor(src)
 
   return (
     <div className="tw:select-none">
-      <div className="tw:relative tw:aspect-square tw:w-full tw:overflow-hidden tw:rounded-xl">
-        <video
-          ref={videoRef}
-          key={src}
-          muted
-          loop
-          playsInline
-          preload="none"
-          aria-label={t('turntable', { label })}
-          className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover"
-        >
-          {webm && <source src={webm} type="video/webm" />}
-          <source src={src} type="video/mp4" />
-        </video>
-      </div>
+      <OptimizedVideo
+        key={src}
+        mp4Src={src}
+        webmSrc={webm}
+        poster={poster}
+        posterSizes="(min-width: 768px) 420px, 90vw"
+        className="tw:relative tw:aspect-square tw:w-full tw:rounded-xl"
+        ariaLabel={t('turntable', { label })}
+      />
       <div className="tw:mt-3 tw:flex tw:items-center tw:justify-center">
         <p className="tw:m-0 tw:text-xs tw:font-semibold tw:text-white/50">{t('view360')}</p>
       </div>

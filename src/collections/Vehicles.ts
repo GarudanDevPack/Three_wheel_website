@@ -195,11 +195,31 @@ export const Vehicles: CollectionConfig = {
           admin: { description: 'Optional offer badge, e.g. "Mega Offer".' },
         },
         {
+          name: 'offerConditions',
+          type: 'textarea',
+          localized: true,
+          admin: { description: 'What the offer includes and who qualifies — shown next to the price.' },
+        },
+        {
+          name: 'offerValidFrom',
+          type: 'date',
+          admin: { description: 'Offer start (optional). Before this day the regular price is shown.' },
+        },
+        {
+          name: 'offerValidUntil',
+          type: 'date',
+          admin: {
+            description:
+              'Offer end (optional). After this day the offer hides itself and the regular ("original") price is shown. Leave empty if there is no end date.',
+          },
+        },
+        {
           name: 'monthlySaving',
           type: 'number',
           min: 0,
           admin: {
-            description: 'Estimated monthly fuel/running-cost saving vs a petrol three-wheeler (LKR), e.g. 100000.',
+            description:
+              'Estimated monthly fuel/running-cost saving vs a petrol three-wheeler (LKR). Leave empty until the figure and its calculation are confirmed.',
           },
         },
       ],
@@ -274,7 +294,19 @@ export const Vehicles: CollectionConfig = {
           name: 'video',
           type: 'upload',
           relationTo: 'media',
-          admin: { description: 'A looping 360° turntable clip for this color — preferred over angle images when present.' },
+          admin: { description: 'A looping 360° turntable clip for this color — preferred over angle images when present. MP4 (H.264), 720p, no audio, under 2 MB.' },
+        },
+        {
+          name: 'videoWebm',
+          type: 'upload',
+          relationTo: 'media',
+          admin: { description: 'Optional WebM (VP9/AV1) version of the clip above — used first when the browser supports it.' },
+        },
+        {
+          name: 'videoPoster',
+          type: 'upload',
+          relationTo: 'media',
+          admin: { description: 'Still image shown before the clip plays (and instead of it on data saver / reduced motion).' },
         },
         {
           name: 'angleImages',
@@ -287,7 +319,14 @@ export const Vehicles: CollectionConfig = {
         },
       ],
     },
-    { name: 'mechanismDemo', type: 'upload', relationTo: 'media' },
+    {
+      name: 'mechanismDemo',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'MP4 (H.264), 720p, no audio, under 2 MB.' },
+    },
+    { name: 'mechanismDemoWebm', type: 'upload', relationTo: 'media', admin: { description: 'Optional WebM version.' } },
+    { name: 'mechanismDemoPoster', type: 'upload', relationTo: 'media', admin: { description: 'Poster image for the clip.' } },
     {
       name: 'awards',
       type: 'array',

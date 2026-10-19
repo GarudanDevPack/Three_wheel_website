@@ -4,9 +4,9 @@ import { useEffect, useRef, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { openConsentSettings } from '@/lib/analytics'
-import { useInViewVideo } from '@/lib/useInViewVideo'
 import { stagger } from 'animejs'
 import { revealOnScroll } from '@/lib/reveal'
+import OptimizedVideo from '@/components/ui/OptimizedVideo'
 
 export type ContactRow = { type: 'address' | 'phone' | 'email'; label: string; href?: string }
 export type ContactGroup = { heading: string; rows: ContactRow[] }
@@ -57,7 +57,6 @@ const FooterReveal = ({
   const t = useTranslations('Footer')
   const containerRef = useRef<HTMLDivElement>(null)
   const mediaRef = useRef<HTMLDivElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const container = containerRef.current
@@ -74,24 +73,14 @@ const FooterReveal = ({
     return () => cleanups.forEach((cleanup) => cleanup())
   }, [])
 
-  // The footer is on every page, so only fetch and play the video once it is near the viewport.
-  useInViewVideo(videoRef)
-
   return (
-    <footer className="tw:relative tw:overflow-hidden tw:bg-brand-ink tw:text-white">
+    <footer data-track-location="footer" className="tw:relative tw:overflow-hidden tw:bg-brand-ink tw:text-white">
       <div ref={mediaRef} className="tw:absolute tw:inset-0">
-        <video
-          ref={videoRef}
-          muted
-          loop
-          playsInline
-          preload="none"
-          aria-hidden="true"
+        <OptimizedVideo
+          mp4Src="/videos/vehicles-driving.mp4"
           poster="/images/posters/night-ride.webp"
-          className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:object-[65%_center]"
-        >
-          <source src="/videos/vehicles-driving.mp4" type="video/mp4" />
-        </video>
+          mediaClassName="tw:object-cover tw:object-[65%_center]"
+        />
         {/* Legibility scrims — vehicles stay on the right, text sits on the black left side */}
         <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-gradient-to-r tw:from-brand-ink tw:via-brand-ink/70 tw:to-transparent" />
         <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-gradient-to-t tw:from-brand-ink tw:via-transparent tw:to-transparent" />

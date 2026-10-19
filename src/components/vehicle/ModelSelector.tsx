@@ -18,12 +18,15 @@ type VehicleSummaryDoc = {
     range?: { value?: number | null; unit?: string | null } | null
     topSpeed?: { value?: number | null; unit?: string | null } | null
     peakPower?: { value?: number | null; unit?: string | null } | null
+    ratedPower?: { value?: number | null; unit?: string | null } | null
     gradeability?: { value?: number | null; unit?: string | null } | null
   } | null
   colors?: Array<{
     colorName: string
     swatchHex?: string | null
     video?: { url?: string | null } | null
+    videoWebm?: { url?: string | null } | null
+    videoPoster?: { url?: string | null } | null
     angleImages?: AngleImage[] | null
   }> | null
 }
@@ -34,12 +37,14 @@ const buildStats = (heroStats?: {
   range?: HeroStatField
   topSpeed?: HeroStatField
   peakPower?: HeroStatField
+  ratedPower?: HeroStatField
   gradeability?: HeroStatField
 } | null) => {
   const entries: Array<[string, HeroStatField]> = [
     ['range', heroStats?.range],
     ['topSpeed', heroStats?.topSpeed],
-    ['peakPower', heroStats?.peakPower],
+    // Peak power when published, otherwise the rated figure (labelled as such).
+    heroStats?.peakPower?.value != null ? ['peakPower', heroStats.peakPower] : ['ratedPower', heroStats?.ratedPower],
     ['gradeabilityStat', heroStats?.gradeability],
   ]
 
@@ -53,7 +58,8 @@ const buildStats = (heroStats?: {
 // No database yet: built from the client-verified catalog (src/lib/catalog.ts).
 const defaultModels: ModelOption[] = catalog.map((model) => ({
   id: `catalog-${model.slug}`,
-  slug: model.slug,
+  // Upcoming models have no page yet, so no link.
+  slug: model.status === 'Available' ? model.slug : null,
   name: model.status === 'Available' ? model.name : '',
   modelRange: model.modelRange,
   availability: model.status,
@@ -64,6 +70,8 @@ const defaultModels: ModelOption[] = catalog.map((model) => ({
     colorName: color.colorName,
     swatchHex: color.swatchHex,
     video: color.video ?? null,
+    videoWebm: color.videoWebm ?? null,
+    videoPoster: color.videoPoster ?? null,
     angleImages: color.image ? [{ angleLabel: 'Front', image: color.image }] : [],
   })),
 }))
@@ -111,6 +119,8 @@ const ModelSelector = async () => {
             colorName: color.colorName,
             swatchHex: color.swatchHex,
             video: color.video?.url || null,
+            videoWebm: color.videoWebm?.url || null,
+            videoPoster: color.videoPoster?.url || null,
             angleImages: color.angleImages,
           })),
       }))

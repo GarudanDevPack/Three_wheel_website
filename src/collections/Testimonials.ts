@@ -30,6 +30,16 @@ export const Testimonials: CollectionConfig = {
     { name: 'photo', type: 'upload', relationTo: 'media' },
     { name: 'vehicle', type: 'relationship', relationTo: 'vehicles' },
     {
+      name: 'approved',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        position: 'sidebar',
+        description:
+          'Tick only for a real customer quote you have permission to publish. Nothing is shown on the site until at least one entry is approved.',
+      },
+    },
+    {
       name: 'featured',
       type: 'checkbox',
       defaultValue: true,

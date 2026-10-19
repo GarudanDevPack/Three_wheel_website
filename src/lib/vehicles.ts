@@ -3,6 +3,7 @@ import { getPayloadClient } from './payload'
 import type { AppLocale } from '@/i18n/routing'
 import type { Specs, Charging } from './specs'
 import { catalog } from './catalog'
+import { applyOfferWindow } from './offers'
 
 export type HeroStat = { value: number; unit?: string | null }
 
@@ -20,6 +21,10 @@ export type ModelVehicle = {
   /** Pre-offer price, shown struck through when higher than `price`. */
   originalPrice: number | null
   offerLabel: string | null
+  /** What the offer includes / who qualifies (shown beside the price), and its optional dates. */
+  offerConditions: string | null
+  offerValidFrom: string | null
+  offerValidUntil: string | null
   /** Estimated monthly fuel/running-cost saving vs a petrol three-wheeler (LKR). */
   monthlySaving: number | null
   /** Suggested down payment (LKR), e.g. from the client's poster. */
@@ -28,7 +33,7 @@ export type ModelVehicle = {
   /** Honest range wording, e.g. "About 100 km on battery …". */
   rangeNote: string | null
   isNew: boolean
-  heroStats: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'gradeability', HeroStat>>
+  heroStats: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'ratedPower' | 'gradeability', HeroStat>>
   specs: Specs | null
   charging: Charging
 }
@@ -36,7 +41,8 @@ export type ModelVehicle = {
 // No database yet: built from the client-verified catalog (src/lib/catalog.ts); the admin overrides it.
 const fallbackModels: ModelVehicle[] = catalog.map((model) => ({
   id: `catalog-${model.slug}`,
-  slug: model.slug,
+  // Upcoming models have no page yet, so no link.
+  slug: model.status === 'Available' ? model.slug : null,
   name: model.status === 'Available' ? model.name : '',
   modelRange: model.modelRange,
   availability: model.status,
@@ -46,6 +52,9 @@ const fallbackModels: ModelVehicle[] = catalog.map((model) => ({
   priceNote: model.priceNote ?? null,
   originalPrice: model.originalPrice ?? null,
   offerLabel: model.offerLabel ?? null,
+  offerConditions: model.offerConditions ?? null,
+  offerValidFrom: model.offerValidFrom ?? null,
+  offerValidUntil: model.offerValidUntil ?? null,
   monthlySaving: model.monthlySaving ?? null,
   downPayment: model.downPayment ?? null,
   category: model.category,
@@ -71,6 +80,9 @@ type VehicleDoc = {
     priceNote?: string | null
     originalPrice?: number | null
     offerLabel?: string | null
+    offerConditions?: string | null
+    offerValidFrom?: string | null
+    offerValidUntil?: string | null
     monthlySaving?: number | null
     downPayment?: number | null
   } | null
@@ -93,9 +105,9 @@ export const getModelVehicles = cache(async (locale: AppLocale): Promise<ModelVe
       locale,
     })
     const vehicleDocs = docs as unknown as VehicleDoc[]
-    if (!vehicleDocs.length) return fallbackModels
+    if (!vehicleDocs.length) return fallbackModels.map((model) => applyOfferWindow(model))
 
-    return vehicleDocs.map((doc) => {
+    return vehicleDocs.map((doc): ModelVehicle => {
       const stats = doc.heroStats || {}
       return {
         id: String(doc.id),
@@ -109,6 +121,9 @@ export const getModelVehicles = cache(async (locale: AppLocale): Promise<ModelVe
         priceNote: doc.pricing?.priceNote || null,
         originalPrice: typeof doc.pricing?.originalPrice === 'number' ? doc.pricing.originalPrice : null,
         offerLabel: doc.pricing?.offerLabel || null,
+        offerConditions: doc.pricing?.offerConditions || null,
+        offerValidFrom: doc.pricing?.offerValidFrom || null,
+        offerValidUntil: doc.pricing?.offerValidUntil || null,
         monthlySaving: typeof doc.pricing?.monthlySaving === 'number' ? doc.pricing.monthlySaving : null,
         downPayment: typeof doc.pricing?.downPayment === 'number' ? doc.pricing.downPayment : null,
         category: doc.category === 'Cargo' ? 'Cargo' : 'Passenger',
@@ -123,10 +138,10 @@ export const getModelVehicles = cache(async (locale: AppLocale): Promise<ModelVe
         specs: doc.variants?.[0]?.specs || null,
         charging: doc.variants?.[0]?.charging || null,
       }
-    })
+    }).map((model) => applyOfferWindow(model))
   } catch {
     // Payload/database not configured yet.
-    return fallbackModels
+    return fallbackModels.map((model) => applyOfferWindow(model))
   }
 })
 

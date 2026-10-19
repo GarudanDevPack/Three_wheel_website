@@ -7,9 +7,11 @@ import { stagger } from 'animejs'
 import { revealOnScroll } from '@/lib/reveal'
 import { submitInquiry, type InquiryFormState, type InquiryType } from '@/app/(frontend)/actions/inquiries'
 import { trackEvent } from '@/lib/analytics'
-import { Link } from '@/i18n/navigation'
+import { usePathname as useFullPathname } from 'next/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 import { catalog } from '@/lib/catalog'
 import { jaffnaDealer } from '@/lib/dealers'
+import { NAME_MAX, NAME_MIN, SRI_LANKA_PHONE_PATTERN } from '@/lib/inquiryValidation'
 import SectionVideoBackdrop from './SectionVideoBackdrop'
 
 const initialState: InquiryFormState = { status: 'idle' }
@@ -74,7 +76,16 @@ const MessageIcon = () => (
   </svg>
 )
 
+/** `slug` (models only) is what GA4 receives, matching `model_view` / `cta_click`. */
+export type SelectOption = { value: string; label: string; slug?: string | null }
+
 type InquiryFormProps = {
+  /** Model choices (from Payload vehicles via the page); defaults to the catalog. */
+  modelOptions?: SelectOption[]
+  /** Dealer choices (from Payload dealers via the page); defaults to head office + Jaffna. */
+  dealerOptions?: SelectOption[]
+  /** Model to pre-select, e.g. when opened from a model page (?model=<slug>). */
+  defaultModel?: string
   relatedVehicleId?: string
   relatedVehicleName?: string
   defaultType?: InquiryType
@@ -86,6 +97,9 @@ type InquiryFormProps = {
 }
 
 const InquiryForm = ({
+  modelOptions,
+  dealerOptions,
+  defaultModel = '',
   relatedVehicleId,
   relatedVehicleName,
   defaultType = 'Single Vehicle',
@@ -101,6 +115,25 @@ const InquiryForm = ({
   const cardRef = useRef<HTMLDivElement>(null)
   const heading = title || t('title')
   const intro = description || t('description')
+  const router = useRouter()
+  const pagePath = useFullPathname() ?? ''
+  // When the form became usable; the elapsed time is sent so the server can reject instant bot posts.
+  const shownAt = useRef(0)
+  useEffect(() => {
+    shownAt.current = performance.now()
+  }, [])
+
+  const models: SelectOption[] =
+    modelOptions ??
+    catalog.map((model) => ({
+      value: model.name,
+      label: model.status === 'Available' ? model.name : `${model.name} (${t('upcoming')})`,
+    }))
+  const dealers: SelectOption[] = dealerOptions ?? [
+    { value: 'Head office', label: t('dealerHeadOffice') },
+    { value: jaffnaDealer.city, label: t('dealerJaffna') },
+  ]
+  const preselectedModel = models.find((option) => option.value === defaultModel)?.value ?? ''
 
   // What was sent, for the GA4 events once the server confirms the submission.
   const submitted = useRef<{ type: string; model: string; dealer: string }>({ type: defaultType, model: '', dealer: '' })
@@ -108,9 +141,20 @@ const InquiryForm = ({
   useEffect(() => {
     if (state.status !== 'success') return
     const { type, model, dealer } = submitted.current
+    const modelSlug = models.find((option) => option.value === model)?.slug || model
     trackEvent('generate_lead', { inquiry_type: type })
-    trackEvent('test_drive_submit', { inquiry_type: type, model: model || 'not_set', dealer: dealer || 'not_set' })
-  }, [state])
+    // Fires once per confirmed submission (this effect only runs when the server state changes).
+    // Never send the name, phone or message to GA4.
+    trackEvent('test_drive_submit', {
+      inquiry_type: type,
+      model: modelSlug || 'not_set',
+      dealer: dealer || 'not_set',
+      source_page: pagePath,
+    })
+    router.push('/thank-you')
+    // `models` is rebuilt every render; depending on it would re-run this and double-fire the events.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state, pagePath, router])
 
   useEffect(() => {
     if (compact) return
@@ -132,7 +176,10 @@ const InquiryForm = ({
     <form
       action={formAction}
       onSubmit={(event) => {
-        const data = new FormData(event.currentTarget)
+        const formEl = event.currentTarget
+        const elapsedInput = formEl.elements.namedItem('elapsed') as HTMLInputElement | null
+        if (elapsedInput) elapsedInput.value = String(Math.round(performance.now() - shownAt.current))
+        const data = new FormData(formEl)
         submitted.current = {
           type: String(data.get('type') || defaultType),
           model: String(data.get('model') || relatedVehicleName || ''),
@@ -142,6 +189,13 @@ const InquiryForm = ({
       className="tw:grid tw:gap-4 tw:sm:grid-cols-2"
     >
       {relatedVehicleId && <input type="hidden" name="relatedVehicle" value={relatedVehicleId} />}
+      <input type="hidden" name="sourcePage" value={pagePath} />
+      <input type="hidden" name="elapsed" defaultValue="" />
+      {/* Honeypot: hidden from people and screen readers; bots that fill it are silently ignored. */}
+      <div aria-hidden="true" className="tw:absolute tw:-left-[9999px] tw:h-px tw:w-px tw:overflow-hidden">
+        <label htmlFor="inquiry-website">Website</label>
+        <input id="inquiry-website" name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
+      </div>
       {lockType ? (
         <input type="hidden" name="type" value={defaultType} />
       ) : (
@@ -167,7 +221,16 @@ const InquiryForm = ({
         </label>
         <div className={fieldRowClasses}>
           <PersonIcon />
-          <input id="inquiry-name" name="name" required placeholder={t('namePlaceholder')} className={fieldClasses} />
+          <input
+            id="inquiry-name"
+            name="name"
+            required
+            minLength={NAME_MIN}
+            maxLength={NAME_MAX}
+            autoComplete="name"
+            placeholder={t('namePlaceholder')}
+            className={fieldClasses}
+          />
         </div>
       </div>
       <div>
@@ -176,7 +239,18 @@ const InquiryForm = ({
         </label>
         <div className={fieldRowClasses}>
           <PhoneIcon />
-          <input id="inquiry-phone" name="phone" required placeholder="077 123 4567" className={fieldClasses} />
+          <input
+            id="inquiry-phone"
+            name="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            required
+            pattern={SRI_LANKA_PHONE_PATTERN}
+            title={t('status.invalidPhone')}
+            placeholder="077 123 4567"
+            className={fieldClasses}
+          />
         </div>
       </div>
       {!relatedVehicleId && (
@@ -186,13 +260,13 @@ const InquiryForm = ({
           </label>
           <div className={fieldRowClasses}>
             <TagIcon />
-            <select id="inquiry-model" name="model" defaultValue="" className={fieldClasses}>
+            <select id="inquiry-model" name="model" defaultValue={preselectedModel} className={fieldClasses}>
               <option value="" className="tw:text-brand-ink">
                 {t('modelAny')}
               </option>
-              {catalog.map((model) => (
-                <option key={model.slug} value={model.name} className="tw:text-brand-ink">
-                  {model.status === 'Available' ? model.name : `${model.name} (${t('upcoming')})`}
+              {models.map((option) => (
+                <option key={option.value} value={option.value} className="tw:text-brand-ink">
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -209,12 +283,11 @@ const InquiryForm = ({
             <option value="" className="tw:text-brand-ink">
               {t('dealerAny')}
             </option>
-            <option value="Head office" className="tw:text-brand-ink">
-              {t('dealerHeadOffice')}
-            </option>
-            <option value={jaffnaDealer.city} className="tw:text-brand-ink">
-              {t('dealerJaffna')}
-            </option>
+            {dealers.map((option) => (
+              <option key={option.value} value={option.value} className="tw:text-brand-ink">
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -245,15 +318,23 @@ const InquiryForm = ({
           />
         </div>
       </div>
-      <p className="tw:text-xs tw:leading-relaxed tw:text-brand-ink/55 tw:sm:col-span-2">
-        {t.rich('consent', {
-          privacy: (chunks) => (
-            <Link href="/privacy-policy" className="tw:font-semibold tw:text-brand-blue tw:underline tw:underline-offset-2">
-              {chunks}
-            </Link>
-          ),
-        })}
-      </p>
+      <label className="tw:flex tw:cursor-pointer tw:items-start tw:gap-3 tw:text-xs tw:leading-relaxed tw:text-brand-ink/70 tw:sm:col-span-2">
+        <input
+          type="checkbox"
+          name="consent"
+          required
+          className="tw:mt-0.5 tw:h-4 tw:w-4 tw:shrink-0 tw:cursor-pointer tw:accent-brand-blue"
+        />
+        <span>
+          {t.rich('consent', {
+            privacy: (chunks) => (
+              <Link href="/privacy-policy" className="tw:font-semibold tw:text-brand-blue tw:underline tw:underline-offset-2">
+                {chunks}
+              </Link>
+            ),
+          })}
+        </span>
+      </label>
       <button
         type="submit"
         disabled={pending}
@@ -301,7 +382,6 @@ const InquiryForm = ({
         poster="/images/posters/neptune-blue-2.webp"
         variant="clear"
         base="surface"
-        lazy
       />
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
         <div>

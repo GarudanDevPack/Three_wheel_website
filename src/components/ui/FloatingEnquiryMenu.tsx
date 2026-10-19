@@ -30,7 +30,7 @@ const FloatingEnquiryMenu = ({
 
   return (
     <>
-      <div className="tw:fixed tw:bottom-6 tw:right-6 tw:z-[80] tw:flex tw:flex-col tw:items-end tw:gap-3">
+      <div className="tw:fixed tw:bottom-24 tw:right-6 tw:z-[80] tw:lg:bottom-6 tw:flex tw:flex-col tw:items-end tw:gap-3">
         {open && (
           <div className="tw:flex tw:flex-col tw:items-end tw:gap-2">
             {options.map((option) => (

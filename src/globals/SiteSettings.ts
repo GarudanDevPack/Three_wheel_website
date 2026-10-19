@@ -81,6 +81,50 @@ export const SiteSettings: GlobalConfig = {
                     { name: 'logo', type: 'upload', relationTo: 'media' },
                   ],
                 },
+                {
+                  name: 'interestFreePlan',
+                  type: 'group',
+                  label: 'Garudan interest-free plan',
+                  admin: {
+                    description:
+                      'Shown next to every price and in the calculator. Edit the terms here once; empty fields fall back to the current published terms.',
+                  },
+                  fields: [
+                    { name: 'enabled', type: 'checkbox', defaultValue: true, admin: { description: 'Untick to hide the plan everywhere.' } },
+                    // Defaults = the confirmed terms (Phase 8 follow-up), same as GARUDAN_ZERO_FINANCE.
+                    { name: 'maxLoan', type: 'number', min: 0, defaultValue: 1_000_000, admin: { description: 'Largest interest-free amount (Rs.).' } },
+                    { name: 'monthly', type: 'number', min: 0, defaultValue: 20_000, admin: { description: 'Monthly instalment (Rs.).' } },
+                    { name: 'months', type: 'number', min: 1, defaultValue: 50, admin: { description: 'Number of monthly instalments.' } },
+                    { name: 'families', type: 'number', min: 0, defaultValue: 200, admin: { description: 'How many families it is limited to.' } },
+                    {
+                      name: 'eligibility',
+                      type: 'textarea',
+                      localized: true,
+                      admin: { description: 'Who qualifies, in plain words. Leave empty to use the current wording.' },
+                    },
+                    { name: 'validUntil', type: 'date', admin: { description: 'Last day of the plan. The plan hides itself after this date. Leave empty if there is no end date.' } },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Warranty',
+          fields: [
+            {
+              name: 'warranty',
+              type: 'group',
+              admin: { description: 'One wording used on model pages and price boxes. Leave empty to use the current wording.' },
+              fields: [
+                { name: 'vehicle', type: 'text', localized: true, admin: { description: 'e.g. 24 months / 50,000 km' } },
+                { name: 'battery', type: 'text', localized: true, admin: { description: 'e.g. 5 years, unlimited km' } },
+                {
+                  name: 'serviceCondition',
+                  type: 'text',
+                  localized: true,
+                  admin: { description: 'e.g. Valid when serviced at authorised Garudan dealers.' },
+                },
               ],
             },
           ],

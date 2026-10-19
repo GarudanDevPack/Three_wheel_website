@@ -54,7 +54,7 @@ const ChargingSection = async () => {
 
   return (
     <section id="charging" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-      <SectionVideoBackdrop src="/videos/charging-backdrop.mp4" variant="soft" base="surface" />
+      <SectionVideoBackdrop src="/videos/charging-backdrop.mp4" poster="/images/posters/charging-backdrop.webp" variant="soft" base="surface" />
       <TopographicBackdrop />
       <div className="tw:relative tw:z-10 tw:mx-auto tw:grid tw:max-w-6xl tw:items-center tw:gap-10 tw:px-6 tw:md:grid-cols-2">
         <div>

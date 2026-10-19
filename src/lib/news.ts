@@ -116,7 +116,7 @@ const campaignNews: NewsItem[] = [
     id: 'news-solar-roof',
     category: 'guide',
     slug: SOLAR_SLUG,
-    title: 'Solar-powered tuk tuks: how a 620 W roof adds about 50 km a day',
+    title: 'Solar-powered electric three-wheelers: how a 620 W roof adds about 50 km a day',
     excerpt:
       'The Neptune EV Cargo offers an optional 620 W rooftop solar system that adds about 50 km of free driving a day. Here is what solar charging can and can’t do for an electric three-wheeler.',
     publishedDate: '2026-10-12T08:00:00.000Z',
@@ -190,7 +190,7 @@ const campaignNews: NewsItem[] = [
       'The offer is limited to the first 200 families. Register today using the enquiry form on this website, or call 021 785 6180 / 077 396 9427.',
       'Garudan: a new opportunity for a new life.',
     ],
-    related: { label: 'Register for the 0% plan', href: '/#pricing' },
+    related: { label: 'Register for the interest-free plan', href: '/#pricing' },
     translations: {
       si: {
         title: 'Neptune විදුලි ත්‍රිරෝද රථයක් සඳහා රු. ලක්ෂ 10 දක්වා පොලී රහිත ණය',
@@ -203,7 +203,7 @@ const campaignNews: NewsItem[] = [
           'මෙම විශේෂ දීමනාව පළමු පවුල් 200 සඳහා පමණි. ප්‍රමාද නොවී අදම මෙම වෙබ් අඩවියේ විමසුම් පෝරමයෙන් හෝ 021 785 6180 / 077 396 9427 ඇමතීමෙන් ලියාපදිංචි වන්න.',
           'Garudan – නව ජීවිතයක් සඳහා නව අවස්ථාවක්.',
         ],
-        related: { label: '0% සැලැස්මට ලියාපදිංචි වන්න', href: '/#pricing' },
+        related: { label: 'පොලී රහිත සැලැස්මට ලියාපදිංචි වන්න', href: '/#pricing' },
       },
       ta: {
         title: 'Neptune மின்சார முச்சக்கர வண்டிக்கு ரூ.10 இலட்சம் வரை வட்டி இல்லாத கடன்',
@@ -216,7 +216,7 @@ const campaignNews: NewsItem[] = [
           'இந்த சிறப்பு சலுகை முதல் 200 குடும்பங்களுக்கு மட்டும்! வாய்ப்பை தவறவிடாதீர்கள் — தாமதிக்காமல் இன்றே பதிவு செய்யுங்கள்: 021 785 6180 / 077 396 9427.',
           'Garudan – புதிய வாழ்க்கைக்கான புதிய வாய்ப்பு.',
         ],
-        related: { label: '0% திட்டத்திற்குப் பதிவு செய்யுங்கள்', href: '/#pricing' },
+        related: { label: 'வட்டியில்லா திட்டத்திற்குப் பதிவு செய்யுங்கள்', href: '/#pricing' },
       },
     },
   },
@@ -290,7 +290,7 @@ const campaignNews: NewsItem[] = [
       'Neptune has added a dedicated delivery vehicle to its electric line-up: the NEPTUNE EV Cargo, made in Sri Lanka.',
       'It carries up to 500 kg in a strong, durable, heavy-duty cargo box with rear double doors, runs on a 20 kWh battery with a 5 kW rated motor, and uses a fully automatic gearbox.',
       'Range is about 100 km on battery alone, depending on load and speed. An optional 620 W rooftop solar system (Rs. 150,000) adds about 50 km a day for free, for a total of up to 350 km.',
-      'Launch offer: the list price is Rs. 2,775,000, with a limited-time discount of Rs. 1,000,000, so the offer price is Rs. 1,775,000. The vehicle carries a 2-year / 50,000 km warranty and the battery 5 years with unlimited kilometres.',
+      'Launch offer: the list price is Rs. 2,775,000, with a limited-time discount of Rs. 1,000,000, so the offer price is Rs. 1,775,000. The vehicle carries a 24-month / 50,000 km warranty and the battery 5 years with unlimited kilometres.',
       'Zero emissions, low maintenance and a low running cost make it a strong fit for shops, delivery rounds and farm-to-town transport.',
     ],
     related: { label: 'See Neptune EV Cargo specs', href: `/vehicles/neptune-ev-cargo` },
@@ -415,7 +415,7 @@ export const fallbackNews: NewsItem[] = [
     id: 'fallback-e-tuk-transition',
     category: 'industry',
     slug: 'sri-lanka-electric-three-wheeler-transition',
-    title: '1.2 million tuk-tuks going electric: what Sri Lanka’s e-three-wheeler push means for drivers',
+    title: '1.2 million three-wheelers going electric: what Sri Lanka’s e-three-wheeler push means for drivers',
     excerpt:
       'A Ministry of Transport and UNDP pilot shows electric three-wheelers can cut fuel and maintenance costs. What the shift means for the drivers behind Sri Lanka’s 1.2 million tuk-tuks.',
     publishedDate: '2026-10-03T00:00:00.000Z',
@@ -453,7 +453,7 @@ export const fallbackNews: NewsItem[] = [
     excerpt:
       'The NTC (Amendment) Act requires every three-wheeler driver to be registered, and new tyre standards apply to imports from 1 January 2027. What owners need to know — and how to stay road-ready.',
     publishedDate: '2026-09-29T00:00:00.000Z',
-    cover: { url: '/images/auto/gallery-3.webp', alt: 'Neptune three-wheeler on the road' },
+    cover: { url: '/images/auto/gallery-3.webp', alt: 'Neptune electric three-wheeler on the road' },
     sourceName: null,
     sourceUrl: null,
     seoTitle: 'Three-Wheeler Rules 2026: Registration & Tyres',
@@ -525,7 +525,13 @@ export const getNewsList = cache(async (locale: AppLocale, limit = 50): Promise<
   } catch {
     // Payload/database not configured yet — fall back to the built-in articles.
   }
-  return [...fallbackNews].sort(byNewest).slice(0, limit).map((item) => localize(item, locale))
+  // On /si and /ta, list only articles that exist in that language (English-only ones stay on the
+  // English site), so a Sinhala/Tamil list never sends visitors to English text.
+  return [...fallbackNews]
+    .filter((item) => locale === 'en' || Boolean(item.translations?.[locale]))
+    .sort(byNewest)
+    .slice(0, limit)
+    .map((item) => localize(item, locale))
 })
 
 export const getNewsBySlug = cache(async (locale: AppLocale, slug: string): Promise<NewsItem | null> => {

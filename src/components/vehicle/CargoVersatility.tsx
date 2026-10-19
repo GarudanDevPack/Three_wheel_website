@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { animate } from 'animejs'
-import { useInViewVideo } from '@/lib/useInViewVideo'
+import OptimizedVideo from '@/components/ui/OptimizedVideo'
 import { prefersReducedMotion, revealOnScroll } from '@/lib/reveal'
 
 type Mode = 'passenger' | 'cargo'
@@ -18,9 +18,6 @@ const CargoVersatility = () => {
   const [mode, setMode] = useState<Mode>('passenger')
   const visualRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const videoRef = useRef<HTMLVideoElement>(null)
-  // Fetch/play only near the viewport; re-attach when the mode swaps the <video>.
-  useInViewVideo(videoRef, true, mode)
 
   useEffect(
     () =>
@@ -84,18 +81,14 @@ const CargoVersatility = () => {
           <div ref={panelRef} key={mode} className="tw:rounded-2xl tw:border tw:border-brand-ink/10 tw:bg-surface-raised tw:p-6">
             {/* Both clips are 16:9 on white — keep the full frame and the same size when switching tabs. */}
             <div className="tw:relative tw:aspect-video tw:w-full tw:overflow-hidden tw:rounded-xl tw:bg-white">
-              <video
-                ref={videoRef}
-                muted
-                loop
-                playsInline
-                preload="none"
+              <OptimizedVideo
+                key={mode}
+                mp4Src={MODE_MEDIA[mode].video}
                 poster={MODE_MEDIA[mode].poster}
-                aria-label={mode === 'passenger' ? t('passengerAlt') : t('cargoAlt')}
-                className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-contain"
-              >
-                <source src={MODE_MEDIA[mode].video} type="video/mp4" />
-              </video>
+                posterSizes="(min-width: 768px) 560px, 100vw"
+                mediaClassName="tw:object-contain"
+                ariaLabel={mode === 'passenger' ? t('passengerAlt') : t('cargoAlt')}
+              />
             </div>
             <p className="tw:mt-4 tw:text-center tw:text-sm tw:font-semibold tw:text-brand-ink/50">
               {mode === 'passenger' ? t('passengerCaption') : t('cargoCaption')}

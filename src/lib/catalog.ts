@@ -13,6 +13,8 @@ export type CatalogColor = {
   colorName: string
   swatchHex: string
   video?: string | null
+  videoWebm?: string | null
+  videoPoster?: string | null
   image?: { url: string; alt: string } | null
 }
 
@@ -30,6 +32,10 @@ export type CatalogModel = {
   price: number | null
   originalPrice?: number | null
   offerLabel?: string | null
+  /** Offer details beside the price and optional ISO dates; none published yet (see Phase 8 report). */
+  offerConditions?: string | null
+  offerValidFrom?: string | null
+  offerValidUntil?: string | null
   downPayment?: number | null
   priceNote?: string | null
   /** Estimated monthly petrol saving vs a petrol three-wheeler (client figure). */
@@ -37,7 +43,8 @@ export type CatalogModel = {
   heroImage: { url: string; alt: string } | null
   /** Full-bleed studio photo for the home pricing card; falls back to `heroImage` (shown contained). */
   pricingImage?: { url: string; alt: string } | null
-  heroStats: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'gradeability', { value: number; unit: string }>>
+  /** `ratedPower` is shown only when a model has no published peak power (EV Cargo). */
+  heroStats: Partial<Record<'range' | 'topSpeed' | 'peakPower' | 'ratedPower' | 'gradeability', { value: number; unit: string }>>
   keyFacts: Array<{ label: string; value: string }>
   features: string[]
   specs: Specs | null
@@ -48,7 +55,8 @@ export type CatalogModel = {
   seo: { title: string; description: string; h1: string; intro: string; bestFor: string }
 }
 
-export const WARRANTY = { vehicle: '2 years / 50,000 km', battery: '5 years, unlimited km' }
+// Same wording as the User Manual & Service Book and the /warranty page. Client confirmed it covers the EV Cargo too.
+export const WARRANTY = { vehicle: '24 months / 50,000 km', battery: '5 years, unlimited km' }
 
 /** Client campaign figures used across the site (running cost, finance offer). */
 export const RUNNING_COST = { monthlyElectricity: 12_000, monthlyKm: 5_500 }
@@ -99,7 +107,7 @@ export const catalog: CatalogModel[] = [
     price: 2_675_000,
     downPayment: 605_000,
     priceNote: 'Including VAT',
-    monthlySaving: 100_000,
+    // monthlySaving: UNKNOWN. The client hasn't confirmed what the Rs. 100,000 saving is or how it is calculated.
     heroImage: { url: '/images/auto/neptune-blue-1.webp', alt: 'Neptune Long Range 300 km electric three-wheeler in blue' },
     pricingImage: {
       url: '/images/auto/neptune-300km-studio-blue.webp',
@@ -115,9 +123,9 @@ export const catalog: CatalogModel[] = [
       { label: 'Range', value: 'Up to 300 km' },
       { label: 'Top speed', value: '60 km/h' },
       { label: 'Battery', value: '20 kWh LiFePO4' },
+      { label: 'Payload', value: '320 kg' },
       { label: 'Charging', value: 'About 6 h at home' },
       { label: 'Seats', value: 'Driver + 3' },
-      { label: 'Payload', value: '320 kg' },
     ],
     features: [
       'Adjustable driver seat',
@@ -130,9 +138,9 @@ export const catalog: CatalogModel[] = [
     specs: passengerSpecs,
     charging: passengerCharging,
     colors: [
-      { colorName: 'Neptune Blue', swatchHex: '#6B9BC3', video: '/videos/color-blue.mp4', image: { url: '/images/auto/neptune-blue-2.webp', alt: 'Neptune 300 km in Neptune Blue' } },
-      { colorName: 'Forest Green', swatchHex: '#2E5E3A', video: '/videos/color-green.mp4', image: { url: '/images/auto/green-1.webp', alt: 'Neptune 300 km in Forest Green' } },
-      { colorName: 'Stealth Black', swatchHex: '#1a1a1a', video: '/videos/color-black.mp4', image: { url: '/images/auto/neptune-black-cutout.webp', alt: 'Neptune 300 km in Stealth Black' } },
+      { colorName: 'Neptune Blue', swatchHex: '#6B9BC3', video: '/videos/color-blue.mp4', videoWebm: '/videos/color-blue.webm', videoPoster: '/images/posters/color-blue.webp', image: { url: '/images/auto/neptune-blue-2.webp', alt: 'Neptune Long Range 300 km electric three-wheeler in Neptune Blue' } },
+      { colorName: 'Forest Green', swatchHex: '#2E5E3A', video: '/videos/color-green.mp4', videoWebm: '/videos/color-green.webm', videoPoster: '/images/posters/color-green.webp', image: { url: '/images/auto/green-1.webp', alt: 'Neptune Long Range 300 km electric three-wheeler in Forest Green' } },
+      { colorName: 'Stealth Black', swatchHex: '#1a1a1a', video: '/videos/color-black.mp4', videoWebm: '/videos/color-black.webm', videoPoster: '/images/posters/color-black.webp', image: { url: '/images/auto/neptune-black-cutout.webp', alt: 'Neptune Long Range 300 km electric three-wheeler in Stealth Black' } },
     ],
     warranty: WARRANTY,
     faqs: [
@@ -153,7 +161,7 @@ export const catalog: CatalogModel[] = [
     seo: {
       title: 'Neptune 300 km Long-Range Electric Tuk Tuk | Sri Lanka',
       description: 'Neptune 300 km long-range electric three-wheeler for hire, tourism and intercity work. Rs. 2,675,000 incl. VAT, Rs. 605,000 down. Book a test drive.',
-      h1: 'Neptune 300 km: our longest-range electric three-wheeler',
+      h1: 'Neptune Long Range 300 km: up to 300 km per charge',
       intro:
         'The Neptune Long Range 300 km is an electric three-wheeler built for full working days in Sri Lanka: up to 300 km on a charge, about 6 hours to charge at home, a 20 kWh LiFePO4 battery with a 5-year warranty, and seating for the driver plus three passengers.',
       bestFor: 'Full-day hire, tourism and tour operators, intercity routes and high-mileage fleets.',
@@ -173,16 +181,18 @@ export const catalog: CatalogModel[] = [
     offerLabel: 'Limited-time offer',
     priceNote: null,
     heroImage: { url: '/images/auto/neptune-ev-cargo-front.webp', alt: 'Neptune EV Cargo electric three-wheeler, yellow, front view' },
+    // 5 kW is the rated motor power (no peak figure published). Top speed, battery chemistry, seats and
+    // charging time are not published for the Cargo yet, so they are left out rather than guessed.
     heroStats: {
       range: { value: 100, unit: 'km' },
-      peakPower: { value: 5, unit: 'kW' },
+      ratedPower: { value: 5, unit: 'kW' },
     },
     keyFacts: [
       { label: 'Range', value: 'About 100 km on battery' },
-      { label: 'With solar', value: 'Up to 350 km' },
       { label: 'Battery', value: '20 kWh' },
-      { label: 'Motor', value: '5 kW rated' },
       { label: 'Payload', value: 'Up to 500 kg' },
+      { label: 'With solar', value: 'Up to 350 km' },
+      { label: 'Motor', value: '5 kW rated' },
       { label: 'Gearbox', value: 'Fully automatic' },
     ],
     features: [
@@ -200,7 +210,7 @@ export const catalog: CatalogModel[] = [
     charging: {
       rangePerCharge: 'About 100 km on battery (depends on load and speed); up to 350 km with 620 W rooftop solar',
     },
-    colors: [{ colorName: 'Sunshine Yellow', swatchHex: '#F5C400', image: { url: '/images/auto/neptune-ev-cargo-front.webp', alt: 'Neptune EV Cargo in yellow, front view' } }],
+    colors: [{ colorName: 'Sunshine Yellow', swatchHex: '#F5C400', image: { url: '/images/auto/neptune-ev-cargo-front.webp', alt: 'Neptune EV Cargo electric three-wheeler in yellow, front view' } }],
     warranty: WARRANTY,
     faqs: [
       {
@@ -220,7 +230,7 @@ export const catalog: CatalogModel[] = [
     seo: {
       title: 'Neptune EV Cargo | Electric Cargo Three-Wheeler Sri Lanka',
       description: 'Neptune EV Cargo: 500 kg payload, heavy-duty box, 20 kWh battery, rooftop solar option. Now Rs. 1,775,000 (save Rs. 1,000,000). Enquire today.',
-      h1: 'Neptune EV Cargo: the electric three-wheeler built for deliveries',
+      h1: 'Neptune EV Cargo: about 100 km range, up to 500 kg payload',
       intro:
         'The Neptune EV Cargo is an electric cargo three-wheeler made in Sri Lanka for delivery and small-business work: a heavy-duty box carrying up to 500 kg, a 20 kWh battery, a fully automatic gearbox and an optional 620 W rooftop solar system.',
       bestFor: 'Delivery rounds, shop and farm-to-town transport, and small businesses moving goods every day.',

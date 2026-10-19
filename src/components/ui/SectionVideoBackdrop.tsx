@@ -1,26 +1,20 @@
 'use client'
 
-import { useRef } from 'react'
-import { useInViewVideo } from '@/lib/useInViewVideo'
+import OptimizedVideo from './OptimizedVideo'
 
 type SectionVideoBackdropProps = {
   src: string
+  webm?: string
+  /** Required: shown until the clip plays, and instead of it on reduced motion / data saver. */
+  poster: string
   /** soft = blurred + washed; strong = sharper; clear = sharp, washed only behind left-side text. */
   variant?: 'soft' | 'strong' | 'clear'
   base?: 'surface' | 'surface-raised'
-  poster?: string
-  /**
-   * Defer download/playback until the section is near the viewport (default). Every backdrop sits
-   * below the fold, so eager autoplay would download every clip on page load.
-   */
-  lazy?: boolean
 }
 
-const SectionVideoBackdrop = ({ src, variant = 'soft', base = 'surface', poster, lazy = true }: SectionVideoBackdropProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  useInViewVideo(videoRef, lazy)
-
-  const videoClass = {
+/** Decorative looping clip behind a section; loading and playback rules live in OptimizedVideo. */
+const SectionVideoBackdrop = ({ src, webm, poster, variant = 'soft', base = 'surface' }: SectionVideoBackdropProps) => {
+  const mediaClass = {
     soft: 'tw:object-cover tw:opacity-50 tw:blur-[2px]',
     strong: 'tw:object-cover tw:opacity-60',
     clear: 'tw:object-cover tw:opacity-90',
@@ -39,19 +33,7 @@ const SectionVideoBackdrop = ({ src, variant = 'soft', base = 'surface', poster,
 
   return (
     <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:overflow-hidden">
-      <video
-        ref={videoRef}
-        autoPlay={!lazy}
-        preload={lazy ? 'none' : undefined}
-        poster={poster}
-        muted
-        loop
-        playsInline
-        aria-hidden="true"
-        className={`tw:absolute tw:inset-0 tw:h-full tw:w-full ${videoClass}`}
-      >
-        <source src={src} type="video/mp4" />
-      </video>
+      <OptimizedVideo mp4Src={src} webmSrc={webm} poster={poster} mediaClassName={mediaClass} />
       <div className={washClass} />
     </div>
   )

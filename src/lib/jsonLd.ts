@@ -16,11 +16,13 @@ export const breadcrumbJsonLd = (locale: AppLocale, homeLabel: string, trail: Ar
   })),
 })
 
-export const faqPageJsonLd = (faqs: Array<{ question: string; answer: string }>) =>
+/** FAQPage for the questions shown on the page, in the page's own language. */
+export const faqPageJsonLd = (faqs: Array<{ question: string; answer: string }>, locale: AppLocale) =>
   faqs.length
     ? {
         '@context': 'https://schema.org',
         '@type': 'FAQPage',
+        inLanguage: locale,
         mainEntity: faqs.map((faq) => ({
           '@type': 'Question',
           name: faq.question,

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
+import Image from 'next/image'
 import { Link } from '@/i18n/navigation'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 
@@ -32,12 +33,26 @@ const Header = () => {
 
   return (
     <header
+      data-track-location="header"
       className={`tw:sticky tw:top-0 tw:z-50 tw:bg-surface/90 tw:text-brand-ink tw:backdrop-blur tw:transition-shadow tw:duration-300 ${
         scrolled ? 'tw:shadow-md' : ''
       }`}
     >
       <div className="tw:mx-auto tw:flex tw:max-w-6xl tw:items-center tw:justify-between tw:gap-6 tw:px-6 tw:py-4">
-        <Link href="/" className="tw:text-xl tw:font-bold tw:uppercase tw:tracking-[0.2em]">
+        <Link
+          href="/"
+          aria-label={`Neptune, ${t('home')}`}
+          className="tw:flex tw:items-center tw:gap-3 tw:text-xl tw:font-bold tw:uppercase tw:tracking-[0.2em]"
+        >
+          {/* Garudan eagle (maker's mark), transparent on the header; the site's colours stay unchanged. */}
+          <Image
+            src="/images/brand/garudan-eagle.webp"
+            alt=""
+            width={74}
+            height={40}
+            loading="eager"
+            className="tw:h-10 tw:w-auto tw:shrink-0"
+          />
           Neptune
         </Link>
         <nav className="tw:hidden tw:gap-8 tw:lg:flex">
@@ -55,6 +70,7 @@ const Header = () => {
           <LanguageSwitcher />
           <Link
             href="/contact#enquire"
+            data-track="cta"
             className="tw:rounded-full tw:bg-brand-blue tw:px-5 tw:py-2 tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light"
           >
             {t('enquire')}
@@ -84,6 +100,7 @@ const Header = () => {
           ))}
           <Link
             href="/contact#enquire"
+            data-track="cta"
             onClick={() => setOpen(false)}
             className={`tw:py-2 tw:text-sm tw:font-semibold tw:text-brand-blue ${caps}`}
           >
