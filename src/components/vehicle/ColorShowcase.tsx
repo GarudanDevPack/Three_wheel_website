@@ -11,6 +11,8 @@ export type ShowcaseColor = {
   colorName: string
   swatchHex?: string | null
   video?: string | null
+  videoWebm?: string | null
+  videoPoster?: string | null
   angleImages?: AngleImage[] | null
 }
 
@@ -42,7 +44,7 @@ const ColorShowcase = ({ colors }: { colors: ShowcaseColor[] }) => {
         className="tw:w-full tw:max-w-md tw:overflow-hidden tw:rounded-2xl tw:border tw:border-brand-blue-light/20 tw:bg-brand-ink tw:p-4 tw:shadow-accent"
       >
         {active.video ? (
-          <ColorVideoSpin src={active.video} label={active.colorName} />
+          <ColorVideoSpin src={active.video} webm={active.videoWebm} poster={active.videoPoster} label={active.colorName} />
         ) : (
           <ColorSpin360 images={active.angleImages || []} label={active.colorName} dark />
         )}

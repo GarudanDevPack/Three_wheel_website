@@ -30,6 +30,13 @@ export const Inquiries: CollectionConfig = {
     // Chosen in the form's selectors (plain text so catalog models without a CMS record still work).
     { name: 'model', type: 'text' },
     { name: 'dealer', type: 'text' },
+    { name: 'sourcePage', type: 'text', admin: { description: 'Page the form was sent from.' } },
+    {
+      name: 'consent',
+      type: 'checkbox',
+      admin: { description: 'Visitor agreed to be contacted and accepted the privacy policy.' },
+    },
+    { name: 'consentAt', type: 'date', admin: { date: { pickerAppearance: 'dayAndTime' } } },
     {
       name: 'status',
       type: 'select',

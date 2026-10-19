@@ -8,10 +8,12 @@ import SectionBackdrop from '@/components/ui/SectionBackdrop'
 import type { AppLocale } from '@/i18n/routing'
 import { getPageMetadata } from '@/lib/pageSeo'
 import { getSiteSettings } from '@/lib/siteSettings'
+import { getInquiryOptions, modelValueForSlug } from '@/lib/inquiryOptions'
 
 export const revalidate = 300
 
 type PageProps = { params: Promise<{ locale: AppLocale }> }
+type ContactPageProps = PageProps & { searchParams: Promise<{ model?: string }> }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params
@@ -19,17 +21,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return getPageMetadata('contact', locale, { title: t('metaTitle'), description: t('metaDescription') })
 }
 
-const ContactPage = async ({ params }: PageProps) => {
+const ContactPage = async ({ params, searchParams }: ContactPageProps) => {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations('Contact')
-  const settings = await getSiteSettings(locale)
+  const [t, settings, options, query] = await Promise.all([
+    getTranslations('Contact'),
+    getSiteSettings(locale),
+    getInquiryOptions(locale),
+    searchParams,
+  ])
 
   return (
     <>
       <Preloader />
       <Header />
-      <main>
+      <main data-track-location="contact">
         <section className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
           <SectionBackdrop src="/images/auto/night-ride.webp" variant="soft" base="surface" />
           <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-4xl tw:px-6 tw:text-center">
@@ -46,7 +52,15 @@ const ContactPage = async ({ params }: PageProps) => {
             </div>
           </div>
         </section>
-        <InquiryForm defaultType="Single Vehicle" title={t('formTitle')} description={t('formDescription')} />
+        <InquiryForm
+          defaultType="Single Vehicle"
+          title={t('formTitle')}
+          description={t('formDescription')}
+          modelOptions={options.models}
+          dealerOptions={options.dealers}
+          // Opened from a model page (/contact?model=<slug>): pre-select that model.
+          defaultModel={modelValueForSlug(options.models, query.model)}
+        />
       </main>
       <Footer />
     </>

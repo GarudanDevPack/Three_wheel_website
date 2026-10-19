@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import type { AppLocale } from '@/i18n/routing'
 import { getModelVehicles, publicPrice } from '@/lib/vehicles'
 import { getSiteSettings } from '@/lib/siteSettings'
-import { getCatalogModel, GARUDAN_ZERO_FINANCE } from '@/lib/catalog'
+import { getCatalogModel } from '@/lib/catalog'
 import { formatLkr } from '@/lib/format'
 import PricingFinanceClient, { type PricedModel, type PricingFact } from './PricingFinanceClient'
 
@@ -31,13 +31,19 @@ const PricingFinance = async () => {
         const range = vehicle.heroStats.range?.value
         if (range) facts.push({ icon: 'range', label: t('rangePerCharge'), value: t('upToKm', { km: range }) })
         if (vehicle.monthlySaving) facts.push({ icon: 'saving', label: t('monthlySaving'), value: formatLkr(vehicle.monthlySaving) })
-        facts.push({ icon: 'warranty', label: t('warranty'), value: tw('vehicleValue') })
-        facts.push({ icon: 'battery', label: t('batteryWarranty'), value: `${tw('batteryValue')} / ${tw('batteryNote')}` })
+        // One warranty wording: SiteSettings → Warranty, else the translated defaults.
+        facts.push({ icon: 'warranty', label: t('warranty'), value: settings.warranty.vehicle ?? tw('vehicleValue') })
+        facts.push({
+          icon: 'battery',
+          label: t('batteryWarranty'),
+          value: settings.warranty.battery ?? `${tw('batteryValue')} / ${tw('batteryNote')}`,
+        })
       }
     }
 
     return {
       id: vehicle.id,
+      slug: vehicle.availability === 'Available' ? vehicle.slug : null,
       name: vehicle.name,
       modelRange: vehicle.modelRange,
       availability: vehicle.availability,
@@ -47,6 +53,8 @@ const PricingFinance = async () => {
       originalPrice: price && vehicle.originalPrice && vehicle.originalPrice > price ? vehicle.originalPrice : null,
       // Catalog label is translated; an admin-entered label is shown as written.
       offerLabel: vehicle.offerLabel === 'Limited-time offer' ? t('limitedOffer') : vehicle.offerLabel,
+      offerConditions: vehicle.offerConditions,
+      offerValidUntil: vehicle.offerValidUntil,
       downPayment: vehicle.downPayment,
       monthlySaving: vehicle.monthlySaving,
       image: catalogModel?.pricingImage ?? vehicle.heroImage,
@@ -57,7 +65,8 @@ const PricingFinance = async () => {
     }
   })
 
-  return <PricingFinanceClient models={models} financing={settings.financing} zeroPlan={GARUDAN_ZERO_FINANCE} />
+  // Interest-free plan terms come from SiteSettings (CMS), with the published poster terms as fallback.
+  return <PricingFinanceClient models={models} financing={settings.financing} zeroPlan={settings.financing.interestFreePlan} />
 }
 
 export default PricingFinance

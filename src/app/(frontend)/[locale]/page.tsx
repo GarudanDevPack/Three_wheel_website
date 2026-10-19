@@ -21,6 +21,7 @@ import InquiryForm from '@/components/ui/InquiryForm'
 import Footer from '@/components/vehicle/Footer'
 import type { AppLocale } from '@/i18n/routing'
 import { getPageMetadata } from '@/lib/pageSeo'
+import { getInquiryOptions } from '@/lib/inquiryOptions'
 
 export const revalidate = 300
 
@@ -39,6 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 const HomePage = async ({ params }: PageProps) => {
   const { locale } = await params
   setRequestLocale(locale)
+  const inquiryOptions = await getInquiryOptions(locale)
 
   return (
     <>
@@ -69,7 +71,7 @@ const HomePage = async ({ params }: PageProps) => {
         <AwardStrip />
         <HomeNews />
         <HomeFaq />
-        <InquiryForm />
+        <InquiryForm modelOptions={inquiryOptions.models} dealerOptions={inquiryOptions.dealers} />
       </main>
       <Footer />
     </>

@@ -96,7 +96,7 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
                       {column.image ? (
                         <Image
                           src={column.image.url}
-                          alt={column.image.alt || column.modelRange}
+                          alt={column.image.alt || column.name || t('rangeModel', { range: column.modelRange })}
                           fill
                           sizes="220px"
                           className="tw:object-contain tw:p-2"
@@ -135,13 +135,6 @@ const ModelComparisonTable = ({ columns, groups }: { columns: ComparisonColumn[]
                           className="tw:inline-flex tw:rounded-full tw:bg-brand-blue tw:px-4 tw:py-2 tw:text-xs tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light"
                         >
                           {t('viewDetails')}
-                        </Link>
-                      ) : column.slug ? (
-                        <Link
-                          href={`/vehicles/${column.slug}`}
-                          className="tw:inline-flex tw:rounded-full tw:border tw:border-brand-ink/15 tw:px-4 tw:py-2 tw:text-xs tw:font-semibold tw:text-brand-ink/60 tw:transition tw:hover:border-brand-ink/35"
-                        >
-                          {t('comingSoon')} →
                         </Link>
                       ) : (
                         <span className="tw:inline-flex tw:rounded-full tw:border tw:border-brand-ink/15 tw:px-4 tw:py-2 tw:text-xs tw:font-semibold tw:text-brand-ink/45">

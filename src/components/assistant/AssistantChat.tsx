@@ -215,12 +215,15 @@ const AssistantChat = ({ contacts, onClose }: { contacts: AssistantContacts; onC
           </button>
         </form>
 
-        <div className={`tw:mt-3 tw:flex tw:flex-wrap tw:gap-2 tw:rounded-2xl tw:transition ${highlightHandoff ? 'tw:bg-brand-green/10 tw:p-2' : ''}`}>
+        {/* whatsapp_click / call_click with location "assistant" are recorded by LinkTracking. */}
+        <div
+          data-track-location="assistant"
+          className={`tw:mt-3 tw:flex tw:flex-wrap tw:gap-2 tw:rounded-2xl tw:transition ${highlightHandoff ? 'tw:bg-brand-green/10 tw:p-2' : ''}`}
+        >
           <a
             href={whatsappHref(contacts.whatsapp, t('whatsappText'))}
             target="_blank"
             rel="noreferrer"
-            onClick={() => trackEvent('assistant_whatsapp')}
             className="tw:inline-flex tw:items-center tw:gap-1.5 tw:rounded-full tw:bg-[#25D366] tw:px-3 tw:py-1.5 tw:text-xs tw:font-semibold tw:text-white"
           >
             {t('whatsapp')}
@@ -232,7 +235,6 @@ const AssistantChat = ({ contacts, onClose }: { contacts: AssistantContacts; onC
             <a
               key={contact.phone}
               href={`tel:${digits(contact.phone)}`}
-              onClick={() => trackEvent('assistant_call')}
               className="tw:inline-flex tw:items-center tw:gap-1.5 tw:rounded-full tw:border tw:border-brand-ink/15 tw:px-3 tw:py-1.5 tw:text-xs tw:font-semibold tw:text-brand-ink"
             >
               {t('call')} · {contact.label}

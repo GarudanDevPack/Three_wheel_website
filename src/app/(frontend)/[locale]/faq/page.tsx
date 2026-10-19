@@ -31,7 +31,7 @@ const FaqPage = async ({ params }: PageProps) => {
   const groups = t.raw('groups') as FaqGroup[]
 
   // The site's one FAQPage block: every question on this page.
-  const faqJsonLd = faqPageJsonLd(groups.flatMap((group) => group.items))
+  const faqJsonLd = faqPageJsonLd(groups.flatMap((group) => group.items), locale)
 
   const phones = [settings.phone, ...settings.otherPhones]
 
@@ -40,7 +40,7 @@ const FaqPage = async ({ params }: PageProps) => {
       <JsonLd data={faqJsonLd} />
       <Preloader />
       <Header />
-      <main>
+      <main data-track-location="faq">
         <section className="tw:bg-surface-raised tw:py-16 tw:md:py-20">
           <div className="tw:mx-auto tw:max-w-6xl tw:px-6">
             <p className="tw:text-sm tw:font-semibold tw:text-brand-blue">{t('eyebrow')}</p>
@@ -105,6 +105,7 @@ const FaqPage = async ({ params }: PageProps) => {
                   ))}
                   <Link
                     href="/contact"
+                    data-track="cta"
                     className="tw:rounded-full tw:bg-brand-blue tw:px-5 tw:py-3 tw:text-center tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light"
                   >
                     {t('testDrive')}

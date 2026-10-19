@@ -21,7 +21,8 @@ const Testimonials = async () => {
     const payload = await getPayloadClient()
     const { docs } = await payload.find({
       collection: 'testimonials',
-      where: { featured: { equals: true } },
+      // Only real, approved customer quotes (and featured for the homepage). No placeholders.
+      where: { and: [{ approved: { equals: true } }, { featured: { equals: true } }] },
       sort: 'order',
       limit: 12,
       depth: 1,

@@ -12,7 +12,8 @@ import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { getNewsBySlug, getNewsList, newsLocales } from '@/lib/news'
 import { formatDate } from '@/lib/format'
-import { localeAlternates, localizedPath, socialMetadata } from '@/lib/pageSeo'
+import { cmsTranslationFlags, languageMetadata, localizedPath, socialMetadata } from '@/lib/pageSeo'
+import { indexableLocales } from '@/lib/translations'
 import { siteUrl } from '@/lib/site'
 import JsonLd from '@/components/seo/JsonLd'
 import { absoluteUrl, breadcrumbJsonLd } from '@/lib/jsonLd'
@@ -29,16 +30,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const title = item.seoTitle || item.title
   const description = item.seoDescription || item.excerpt || ''
   const path = `/news/${slug}`
-  const social = socialMetadata(locale, { title, description, url: localizedPath(path, locale), image: item.cover?.url })
-
-  const locales = newsLocales(slug)
+  const indexable = indexableLocales(path, {
+    contentLocales: newsLocales(slug),
+    cmsComplete: await cmsTranslationFlags('news', slug),
+  })
+  const social = socialMetadata(locale, {
+    title,
+    description,
+    url: localizedPath(path, locale),
+    image: item.cover?.url,
+    locales: indexable,
+  })
 
   return {
     title,
     description,
-    alternates: localeAlternates(path, locale, locales),
-    // Not translated into this language yet: shown in English, but kept out of the index.
-    ...(locales.includes(locale) ? {} : { robots: { index: false, follow: true } }),
+    ...languageMetadata(path, locale, indexable),
     ...social,
     openGraph: { ...social.openGraph, type: 'article', publishedTime: item.publishedDate },
   }
@@ -57,6 +64,7 @@ const NewsArticlePage = async ({ params }: PageProps) => {
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
+    inLanguage: locale,
     headline: item.title,
     description: item.excerpt || undefined,
     image: item.cover ? [absoluteUrl(item.cover.url)] : undefined,

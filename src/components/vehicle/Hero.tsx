@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation'
 import type { AppLocale } from '@/i18n/routing'
 import { getPayloadClient } from '@/lib/payload'
 import { catalog } from '@/lib/catalog'
+import OptimizedVideo from '@/components/ui/OptimizedVideo'
 
 // Labels are message keys under `Specs.rows`, translated at render time.
 // Flagship figures from the User Manual (via src/lib/catalog.ts).
@@ -72,19 +73,16 @@ const Hero = async () => {
       id="hero"
       className="tw:relative tw:isolate tw:min-h-[70vh] tw:overflow-hidden tw:bg-brand-ink tw:text-white tw:md:min-h-[85vh]"
     >
-      <HeroEntrance variant="drive-in" delay={0.1} duration={0.8} className="tw:absolute tw:inset-0">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="metadata"
+      {/* Static (no entrance animation): the poster must paint full-size at once to be the LCP image.
+          It is preloaded; the clip only starts after the page has loaded. */}
+      <div className="tw:absolute tw:inset-0">
+        <OptimizedVideo
+          priority
+          mp4Src="/videos/three-wheeler-reveal.mp4"
           poster="/images/posters/neptune-blue-1.webp"
-          className="tw:absolute tw:inset-0 tw:h-full tw:w-full tw:object-cover tw:object-center"
-        >
-          <source src="/videos/three-wheeler-reveal.mp4" type="video/mp4" />
-        </video>
-      </HeroEntrance>
+          mediaClassName="tw:object-cover tw:object-center"
+        />
+      </div>
 
       {/* Legibility scrims */}
       <div className="tw:pointer-events-none tw:absolute tw:inset-0 tw:bg-gradient-to-r tw:from-brand-ink tw:via-brand-ink/60 tw:to-transparent tw:md:via-brand-ink/40" />
@@ -95,9 +93,10 @@ const Hero = async () => {
           <p className={`tw:mb-4 tw:text-sm tw:font-semibold tw:text-brand-blue-light ${caps}`}>{t('eyebrow')}</p>
           <h1 className="tw:text-4xl tw:font-bold tw:leading-tight tw:md:text-5xl">{t('title')}</h1>
           <p className="tw:mt-5 tw:max-w-md tw:text-white/70">{t('intro')}</p>
-          <div className="tw:mt-8 tw:flex tw:flex-wrap tw:gap-4">
+          <div data-track-location="hero" className="tw:mt-8 tw:flex tw:flex-wrap tw:gap-4">
             <a
               href="#enquire"
+              data-track="cta"
               className="tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:transition tw:hover:bg-brand-blue-light"
             >
               {t('testDrive')}

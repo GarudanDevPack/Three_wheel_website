@@ -1,7 +1,7 @@
 import { getSiteSettings } from './siteSettings'
 import { getModelVehicles, publicPrice } from './vehicles'
 import { jaffnaDealer } from './dealers'
-import { availableModels, catalog, GARUDAN_ZERO_FINANCE, RUNNING_COST, WARRANTY } from './catalog'
+import { availableModels, catalog, RUNNING_COST, WARRANTY } from './catalog'
 
 const lkr = (amount: number) => `Rs. ${amount.toLocaleString('en-US')}`
 
@@ -12,6 +12,20 @@ const lkr = (amount: number) => `Rs. ${amount.toLocaleString('en-US')}`
  */
 export async function buildAssistantSystemPrompt(): Promise<string> {
   const [settings, vehicles] = await Promise.all([getSiteSettings('en'), getModelVehicles('en')])
+
+  // Garudan interest-free plan from SiteSettings (CMS): omitted entirely when switched off or expired.
+  const plan = settings.financing.interestFreePlan
+  const planText = plan.enabled
+    ? [
+        'Garudan interest-free plan:',
+        `- Interest-free financing of up to ${lkr(plan.maxLoan)}: pay ${lkr(plan.monthly)} a month over ${plan.months} months.`,
+        `- Eligibility: ${plan.eligibility ?? 'the applicant must be from a low-income family and must be a three-wheeler driver.'}`,
+        `- Limited to the first ${plan.families} families. Register through the enquiry form or by phone.`,
+        plan.validUntil ? `- The plan ends on ${plan.validUntil.slice(0, 10)}.` : '',
+      ]
+        .filter(Boolean)
+        .join('\n')
+    : 'Garudan interest-free plan: not currently offered.'
 
   const pricing = vehicles
     .filter((vehicle) => vehicle.availability === 'Available')
@@ -61,11 +75,8 @@ Prices and offers:
 ${pricing}
 - Optional 620 W rooftop solar system for the EV Cargo: Rs. 150,000 (about 50 km a day free from the sun).
 
-Garudan interest-free finance (a special offer no other company in Sri Lanka provides):
-- Interest-free financing of up to ${lkr(GARUDAN_ZERO_FINANCE.maxLoan)}: pay ${lkr(GARUDAN_ZERO_FINANCE.monthly)} a month over ${GARUDAN_ZERO_FINANCE.months} months.
-- Eligibility: the applicant must be from a low-income family and must be a three-wheeler driver.
-- Limited to the first ${GARUDAN_ZERO_FINANCE.families} families. Register through the enquiry form or by phone.
-- Bank and leasing finance is also available (use the calculator on the website).
+${planText}
+- Bank and leasing finance is also available (use the calculator on the website; its ${settings.financing.interestRate}% p.a. is only an example rate, the lender sets the real one).
 
 Running cost:
 - Garudan's figures: about ${lkr(RUNNING_COST.monthlyElectricity)} of electricity a month for around ${RUNNING_COST.monthlyKm.toLocaleString('en-US')} km (roughly Rs. 2.2 per km), charging at home overnight; actual cost depends on tariff, load, speed and distance.
@@ -80,7 +91,7 @@ Long Range technical details (User Manual):
 - Driver + 3 seats; payload 320 kg; kerb weight 480 kg; 2780 × 1275 × 1700 mm; hydraulic drum brakes, hill hold, regenerative braking; tyres 4.00-12 at 30 psi front / 35 psi rear.
 
 Warranty and service:
-- Vehicle warranty: ${WARRANTY.vehicle}, whichever comes first. Battery warranty: ${WARRANTY.battery}.
+- Vehicle warranty: ${settings.warranty.vehicle ?? WARRANTY.vehicle}, whichever comes first. Battery warranty: ${settings.warranty.battery ?? WARRANTY.battery}.
 - Service schedule: 1,000 km (or 60 days), then 2,500, 5,000, 7,500, 10,000, 12,500 and 15,000 km, and every 2,500 km after that, at authorised Garudan service dealers with stamped coupons. The warranty can be void if the odometer is tampered with, services are missed, non-Garudan parts are used or repairs are done at unauthorised workshops. Full terms are on the website's Warranty page.
 
 Contact and dealers:

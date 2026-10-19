@@ -87,9 +87,14 @@ const VehiclesPage = async ({ params }: PageProps) => {
                   {catalog.map((model) => (
                     <tr key={model.slug} className="tw:border-t tw:border-brand-ink/10">
                       <th scope="row" className="tw:px-4 tw:py-3 tw:font-semibold tw:text-brand-ink">
-                        <Link href={`/vehicles/${model.slug}`} className="tw:text-brand-blue tw:underline-offset-2 tw:hover:underline">
-                          {model.name}
-                        </Link>
+                        {model.status === 'Available' ? (
+                          <Link href={`/vehicles/${model.slug}`} className="tw:text-brand-blue tw:underline-offset-2 tw:hover:underline">
+                            {model.name}
+                          </Link>
+                        ) : (
+                          // Upcoming: no page until there are photos, price and specs.
+                          model.name
+                        )}
                       </th>
                       {model.status === 'Available' ? (
                         <>

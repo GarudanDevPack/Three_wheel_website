@@ -7,8 +7,8 @@ import { stagger } from 'animejs'
 import { revealOnScroll } from '@/lib/reveal'
 import type { AppLocale } from '@/i18n/routing'
 import { Link } from '@/i18n/navigation'
-import type { SiteSettingsData } from '@/lib/siteSettings'
-import { formatLkr, monthlyEmi } from '@/lib/format'
+import type { InterestFreePlan, SiteSettingsData } from '@/lib/siteSettings'
+import { formatDate, formatLkr, monthlyEmi } from '@/lib/format'
 import { trackEvent } from '@/lib/analytics'
 import Modal from '@/components/ui/Modal'
 import InquiryForm from '@/components/ui/InquiryForm'
@@ -18,6 +18,8 @@ export type PricingFact = { icon: FactIcon; label: string; value: string }
 
 export type PricedModel = {
   id: string
+  /** Model page slug, used to pre-select the model in the test-drive form. */
+  slug: string | null
   name: string
   modelRange: string
   availability: 'Available' | 'Upcoming'
@@ -27,6 +29,9 @@ export type PricedModel = {
   /** Pre-offer price; only set when higher than `price`. */
   originalPrice: number | null
   offerLabel: string | null
+  /** Offer details shown beside the price, and its end date (ISO) when one is published. */
+  offerConditions: string | null
+  offerValidUntil: string | null
   downPayment: number | null
   monthlySaving: number | null
   image: { url: string; alt?: string | null } | null
@@ -37,11 +42,12 @@ export type PricedModel = {
 }
 
 type Financing = SiteSettingsData['financing']
-type ZeroPlan = { maxLoan: number; monthly: number; months: number; families: number }
+type ZeroPlan = InterestFreePlan
 type Plan = 'bank' | 'zero'
 
 const sliderClasses = 'tw:mt-3 tw:w-full tw:cursor-pointer tw:accent-brand-blue'
 const maxSaving = 150_000
+const CALC_SESSION_KEY = 'neptune_calc_used'
 const roundTo = (value: number, step: number) => Math.round(value / step) * step
 
 const SliderField = ({ id, label, display, children }: { id: string; label: string; display: string; children: ReactNode }) => (
@@ -132,7 +138,7 @@ const PricingFinanceClient = ({
   const [down, setDown] = useState(defaultDown(first))
   const [tenure, setTenure] = useState(defaultTenure)
   const [rate, setRate] = useState(financing.interestRate)
-  const [saving, setSaving] = useState(first?.monthlySaving ?? 100_000)
+  const [saving, setSaving] = useState(first?.monthlySaving ?? 0)
   const [applyOpen, setApplyOpen] = useState(false)
 
   const selected = models.find((model) => model.id === selectedId)
@@ -151,7 +157,11 @@ const PricingFinanceClient = ({
   const zeroLoan = Math.min(zeroPlan.maxLoan, price)
   const zeroMonthly = zeroLoan > 0 ? Math.min(zeroPlan.monthly, zeroLoan / zeroPlan.months) : 0
 
-  const isZero = plan === 'zero'
+  // CMS wording of who qualifies, or the default translated lines.
+  const eligibility = zeroPlan.eligibility
+    ? [zeroPlan.eligibility]
+    : [t('zeroEligibilityIncome'), t('zeroEligibilityDriver')]
+  const isZero = plan === 'zero' && zeroPlan.enabled
   const emi = isZero ? zeroMonthly : bankEmi
   const months = isZero ? zeroPlan.months : tenure
   const loan = isZero ? zeroLoan : bankLoan
@@ -164,7 +174,7 @@ const PricingFinanceClient = ({
   const barMax = Math.max(saving, emi, 1)
   const offerSaving = selected?.originalPrice && selected.price ? selected.originalPrice - selected.price : 0
 
-  // GA4 `finance_calc_use`: once per page view, the first time the visitor changes any calculator input.
+  // GA4 `finance_calc_use`: once per browser session, the first time the visitor changes any calculator input.
   const calcTouched = useRef<'initial' | 'ready' | 'sent'>('initial')
   useEffect(() => {
     if (calcTouched.current === 'initial') {
@@ -173,7 +183,13 @@ const PricingFinanceClient = ({
     }
     if (calcTouched.current === 'sent') return
     calcTouched.current = 'sent'
-    trackEvent('finance_calc_use', { plan, model: selected ? modelLabel(selected) : 'custom' })
+    try {
+      if (sessionStorage.getItem(CALC_SESSION_KEY)) return
+      sessionStorage.setItem(CALC_SESSION_KEY, '1')
+    } catch {
+      // Storage blocked: fall back to once per page view.
+    }
+    trackEvent('finance_calc_use', { plan, model: selected?.slug || 'custom' })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, plan, priceInput, down, tenure, rate, saving])
 
@@ -199,7 +215,7 @@ const PricingFinanceClient = ({
   const featured = selected && selected.availability === 'Available' ? selected : first
 
   return (
-    <section id="pricing" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
+    <section id="pricing" data-track-location="pricing" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
       <div ref={sectionRef} className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
         <div data-pricing-reveal className="tw:max-w-2xl">
           <p className="tw:text-sm tw:font-semibold tw:text-brand-blue">{t('eyebrow')}</p>
@@ -281,6 +297,14 @@ const PricingFinanceClient = ({
                           {t('downPaymentBadge', { amount: money(featured.downPayment) })}
                         </p>
                       )}
+                      {featured.originalPrice && featured.offerConditions && (
+                        <p className="tw:mt-2 tw:text-xs tw:leading-relaxed tw:text-brand-ink/70">{featured.offerConditions}</p>
+                      )}
+                      {featured.originalPrice && featured.offerValidUntil && (
+                        <p className="tw:mt-1 tw:text-xs tw:font-semibold tw:text-red-700">
+                          {t('offerEnds', { date: formatDate(featured.offerValidUntil, locale) })}
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <p className="tw:mt-1 tw:text-2xl tw:font-bold tw:text-brand-ink">{t('priceOnRequest')}</p>
@@ -294,17 +318,33 @@ const PricingFinanceClient = ({
                     </div>
                   )}
 
-                  {/* Offer conditions next to the price (same figures as the 0% tab in the calculator). */}
-                  {featured.price && featured.availability === 'Available' && (
+                  {/* Interest-free plan terms next to the price (edited in SiteSettings → Financing). */}
+                  {featured.price && featured.availability === 'Available' && zeroPlan.enabled && (
                     <div className="tw:mt-5 tw:rounded-2xl tw:bg-brand-green/10 tw:p-4 tw:text-sm">
                       <p className="tw:font-semibold tw:text-brand-ink">{t('zeroTitle')}</p>
                       <p className="tw:mt-1 tw:text-brand-ink/70">
                         {t('zeroTerms', { amount: money(zeroPlan.maxLoan), monthly: money(zeroPlan.monthly), months: zeroPlan.months })}
                       </p>
                       <p className="tw:mt-1 tw:text-xs tw:text-brand-ink/60">
-                        {t('zeroEligibilityIncome')} · {t('zeroEligibilityDriver')} · {t('zeroLimited', { count: zeroPlan.families })}
+                        {eligibility.join(' · ')} · {t('zeroLimited', { count: zeroPlan.families })}
                       </p>
+                      {zeroPlan.validUntil && (
+                        <p className="tw:mt-1 tw:text-xs tw:font-semibold tw:text-red-700">
+                          {t('offerEnds', { date: formatDate(zeroPlan.validUntil, locale) })}
+                        </p>
+                      )}
                     </div>
+                  )}
+
+                  {/* The one primary action in this card. */}
+                  {featured.availability === 'Available' && (
+                    <Link
+                      href={featured.slug ? `/contact?model=${featured.slug}#enquire` : '/contact#enquire'}
+                      data-track="cta"
+                      className="tw:mt-5 tw:flex tw:w-full tw:items-center tw:justify-center tw:rounded-full tw:bg-brand-blue tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light"
+                    >
+                      {t('bookTestDrive')}
+                    </Link>
                   )}
 
                   {featured.detailHref && (
@@ -339,7 +379,7 @@ const PricingFinanceClient = ({
           >
             <div className="tw:bg-gradient-to-br tw:from-brand-blue tw:to-[#1e40af] tw:p-6 tw:text-white tw:sm:p-8">
               <div role="tablist" aria-label={t('financePlan')} className="tw:mb-6 tw:inline-flex tw:rounded-full tw:bg-white/15 tw:p-1">
-                {(['bank', 'zero'] as const).map((option) => (
+                {(zeroPlan.enabled ? (['bank', 'zero'] as const) : (['bank'] as const)).map((option) => (
                   <button
                     key={option}
                     type="button"
@@ -384,7 +424,8 @@ const PricingFinanceClient = ({
               {hasResult && <p className="tw:mt-3 tw:text-[11px] tw:text-white/60">{t('totalCostLine', { amount: money(totalCost) })}</p>}
             </div>
 
-            {hasResult && emi > 0 && (
+            {/* Only once the visitor enters their own fuel saving; no saving figure is pre-filled. */}
+            {hasResult && emi > 0 && saving > 0 && (
               <div className="tw:border-b tw:border-brand-ink/10 tw:bg-surface/60 tw:p-6 tw:sm:px-8">
                 <p className="tw:text-sm tw:font-semibold tw:text-brand-ink">{t('savingVsPayment')}</p>
                 <div className="tw:mt-4 tw:space-y-3">
@@ -439,8 +480,9 @@ const PricingFinanceClient = ({
                     {t('zeroTerms', { amount: money(zeroPlan.maxLoan), monthly: money(zeroPlan.monthly), months: zeroPlan.months })}
                   </p>
                   <ul className="tw:mt-3 tw:list-disc tw:space-y-1 tw:pl-5 tw:text-xs tw:text-emerald-900/80">
-                    <li>{t('zeroEligibilityIncome')}</li>
-                    <li>{t('zeroEligibilityDriver')}</li>
+                    {eligibility.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
                   </ul>
                   <p className="tw:mt-3 tw:inline-flex tw:rounded-full tw:bg-white tw:px-3 tw:py-1 tw:text-xs tw:font-bold tw:text-red-600">
                     {t('zeroLimited', { count: zeroPlan.families })}
@@ -508,7 +550,7 @@ const PricingFinanceClient = ({
               <button
                 type="button"
                 onClick={() => setApplyOpen(true)}
-                className="tw:inline-flex tw:w-full tw:cursor-pointer tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:border-0 tw:bg-brand-blue tw:px-6 tw:py-3.5 tw:text-sm tw:font-semibold tw:text-white tw:transition tw:hover:bg-brand-blue-light"
+                className="tw:inline-flex tw:w-full tw:cursor-pointer tw:items-center tw:justify-center tw:gap-2 tw:rounded-full tw:border-2 tw:border-brand-blue tw:bg-transparent tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-blue tw:transition tw:hover:bg-brand-blue/5"
               >
                 {isZero ? t('zeroApply') : t('apply')}
                 <svg viewBox="0 0 24 24" className="tw:h-4 tw:w-4" fill="none" aria-hidden="true">

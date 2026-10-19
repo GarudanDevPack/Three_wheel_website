@@ -76,7 +76,7 @@ const DealersGrid = ({ dealers }: { dealers: Dealer[] }) => {
             )}
             {dealer.address && <p className="tw:mt-3 tw:text-sm tw:text-brand-ink/60">{dealer.address}</p>}
             {(dealer.phone || dealer.phone2) && (
-              <div className="tw:mt-4 tw:flex tw:flex-wrap tw:gap-x-6 tw:gap-y-2">
+              <div data-track-location="dealer" data-track-dealer={dealer.name} className="tw:mt-4 tw:flex tw:flex-wrap tw:gap-x-6 tw:gap-y-2">
                 {[dealer.phone, dealer.phone2]
                   .filter((phone): phone is string => Boolean(phone))
                   .map((phone) => (

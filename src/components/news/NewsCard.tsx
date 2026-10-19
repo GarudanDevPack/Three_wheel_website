@@ -84,7 +84,6 @@ const NewsCard = ({
             src={item.cover.url}
             alt=""
             fill
-            priority={isHero}
             sizes={isWide || isHero ? '(min-width: 768px) 55vw, 100vw' : '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'}
             className="tw:object-cover tw:transition-transform tw:duration-500 tw:group-hover:scale-105"
           />

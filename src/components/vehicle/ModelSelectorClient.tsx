@@ -14,6 +14,8 @@ export type ModelColor = {
   colorName: string
   swatchHex?: string | null
   video?: string | null
+  videoWebm?: string | null
+  videoPoster?: string | null
   angleImages?: AngleImage[] | null
 }
 
@@ -52,7 +54,7 @@ const ModelSelectorClient = ({ models }: { models: ModelOption[] }) => {
 
   return (
     <section id="model-selector" className="tw:relative tw:isolate tw:overflow-hidden tw:bg-surface tw:py-20">
-      <SectionVideoBackdrop src="/videos/model-selector-backdrop.mp4" variant="soft" base="surface" />
+      <SectionVideoBackdrop src="/videos/model-selector-backdrop.mp4" poster="/images/posters/model-selector-backdrop.webp" variant="soft" base="surface" />
       <div className="tw:relative tw:z-10 tw:mx-auto tw:max-w-6xl tw:px-6">
         <div className="tw:flex tw:items-end tw:justify-between">
           <h2 className="tw:text-3xl tw:font-bold tw:text-brand-ink">{t('title')}</h2>
@@ -122,17 +124,9 @@ const ModelSelectorClient = ({ models }: { models: ModelOption[] }) => {
                 >
                   {t('viewDetails')} →
                 </Link>
-              ) : active.slug ? (
-                // Upcoming model: its own (noindex) coming-soon page.
-                <Link
-                  href={`/vehicles/${active.slug}`}
-                  className="tw:inline-block tw:rounded-full tw:border tw:border-brand-ink/20 tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-ink/70 tw:transition tw:hover:border-brand-ink/40"
-                >
-                  {t('comingSoon')} →
-                </Link>
               ) : (
                 <span className="tw:inline-block tw:rounded-full tw:border tw:border-brand-ink/20 tw:px-6 tw:py-3 tw:text-sm tw:font-semibold tw:text-brand-ink/40">
-                  {t('specsSoon')}
+                  {t('comingSoon')}
                 </span>
               )}
             </div>

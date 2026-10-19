@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { animate, onScroll } from 'animejs'
+import Image from 'next/image'
 import { prefersReducedMotion } from '@/lib/reveal'
 
 export type ExplodedPart = {
@@ -98,12 +99,14 @@ const BuildSequence = ({ parts }: { parts: ExplodedPart[] }) => {
               }}
               className="tw:absolute tw:inset-0 tw:flex tw:items-center tw:justify-center tw:will-change-transform"
             >
-              {/* SVG part illustrations are user-uploaded and variable in count/size, so a plain img keeps this simple - next/image's fixed-dimension requirement doesn't fit an unknown-count exploded diagram. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              {/* Uploaded SVG part: fills the fixed square stage (no layout shift); SVGs skip the optimiser. */}
+              <Image
                 src={part.svg!.url!}
                 alt={part.svg?.alt || part.partName}
-                className="tw:max-h-full tw:max-w-full"
+                fill
+                unoptimized
+                sizes="70vmin"
+                className="tw:object-contain"
                 draggable={false}
               />
             </div>

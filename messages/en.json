@@ -1,7 +1,7 @@
 {
   "Meta": {
     "siteTitle": "Neptune Electric Three-Wheelers Sri Lanka | Up to 300 km",
-    "siteDescription": "Neptune electric tuk tuks for Sri Lankan roads: up to 300 km range, about Rs. 12,000 a month to run and Garudan 0% finance. Book a test drive."
+    "siteDescription": "Neptune electric tuk tuks for Sri Lankan roads: up to 300 km range, about Rs. 12,000 a month to run and the Garudan interest-free plan. Book a test drive."
   },
   "Header": {
     "home": "Home",
@@ -57,7 +57,12 @@
     "status": {
       "success": "Thanks! Our team will reach out shortly.",
       "missingFields": "Name and phone number are required.",
-      "failed": "We could not submit your enquiry right now. Please try again later."
+      "failed": "We could not submit your enquiry right now. Please try again later.",
+      "invalidName": "Please enter your name (at least 2 characters).",
+      "invalidPhone": "Please enter a Sri Lankan phone number, e.g. 077 123 4567 or +94 77 123 4567.",
+      "consentRequired": "Please tick the box to agree to be contacted.",
+      "tooFast": "That was quick! Please check your details and press Submit again.",
+      "rateLimited": "Too many enquiries from this connection. Please try again in a few minutes or call us."
     },
     "modelLabel": "Model",
     "modelAny": "Not sure yet",
@@ -66,7 +71,7 @@
     "dealerAny": "Any / not sure",
     "dealerHeadOffice": "Head office, Mount Lavinia",
     "dealerJaffna": "Jaffna",
-    "consent": "By submitting, you agree that Neptune may contact you about this enquiry by phone, WhatsApp or email. Read our <privacy>privacy policy</privacy>."
+    "consent": "I agree that Neptune may contact me about this enquiry by phone, WhatsApp or email, and I accept the <privacy>privacy policy</privacy>."
   },
   "EnquiryMenu": {
     "toggle": "Enquire about this vehicle",
@@ -149,19 +154,19 @@
       "label": "Powertrain",
       "headline": "Chassis and battery, built to endure",
       "copy": "A reinforced frame carries the motor, battery, and suspension as one rigid unit — engineered to endure diverse terrain and rigorously tested for daily commercial duty.",
-      "alt": "Neptune three-wheeler chassis, battery, and suspension layout"
+      "alt": "Neptune electric three-wheeler chassis, battery, and suspension layout"
     },
     "interior": {
       "label": "Interior",
       "headline": "A cabin built around the driver",
       "copy": "A driver-first layout with an adjustable seat, digital instrument cluster, and USB charging — ergonomic touches that make a full shift behind the wheel comfortable, not just possible.",
-      "alt": "Neptune three-wheeler cabin and seating layout, viewed from above"
+      "alt": "Neptune electric three-wheeler cabin and seating layout, viewed from above"
     },
     "exterior": {
       "label": "Exterior",
       "headline": "One structure, start to finish",
       "copy": "Every panel and support is engineered as part of a single structure — confident styling built to stand out on the route and stand up to daily commercial use, mile after mile.",
-      "alt": "Neptune three-wheeler full-body structure, isometric view"
+      "alt": "Neptune electric three-wheeler full-body structure, isometric view"
     }
   },
   "Cargo": {
@@ -169,8 +174,8 @@
     "intro": "Neptune switches between passenger and cargo mode in moments, so one vehicle covers both jobs. Fold the seats back for a generous, secure load area, or keep them up for a comfortable ride with plenty of legroom — either way, it's built for a full day's work.",
     "passengerMode": "Passenger mode",
     "cargoMode": "Cargo mode",
-    "passengerAlt": "Neptune three-wheeler blueprint animation, passenger mode",
-    "cargoAlt": "Neptune three-wheeler in cargo mode, rear doors opening to the load area",
+    "passengerAlt": "Neptune electric three-wheeler blueprint animation, passenger mode",
+    "cargoAlt": "Neptune electric three-wheeler in cargo mode, rear doors opening to the load area",
     "passengerCaption": "Passenger mode",
     "cargoCaption": "Cargo mode"
   },
@@ -196,11 +201,11 @@
     "previous": "Previous photo",
     "next": "Next photo",
     "photos": {
-      "front": "Neptune three-wheeler, front three-quarter view parked by the water",
-      "rear": "Neptune three-wheeler, rear view on a coastal road",
-      "side": "Neptune three-wheeler, side profile studio shot",
-      "cabin": "Neptune three-wheeler cabin interior and seating",
-      "usb": "Neptune three-wheeler USB fast-charging port detail"
+      "front": "Neptune electric three-wheeler, front three-quarter view parked by the water",
+      "rear": "Neptune electric three-wheeler, rear view on a coastal road",
+      "side": "Neptune electric three-wheeler, side profile studio shot",
+      "cabin": "Neptune electric three-wheeler cabin interior and seating",
+      "usb": "Neptune electric three-wheeler USB fast-charging port detail"
     }
   },
   "Awards": {
@@ -252,7 +257,7 @@
       },
       "warranty": {
         "q": "What is the warranty coverage?",
-        "a": "2 years or 50,000 km on the vehicle (whichever comes first) and 5 years with unlimited kilometres on the battery, when serviced at authorised Garudan dealers. Full terms are on our Warranty page."
+        "a": "24 months or 50,000 km on the vehicle (whichever comes first) and 5 years with unlimited kilometres on the battery, when serviced at authorised Garudan dealers. Full terms are on our Warranty page."
       },
       "testDrive": {
         "q": "Can I test drive before buying?",
@@ -263,7 +268,7 @@
   },
   "Contact": {
     "metaTitle": "Contact Us: Book a Test Drive or Fleet Enquiry",
-    "metaDescription": "Call 021 785 6180 or 077 396 9427, or send an enquiry for a test drive, fleet order, Garudan 0% finance, dealership or partnership.",
+    "metaDescription": "Call 021 785 6180 or 077 396 9427, or send an enquiry for a test drive, fleet order, the Garudan interest-free plan, dealership or partnership.",
     "title": "Talk to Neptune",
     "intro": "Questions about a vehicle, finance, fleet orders, or becoming a dealer or sales partner — reach out and our team will get back to you.",
     "formTitle": "Send us a message",
@@ -293,7 +298,7 @@
     "metaTitle": "Electric Three-Wheelers for Sale in Sri Lanka",
     "metaDescription": "Compare Neptune electric three-wheelers: the Long Range 300 km passenger model and the new EV Cargo, with prices, specs and test-drive booking.",
     "title": "Neptune electric three-wheelers: compare all models",
-    "intro": "Neptune makes electric three-wheelers for Sri Lankan drivers and businesses. The Long Range 300 km is our passenger model for full-day hire, tourism and intercity work, with up to 300 km per charge and a 20 kWh LiFePO4 battery. The new Neptune EV Cargo carries up to 500 kg in a heavy-duty box, with an optional rooftop solar system for extra daily range. 200 km and 120 km passenger models are coming soon. Every model has a 2-year / 50,000 km vehicle warranty and a 5-year battery warranty. Compare the key figures below, then open a model for full specifications, prices and finance options.",
+    "intro": "Neptune makes electric three-wheelers for Sri Lankan drivers and businesses. The Long Range 300 km is our passenger model for full-day hire, tourism and intercity work, with up to 300 km per charge and a 20 kWh LiFePO4 battery. The new Neptune EV Cargo carries up to 500 kg in a heavy-duty box, with an optional rooftop solar system for extra daily range. 200 km and 120 km passenger models are coming soon. Every model has a 24-month / 50,000 km vehicle warranty and a 5-year battery warranty. Compare the key figures below, then open a model for full specifications, prices and finance options.",
     "empty": "Our full catalog is being updated. In the meantime, compare the Neptune range on the homepage.",
     "compareModels": "Compare models",
     "noMatch": "No vehicles match those filters.",
@@ -466,7 +471,7 @@
     "save": "Save {amount}",
     "wasPrice": "Was",
     "rangePerCharge": "Range per charge",
-    "monthlySaving": "Monthly saving",
+    "monthlySaving": "Monthly saving (Garudan estimate)",
     "warranty": "Neptune warranty",
     "batteryWarranty": "Battery warranty",
     "fuelSaving": "Monthly fuel saving",
@@ -490,8 +495,8 @@
     "cargoRange": "~100 km battery · up to 350 km with solar",
     "financePlan": "Finance plan",
     "planBank": "Bank / leasing",
-    "planZero": "Garudan 0% plan",
-    "zeroOver": "{months} months · 0% interest",
+    "planZero": "Garudan interest-free plan",
+    "zeroOver": "{months} months · interest-free",
     "upfront": "Pay upfront",
     "totalCostLine": "Total you pay: {amount}",
     "zeroTitle": "Garudan interest-free financing",
@@ -499,9 +504,11 @@
     "zeroEligibilityIncome": "For families from a low-income background",
     "zeroEligibilityDriver": "Applicant must be a three-wheeler driver",
     "zeroLimited": "Limited to the first {count} families",
-    "zeroApply": "Register for the 0% plan",
+    "zeroApply": "Register for the interest-free plan",
     "zeroApplyMessage": "I'd like to register for the Garudan interest-free plan for the {model} ({monthly} a month for {months} months).",
-    "rateNote": "{rate}% p.a. is an example bank / leasing rate. Your lender sets the final rate. The Garudan 0% plan is a separate option."
+    "rateNote": "{rate}% p.a. is an example bank / leasing rate. Your lender sets the final rate. The Garudan interest-free plan is a separate option.",
+    "offerEnds": "Offer ends {date}",
+    "bookTestDrive": "Book a Test Drive"
   },
   "Testimonials": {
     "eyebrow": "Testimonials",
@@ -529,7 +536,7 @@
   },
   "News": {
     "metaTitle": "Electric Three-Wheeler News & Offers in Sri Lanka",
-    "metaDescription": "Neptune news: Garudan 0% financing, the new EV Cargo, running-cost guides and price notices for electric three-wheeler owners in Sri Lanka.",
+    "metaDescription": "Neptune news: the Garudan interest-free plan, the new EV Cargo, running-cost guides and price notices for electric three-wheeler owners in Sri Lanka.",
     "eyebrow": "News",
     "title": "News & updates",
     "intro": "Launches, events and press coverage — the latest from Neptune.",
@@ -613,7 +620,7 @@
   },
   "RunningCost": {
     "eyebrow": "Running cost",
-    "title": "Why switch to an electric tuk tuk?",
+    "title": "Why switch to an electric three-wheeler?",
     "headline": "Run about 5,500 km a month on about Rs. 12,000 of electricity.",
     "intro": "Charge overnight at home, drive by day, and stop paying for petrol, engine oil and clutch repairs.",
     "statElectricity": "Electricity per month",
@@ -654,7 +661,7 @@
         "answer": "The Neptune Long Range 300 km is Rs. 2,675,000 including VAT, with a Rs. 605,000 down payment. The new Neptune EV Cargo is Rs. 1,775,000 on a limited-time offer (Rs. 1,000,000 off Rs. 2,775,000)."
       },
       {
-        "question": "Is an electric tuk tuk cheaper to run than petrol?",
+        "question": "Is an electric three-wheeler cheaper to run than petrol?",
         "answer": "Yes. Garudan's figures show about 5,500 km a month for around Rs. 12,000 of electricity (about Rs. 2.2 per km), with no engine oil, grease, clutch or gear cables to replace. Your saving depends on your tariff, distance and driving."
       },
       {
@@ -663,7 +670,7 @@
       },
       {
         "question": "What is the battery warranty?",
-        "answer": "The LiFePO4 battery has a 5-year warranty with unlimited kilometres. The vehicle is covered for 2 years or 50,000 km, whichever comes first, when serviced at authorised Garudan dealers."
+        "answer": "The LiFePO4 battery has a 5-year warranty with unlimited kilometres. The vehicle is covered for 24 months or 50,000 km, whichever comes first, when serviced at authorised Garudan dealers."
       },
       {
         "question": "Can I test drive before buying?",
@@ -673,7 +680,7 @@
   },
   "Faq": {
     "metaTitle": "Electric Tuk Tuk FAQ: Price, Range & Charging",
-    "metaDescription": "Answers on Neptune electric three-wheeler prices, Garudan 0% finance, range, home charging, solar, warranty, service and Cargo Mode in Sri Lanka.",
+    "metaDescription": "Answers on Neptune electric three-wheeler prices, the Garudan interest-free plan, range, home charging, solar, warranty, service and Cargo Mode.",
     "eyebrow": "Help centre",
     "title": "Neptune electric three-wheeler FAQ",
     "intro": "Straight answers about prices, finance, range, charging, warranty and everyday use. Can’t find what you need? Our team is a call or a WhatsApp away.",
@@ -719,7 +726,7 @@
             "answer": "No. Neptune has an on-board charger and a 32 A AC charging socket, so it charges from a standard, properly earthed 220–240 V home supply. Ask an electrician to check the socket and wiring first."
           },
           {
-            "question": "Is an electric tuk tuk cheaper to run than petrol?",
+            "question": "Is an electric three-wheeler cheaper to run than petrol?",
             "answer": "Yes. Garudan's figures show about 5,500 km a month for around Rs. 12,000 of electricity (about Rs. 2.2 per km), with no engine oil, grease, clutch or gear cables to replace. Your saving depends on your tariff, distance and driving."
           },
           {
@@ -734,7 +741,7 @@
         "items": [
           {
             "question": "What is the battery warranty?",
-            "answer": "The LiFePO4 battery has a 5-year warranty with unlimited kilometres. The vehicle is covered for 2 years or 50,000 km, whichever comes first, when serviced at authorised Garudan dealers."
+            "answer": "The LiFePO4 battery has a 5-year warranty with unlimited kilometres. The vehicle is covered for 24 months or 50,000 km, whichever comes first, when serviced at authorised Garudan dealers."
           },
           {
             "question": "Where can I service my Neptune?",
@@ -772,11 +779,17 @@
     "vehicles": "Vehicles",
     "dealers": "Dealers"
   },
-  "UpcomingModel": {
-    "comingSoon": "Coming soon",
-    "cta": "Register your interest",
-    "note": "Price, specifications and photos will be published at launch.",
-    "availableNow": "Available now",
-    "allVehicles": "All vehicles"
+  "ThankYou": {
+    "metaTitle": "Thank you",
+    "title": "Thank you, we have your enquiry",
+    "body": "Our team will contact you shortly, usually within the day. If it is urgent, call or WhatsApp us.",
+    "models": "Browse models",
+    "home": "Back to home",
+    "whatsapp": "WhatsApp us"
+  },
+  "MobileCta": {
+    "label": "Quick contact",
+    "call": "Call",
+    "testDrive": "Book a Test Drive"
   }
 }

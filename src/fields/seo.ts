@@ -23,6 +23,17 @@ export const seoField = ({ ogImage = true }: { ogImage?: boolean } = {}): Field 
       localized: true,
       admin: { description: 'Keep under about 155 characters; longer descriptions are cut off in Google.' },
     },
+    {
+      name: 'translationComplete',
+      type: 'checkbox',
+      localized: true,
+      defaultValue: false,
+      label: 'Translation complete and ready to index',
+      admin: {
+        description:
+          'Sinhala / Tamil only: tick after a native speaker has checked this page in this language. Until then the page is shown to visitors but kept out of Google, the sitemap and hreflang. English is always indexed.',
+      },
+    },
     ...(ogImage
       ? [
           {

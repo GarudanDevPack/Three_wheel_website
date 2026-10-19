@@ -99,7 +99,7 @@ const AssistantLauncher = ({ contacts }: { contacts: AssistantContacts }) => {
     <MotionConfig reducedMotion="user">
       <AnimatePresence>{open && <AssistantChat contacts={contacts} onClose={closeChat} />}</AnimatePresence>
 
-      <div className="tw:pointer-events-none tw:fixed tw:bottom-6 tw:right-6 tw:z-[70] tw:flex tw:items-end tw:gap-3">
+      <div className="tw:pointer-events-none tw:fixed tw:bottom-24 tw:right-6 tw:z-[70] tw:lg:bottom-6 tw:flex tw:items-end tw:gap-3">
         <AnimatePresence mode="wait">
           {message && (
             <motion.div

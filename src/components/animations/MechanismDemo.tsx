@@ -1,36 +1,17 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import OptimizedVideo from '@/components/ui/OptimizedVideo'
 
-const MechanismDemo = ({ src }: { src: string }) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [isNearViewport, setIsNearViewport] = useState(false)
-
-  useEffect(() => {
-    const el = containerRef.current
-    if (!el) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsNearViewport(true)
-          observer.disconnect()
-        }
-      },
-      { rootMargin: '400px' },
-    )
-
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <div ref={containerRef} className="tw:mx-auto tw:max-w-3xl tw:overflow-hidden tw:rounded-2xl">
-      {isNearViewport && (
-        <video src={src} loop muted autoPlay playsInline className="tw:h-auto tw:w-full" />
-      )}
-    </div>
-  )
-}
+/** CMS mechanism clip: lazy, paused off-screen, poster when the admin uploaded one. */
+const MechanismDemo = ({ src, webm, poster }: { src: string; webm?: string | null; poster?: string | null }) => (
+  <OptimizedVideo
+    mp4Src={src}
+    webmSrc={webm}
+    poster={poster}
+    posterSizes="(min-width: 768px) 768px, 100vw"
+    className="tw:relative tw:mx-auto tw:aspect-video tw:max-w-3xl tw:rounded-2xl"
+    mediaClassName="tw:object-contain"
+  />
+)
 
 export default MechanismDemo
