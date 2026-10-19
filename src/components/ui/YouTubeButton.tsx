@@ -14,7 +14,9 @@ const YouTubeButton = ({ url }: { url: string }) => {
       rel="noreferrer"
       aria-label={t('label')}
       onClick={() => trackEvent('youtube_click')}
-      className="tw:fixed tw:bottom-[10.5rem] tw:left-6 tw:z-[70] tw:flex tw:h-14 tw:w-14 tw:items-center tw:justify-center tw:rounded-full tw:bg-[#FF0000] tw:text-white tw:shadow-xl tw:transition tw:hover:brightness-110"
+      // Pops in after the loading screen (tailwind.css .intro-pop), last of the three.
+      style={{ '--intro-delay': '0.24s' } as React.CSSProperties}
+      className="intro-pop tw:fixed tw:bottom-[10.5rem] tw:left-6 tw:z-[70] tw:flex tw:h-14 tw:w-14 tw:items-center tw:justify-center tw:rounded-full tw:bg-[#FF0000] tw:text-white tw:shadow-xl tw:transition tw:hover:brightness-110"
     >
       <svg viewBox="0 0 24 24" className="tw:h-7 tw:w-7" fill="currentColor" aria-hidden="true">
         <path d="M9.5 8.2v7.6l6.4-3.8-6.4-3.8z" />

@@ -17,7 +17,8 @@ const MobileCtaBar = ({ phone, whatsapp }: { phone: string; whatsapp: string }) 
     <nav
       aria-label={t('label')}
       data-track-location="mobile_bar"
-      className="tw:fixed tw:inset-x-0 tw:bottom-0 tw:z-[75] tw:grid tw:grid-cols-[1fr_1fr_1.6fr] tw:gap-2 tw:border-t tw:border-brand-ink/10 tw:bg-surface/95 tw:px-3 tw:pb-[max(0.75rem,env(safe-area-inset-bottom))] tw:pt-3 tw:shadow-[0_-8px_24px_-16px_rgba(11,14,20,0.35)] tw:backdrop-blur tw:lg:hidden"
+      // Slides up after the loading screen (tailwind.css .intro-pop / .intro-pop-up).
+      className="intro-pop intro-pop-up tw:fixed tw:inset-x-0 tw:bottom-0 tw:z-[75] tw:grid tw:grid-cols-[1fr_1fr_1.6fr] tw:gap-2 tw:border-t tw:border-brand-ink/10 tw:bg-surface/95 tw:px-3 tw:pb-[max(0.75rem,env(safe-area-inset-bottom))] tw:pt-3 tw:shadow-[0_-8px_24px_-16px_rgba(11,14,20,0.35)] tw:backdrop-blur tw:lg:hidden"
     >
       {/* call_click / whatsapp_click / cta_click are recorded by LinkTracking (delegated listener). */}
       <a

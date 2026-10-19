@@ -59,13 +59,18 @@ const stopPlayback = (video: HTMLVideoElement) => {
   }
 }
 
-/** Visitors who asked for less motion or less data, or are on a slow connection, only get the poster. */
-const mayLoadVideo = () => {
+/**
+ * Visitors who asked for less motion or less data, or are on a slow connection, only get the poster.
+ * The hero clip (0.7 MB) still plays on connections Chrome rates "3g", which is common on Sri Lankan
+ * mobile networks; the other clips wait for a faster one.
+ */
+const mayLoadVideo = (hero: boolean) => {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return false
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
     .connection
   if (connection?.saveData) return false
-  return !['slow-2g', '2g', '3g'].includes(connection?.effectiveType ?? '')
+  const tooSlow = hero ? ['slow-2g', '2g'] : ['slow-2g', '2g', '3g']
+  return !tooSlow.includes(connection?.effectiveType ?? '')
 }
 
 /**
@@ -130,7 +135,7 @@ const OptimizedVideo = ({
 
   useEffect(() => {
     const video = videoRef.current
-    if (!video || !mayLoadVideo()) return
+    if (!video || !mayLoadVideo(priority)) return
 
     let visible = false
     // Hero: after the page `load` event. Everything else: after the visitor's first scroll/tap.

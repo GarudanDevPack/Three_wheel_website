@@ -198,13 +198,57 @@
     animation: hero-enter-drive 0.8s cubic-bezier(0.22, 1.25, 0.36, 1) both;
   }
 
+  /* Floating YouTube / Facebook / WhatsApp buttons and the phone contact bar (lib/intro.ts): hidden while
+     the loading screen is up, then they pop in (stagger from an inline --intro-delay). If JavaScript never runs,
+     intro-fallback shows them after 4 s anyway. */
+  html:not([data-intro-done]) .intro-pop {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    animation: intro-fallback 0s 4s forwards;
+  }
+  @keyframes intro-fallback {
+    to {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+  }
+  @keyframes intro-pop-left {
+    from {
+      opacity: 0;
+      transform: translateX(-140%) scale(0.6);
+    }
+    70% {
+      opacity: 1;
+      transform: translateX(10%) scale(1.06);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes intro-pop-up {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+  }
+  html[data-intro-done] .intro-pop {
+    animation: intro-pop-left 0.55s ease-out var(--intro-delay, 0s) both;
+  }
+  html[data-intro-done] .intro-pop-up {
+    animation: intro-pop-up 0.45s ease-out both;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero-sweep,
     .charger-pulse,
     .gallery-marquee,
     .hero-enter-up,
     .hero-enter-scale,
-    .hero-enter-drive {
+    .hero-enter-drive,
+    html[data-intro-done] .intro-pop {
       animation: none;
     }
   }

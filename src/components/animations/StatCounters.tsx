@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { animate, stagger } from 'animejs'
 import { prefersReducedMotion } from '@/lib/reveal'
+import { onIntroDone } from '@/lib/intro'
 
 export type Stat = { label: string; value: number; unit?: string }
 
@@ -15,22 +16,33 @@ const StatCounters = ({ stats }: { stats: Stat[] }) => {
     const targets = stats.map(() => ({ value: 0 }))
     // Keep the source's decimal places (e.g. 27.8 %), so the counter never rounds a published figure.
     const decimals = stats.map((stat) => (String(stat.value).split('.')[1] || '').length)
+    const render = () =>
+      targets.forEach((target, index) => {
+        const el = valueRefs.current[index]
+        if (el) el.textContent = target.value.toFixed(decimals[index])
+      })
 
-    const animation = animate(targets, {
-      value: (_, index) => stats[index ?? 0].value,
-      delay: stagger(100),
-      duration: 1200,
-      ease: 'outExpo',
-      onUpdate: () => {
-        targets.forEach((target, index) => {
-          const el = valueRefs.current[index]
-          if (el) el.textContent = target.value.toFixed(decimals[index])
-        })
-      },
+    // Start from 0 under the loading screen, then count up once it has faded so the visitor sees it.
+    render()
+    let animation: ReturnType<typeof animate> | undefined
+    const stopWaiting = onIntroDone(() => {
+      animation = animate(targets, {
+        value: (_, index) => stats[index ?? 0].value,
+        delay: stagger(120),
+        duration: 1600,
+        ease: 'outExpo',
+        onUpdate: render,
+      })
     })
 
     return () => {
-      animation.revert()
+      stopWaiting()
+      animation?.revert()
+      // Unmounting mid-count: put the real figures back.
+      stats.forEach((stat, index) => {
+        const el = valueRefs.current[index]
+        if (el) el.textContent = String(stat.value)
+      })
     }
   }, [stats])
 

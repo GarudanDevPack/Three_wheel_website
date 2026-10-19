@@ -18,6 +18,7 @@ import CookieConsent from '@/components/ui/CookieConsent'
 import Analytics from '@/components/ui/Analytics'
 import LinkTracking from '@/components/ui/LinkTracking'
 import LanguageSuggestion from '@/components/ui/LanguageSuggestion'
+import IntroGate from '@/components/ui/IntroGate'
 
 import { siteUrl } from '@/lib/site'
 
@@ -129,6 +130,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <Analytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || settings.gaMeasurementId} />
           <LinkTracking />
           <LanguageSuggestion />
+          <IntroGate />
         </NextIntlClientProvider>
       </body>
     </html>
